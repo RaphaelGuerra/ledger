@@ -64,14 +64,26 @@ export default function EntradasResumo() {
     setDespesas(prev => (prev.length === 1 ? prev : prev.filter(r => r.id !== id)))
   }
 
-  const movResultados = useMemo(
-    () => movimentacoes.map(r => toNumberOrZero(r.credito) - toNumberOrZero(r.debito)),
-    [movimentacoes],
-  )
-  const totalMovimentacao = useMemo(
-    () => movResultados.reduce((sum, n) => sum + n, 0),
-    [movResultados],
-  )
+  // Movimentacoes Resultado per row, matching Excel logic:
+  // - If both debit and credit exist: credit - debit
+  // - If only debit: negative value
+  // - If only credit: positive value
+  // - If neither: blank
+  const movResultados = useMemo(() => {
+    return movimentacoes.map(r => {
+      const hasDeb = r.debito !== '' && r.debito !== null && r.debito !== undefined && !(Number.isNaN(Number(r.debito)))
+      const hasCre = r.credito !== '' && r.credito !== null && r.credito !== undefined && !(Number.isNaN(Number(r.credito)))
+      const deb = toNumberOrZero(r.debito)
+      const cre = toNumberOrZero(r.credito)
+      if (hasDeb && hasCre) return cre - deb
+      if (hasDeb) return -deb
+      if (hasCre) return cre
+      return ''
+    })
+  }, [movimentacoes])
+  const totalMovimentacao = useMemo(() => {
+    return movResultados.reduce((sum, n) => sum + (typeof n === 'number' ? n : 0), 0)
+  }, [movResultados])
 
   const despRowValues = useMemo(
     () => despesas.map(r => toNumberOrZero(r.qtd) * toNumberOrZero(r.debito)),
@@ -86,10 +98,10 @@ export default function EntradasResumo() {
     }
     return out
   }, [despRowValues])
-  const totalDespesas = useMemo(
-    () => despSaldoRunning.reduce((sum, n) => sum + n, 0),
-    [despSaldoRunning],
-  )
+  // Total Despesas uses MAX of running saldo to mirror Excel's max-of-F column behavior
+  const totalDespesas = useMemo(() => {
+    return despSaldoRunning.length ? Math.max(...despSaldoRunning) : 0
+  }, [despSaldoRunning])
 
   const resultadoTopo = useMemo(
     () => totalMovimentacao + totalDespesas,
@@ -160,7 +172,7 @@ export default function EntradasResumo() {
                       />
                     </td>
                     <td>
-                      <input className="cell-input readonly" readOnly value={movResultados[idx].toFixed(2)} />
+                      <input className="cell-input readonly" readOnly value={typeof movResultados[idx] === 'number' ? movResultados[idx].toFixed(2) : ''} />
                     </td>
                     <td>
                       <button className="link-button danger" onClick={() => removeMov(r.id)} disabled={movimentacoes.length === 1}>

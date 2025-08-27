@@ -1,3 +1,38 @@
+:root {
+  --bg: #f5f7fb;
+  --text: #111827;
+  --surface: #ffffff;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --table-border: #dddddd;
+  --thead: #f3f4f6;
+  --readonly: #f9fafb;
+  --subtotal: #f8fafc;
+  --primary: #2563eb;
+  --danger: #b91c1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1220;
+    --text: #e5e7eb;
+    --surface: #111827;
+    --muted: #9ca3af;
+    --border: #334155;
+    --table-border: #334155;
+    --thead: #1f2937;
+    --readonly: #1b2538;
+    --subtotal: #152238;
+    --primary: #60a5fa;
+    --danger: #f87171;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
 #root {
   max-width: 1200px;
   margin: 0 auto;
@@ -35,33 +70,35 @@
 .sheet-table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: var(--surface);
 }
 .sheet-table th,
 .sheet-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--table-border);
   padding: 6px;
   text-align: left;
 }
 .sheet-table thead th {
-  background: #f3f4f6;
+  background: var(--thead);
 }
 
 .cell-input {
   width: 100%;
   box-sizing: border-box;
   padding: 6px 8px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border);
   border-radius: 4px;
-  background: #fff;
+  background: var(--surface);
+  color: var(--text);
 }
 .cell-input.readonly {
-  background: #f9fafb;
-  color: #111827;
+  background: var(--readonly);
+  color: var(--text);
 }
 
 .subtotal-row td {
-  background: #f8fafc;
+  background: var(--subtotal);
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -70,7 +107,7 @@
 }
 
 .primary {
-  background: #2563eb;
+  background: var(--primary);
   color: #fff;
   border: none;
   padding: 8px 12px;
@@ -79,11 +116,11 @@
 .link-button {
   background: transparent;
   border: none;
-  color: #2563eb;
+  color: var(--primary);
   cursor: pointer;
 }
 .link-button.danger {
-  color: #b91c1c;
+  color: var(--danger);
 }
 
 .grid-two {
@@ -108,19 +145,13 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 10px 12px;
-  background: #fff;
+  background: var(--surface);
 }
 .summary-card .label {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--muted);
 }
 .summary-card .value {
   font-weight: 700;
   font-size: 16px;
-}
-
-/* Force light theme for readability */
-body {
-  background: #f5f7fb;
-  color: #111827;
 }

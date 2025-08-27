@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 
 function createEmptyShift() {
   return {
@@ -65,7 +65,7 @@ export default function EntradasDiarias() {
     const cozinha = sum(r.dia.cozinha, r.noite.cozinha)
     const bar = sum(r.dia.bar, r.noite.bar)
     const outros = sum(r.dia.outros, r.noite.outros)
-    const media = nEntradas > 0 ? totalEntradas / nEntradas : 0
+    const media = nEntradas > 0 ? totalEntradas / nEntradas : ''
     return { nEntradas, totalEntradas, cozinha, bar, outros, media }
   }
 
@@ -91,7 +91,7 @@ export default function EntradasDiarias() {
             {rows.map((r, idx) => {
               const totals = computeTotals(r)
               return (
-                <>
+                <Fragment key={r.id}>
                   <tr key={r.id + '-dia'}>
                     <td rowSpan={3}>
                       <input
@@ -122,11 +122,7 @@ export default function EntradasDiarias() {
                       />
                     </td>
                     <td>
-                      <input
-                        value={r.dia.nEntradas > 0 ? (r.dia.totalEntradas / r.dia.nEntradas).toFixed(2) : '0.00'}
-                        readOnly
-                        className="cell-input readonly"
-                      />
+                      <input value={r.dia.nEntradas > 0 ? (r.dia.totalEntradas / r.dia.nEntradas).toFixed(2) : ''} readOnly className="cell-input readonly" />
                     </td>
                     <td>
                       <input
@@ -186,11 +182,7 @@ export default function EntradasDiarias() {
                       />
                     </td>
                     <td>
-                      <input
-                        value={r.noite.nEntradas > 0 ? (r.noite.totalEntradas / r.noite.nEntradas).toFixed(2) : '0.00'}
-                        readOnly
-                        className="cell-input readonly"
-                      />
+                      <input value={r.noite.nEntradas > 0 ? (r.noite.totalEntradas / r.noite.nEntradas).toFixed(2) : ''} readOnly className="cell-input readonly" />
                     </td>
                     <td>
                       <input
@@ -232,7 +224,7 @@ export default function EntradasDiarias() {
                       <input value={totals.totalEntradas.toFixed(2)} readOnly className="cell-input readonly" />
                     </td>
                     <td>
-                      <input value={totals.media.toFixed(2)} readOnly className="cell-input readonly" />
+                      <input value={typeof totals.media === 'number' ? totals.media.toFixed(2) : ''} readOnly className="cell-input readonly" />
                     </td>
                     <td>
                       <input value={totals.cozinha.toFixed(2)} readOnly className="cell-input readonly" />
@@ -244,7 +236,7 @@ export default function EntradasDiarias() {
                       <input value={totals.outros.toFixed(2)} readOnly className="cell-input readonly" />
                     </td>
                   </tr>
-                </>
+                </Fragment>
               )
             })}
           </tbody>

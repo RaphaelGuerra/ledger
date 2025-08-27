@@ -16,8 +16,8 @@ function createEmptyRow() {
   }
 }
 
-// Caixa renders a running ledger. Saldo is a running total of Debito values.
-// Per spec: Saldo(n) = Saldo(n-1) + Debito(n). QTD is captured but not used in the sum.
+// Caixa renders a running ledger.
+// Saldo(n) = (has amount ? (QTD * Debito or Debito) + Saldo(n-1) : '')
 export default function Caixa() {
   const [rows, setRows] = useState([createEmptyRow()])
 
@@ -43,8 +43,21 @@ export default function Caixa() {
     const out = []
     let acc = 0
     for (const r of rows) {
-      acc += toNumberOrZero(r.debito)
-      out.push(acc)
+      const qtd = toNumberOrZero(r.qtd)
+      const deb = toNumberOrZero(r.debito)
+      const hasQtd = r.qtd !== '' && r.qtd !== null && r.qtd !== undefined && !(Number.isNaN(Number(r.qtd)))
+      const hasDeb = r.debito !== '' && r.debito !== null && r.debito !== undefined && !(Number.isNaN(Number(r.debito)))
+      const amount = hasQtd && hasDeb ? qtd * deb : hasDeb ? deb : undefined
+      if (typeof amount === 'number' && Number.isFinite(amount) && amount !== 0) {
+        acc += amount
+        out.push(acc)
+      } else if (typeof amount === 'number' && amount === 0 && (hasQtd || hasDeb)) {
+        // Explicit 0 amount counts as processed
+        acc += 0
+        out.push(acc)
+      } else {
+        out.push('')
+      }
     }
     return out
   }, [rows])
@@ -57,6 +70,7 @@ export default function Caixa() {
           <thead>
             <tr>
               <th>Data</th>
+              <th>Status</th>
               <th>Descricao</th>
               <th>QTD.</th>
               <th>Debito (R$)</th>
@@ -71,6 +85,9 @@ export default function Caixa() {
                   <input type="date" className="cell-input" value={r.data} onChange={e => updateRow(r.id, 'data', e.target.value)} />
                 </td>
                 <td>
+                  <input className="cell-input readonly" readOnly value={saldoRunning[idx] !== '' ? 'PAGO' : ''} />
+                </td>
+                <td>
                   <input className="cell-input" value={r.descricao} onChange={e => updateRow(r.id, 'descricao', e.target.value)} placeholder="Descricao" />
                 </td>
                 <td>
@@ -80,7 +97,7 @@ export default function Caixa() {
                   <input type="number" inputMode="decimal" step="any" className="cell-input" value={r.debito} onChange={e => updateRow(r.id, 'debito', e.target.value)} />
                 </td>
                 <td>
-                  <input className="cell-input readonly" readOnly value={saldoRunning[idx].toFixed(2)} />
+                  <input className="cell-input readonly" readOnly value={saldoRunning[idx] === '' ? '' : Number(saldoRunning[idx]).toFixed(2)} />
                 </td>
                 <td>
                   <button className="link-button danger" onClick={() => removeRow(r.id)} disabled={rows.length === 1}>
