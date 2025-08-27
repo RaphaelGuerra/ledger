@@ -31,6 +31,7 @@
 body {
   background: var(--bg);
   color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
 #root {
@@ -42,13 +43,54 @@ body {
 .app-header {
   margin-bottom: 24px;
 }
-.app-header h1 {
-  margin: 0;
-  font-size: 24px;
+.app-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  min-height: 72px;
 }
-.app-header .subtitle {
-  color: #666;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+}
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.brand-text {
+  min-width: 0;
+}
+.brand-text .brand-title {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.1;
+  margin: 0;
+}
+.brand-text .brand-subtitle {
+  color: var(--muted);
   font-size: 14px;
+  margin: 0;
+  line-height: 1.1;
+}
+.header-month-controls {
+  flex: 0 0 auto;
+}
+.header-month-controls .current-month {
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 140px;
+  text-align: center;
 }
 
 .section {
@@ -57,6 +99,19 @@ body {
 .section-title {
   margin: 0 0 12px 0;
   font-size: 18px;
+}
+
+/* Compact ENTRADAS DIARIAS section */
+.section.entradas-section {
+  margin: 16px 0;
+}
+
+.section.entradas-section .section-title {
+  margin: 0 0 8px 0;
+}
+
+.section.entradas-section .section-actions {
+  margin-top: 8px;
 }
 .sub-title {
   margin: 0 0 8px 0;
@@ -179,4 +234,301 @@ body {
 }
 .row-desp td {
   background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+/* Month Navigation */
+.month-navigation {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.month-nav-btn {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.month-nav-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.current-month {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Entries Container */
+.entries-container {
+  max-height: 700px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+/* Sticky table header inside scrollable containers */
+.entries-container .sheet-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--thead);
+}
+
+/* Compact table styling for ENTRADAS DIARIAS */
+.entries-container .sheet-table {
+  font-size: 13px;
+}
+
+.entries-container .sheet-table th,
+.entries-container .sheet-table td {
+  padding: 4px 6px;
+  border: 1px solid var(--table-border);
+}
+
+.entries-container .sheet-table th {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 6px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+}
+
+.empty-state p {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+}
+
+/* Collapsed Row Styling */
+.collapsed-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.collapsed-row:hover {
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+}
+
+.collapsed-row td {
+  padding: 4px 6px;
+  vertical-align: middle;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+/* Expanded Row Styling */
+.expanded-header {
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.expanded-header td {
+  padding: 8px 12px;
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary);
+}
+
+.expanded-row td {
+  padding: 0;
+  border: none;
+}
+
+.expanded-editor {
+  padding: 16px;
+  background: var(--surface);
+}
+
+.editor-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.editor-table th,
+.editor-table td {
+  border: 1px solid var(--table-border);
+  padding: 6px;
+  text-align: left;
+}
+
+.editor-table thead th {
+  background: var(--thead);
+  font-size: 12px;
+}
+
+/* Secondary Button */
+.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.secondary:hover {
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+}
+
+/* Link Button Primary Variant */
+.link-button.primary {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.link-button.primary:hover {
+  text-decoration: underline;
+}
+
+/* Compact action buttons for ENTRADAS DIARIAS */
+.entries-container .link-button {
+  font-size: 12px;
+  padding: 2px 6px;
+  margin: 0 2px;
+}
+
+.entries-container .collapsed-row .link-button {
+  white-space: nowrap;
+}
+
+/* Truncate long text (e.g., descricao) */
+.entries-container .truncate {
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Type chips for Mov/Desp */
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  border: 1px solid var(--border);
+}
+.chip-mov {
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+}
+.chip-desp {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+}
+
+/* Collapsed row styling for Dia/Noite/Total breakdown */
+.collapsed-row .date-cell {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--primary) 3%, transparent);
+  border-right: 2px solid var(--primary);
+}
+
+.collapsed-row .shift-label {
+  font-weight: 500;
+  font-size: 12px;
+  background: color-mix(in srgb, var(--muted) 5%, transparent);
+  width: 50px;
+  text-align: center;
+}
+
+.collapsed-row.totals-row {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  border-top: 1px solid var(--primary);
+}
+
+.collapsed-row.totals-row .shift-label {
+  background: var(--primary);
+  color: white;
+}
+
+.collapsed-row .actions-cell {
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .app-header-inner {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .brand {
+    justify-content: center;
+  }
+  
+  .month-navigation {
+    gap: 8px;
+    padding: 6px 8px;
+  }
+  
+  .month-nav-btn {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+  
+  .header-month-controls .current-month {
+    min-width: 120px;
+    font-size: 14px;
+  }
+  
+  .entries-container {
+    max-height: 500px;
+  }
+  
+  .entries-container .sheet-table {
+    font-size: 12px;
+  }
+  
+  .entries-container .collapsed-row td {
+    padding: 3px 4px;
+    font-size: 12px;
+  }
+  
+  .entries-container .link-button {
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+  
+  .collapsed-row .shift-label {
+    font-size: 11px;
+    width: 40px;
+  }
+  
+  .collapsed-row .date-cell {
+    font-size: 11px;
+  }
+  
+  .sheet-table {
+    font-size: 14px;
+  }
+  
+  .cell-input {
+    padding: 4px 6px;
+    font-size: 14px;
+  }
 }
