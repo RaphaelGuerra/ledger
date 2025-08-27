@@ -155,3 +155,28 @@ body {
   font-weight: 700;
   font-size: 16px;
 }
+
+.tabs {
+  display: inline-flex;
+  gap: 8px;
+  margin: 8px 0 12px 0;
+}
+.tab {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+.tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.row-mov td {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.row-desp td {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}

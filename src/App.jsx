@@ -1,7 +1,6 @@
 import './App.css'
 import EntradasDiarias from './components/EntradasDiarias'
-import EntradasResumo from './components/EntradasResumo'
-import Caixa from './components/Caixa'
+import Ledger from './components/Ledger'
 
 export default function App() {
   return (
@@ -12,8 +11,7 @@ export default function App() {
       </header>
       <main>
         <EntradasDiarias />
-        <EntradasResumo />
-        <Caixa />
+        <Ledger />
       </main>
     </div>
   )
