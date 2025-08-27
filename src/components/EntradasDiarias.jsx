@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react'
+import { Fragment } from 'react'
 
 function createEmptyShift() {
   return {
@@ -27,13 +27,12 @@ function toNumberOrZero(value) {
 
 // EntradasDiarias renders Day/ Night inputs by date and a total row per date.
 // Totals sum Dia + Noite for each metric; Media = Total entradas / N. Entradas.
-export default function EntradasDiarias() {
+export default function EntradasDiarias({ rows, onChange }) {
   const today = new Date().toISOString().slice(0, 10)
-  const [rows, setRows] = useState([createEmptyDateRow(today)])
 
   function updateShift(rowId, shiftKey, field, value) {
-    setRows(prev =>
-      prev.map(r => {
+    onChange(
+      rows.map(r => {
         if (r.id !== rowId) return r
         return {
           ...r,
@@ -47,15 +46,15 @@ export default function EntradasDiarias() {
   }
 
   function updateDate(rowId, value) {
-    setRows(prev => prev.map(r => (r.id === rowId ? { ...r, date: value } : r)))
+    onChange(rows.map(r => (r.id === rowId ? { ...r, date: value } : r)))
   }
 
   function addDateRow() {
-    setRows(prev => [...prev, createEmptyDateRow(today)])
+    onChange([...rows, createEmptyDateRow(today)])
   }
 
   function removeDateRow(rowId) {
-    setRows(prev => (prev.length === 1 ? prev : prev.filter(r => r.id !== rowId)))
+    onChange(rows.length === 1 ? rows : rows.filter(r => r.id !== rowId))
   }
 
   function computeTotals(r) {
