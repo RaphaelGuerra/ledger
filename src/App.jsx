@@ -36,8 +36,8 @@ export default function App() {
         <div className="subtitle">Planilha interativa simples</div>
       </header>
       <main>
-        <EntradasDiarias rows={diariasRows} onChange={setDiariasRows} />
         <Ledger creditTotals={creditTotals} />
+        <EntradasDiarias rows={diariasRows} onChange={setDiariasRows} />
       </main>
     </div>
   )
