@@ -96,11 +96,11 @@ export default function App() {
             </div>
           </div>
           <div className="month-navigation header-month-controls">
-            <button className="month-nav-btn" onClick={() => navigateMonth(-1)} aria-label="Mês anterior">
+            <button className="month-nav-btn" onClick={() => navigateMonth(-1)} aria-label="Mês anterior" title="Mês anterior">
               ←
             </button>
             <span className="current-month">{getMonthDisplayName(activeMonth)}</span>
-            <button className="month-nav-btn" onClick={() => navigateMonth(1)} aria-label="Próximo mês">
+            <button className="month-nav-btn" onClick={() => navigateMonth(1)} aria-label="Próximo mês" title="Próximo mês">
               →
             </button>
           </div>

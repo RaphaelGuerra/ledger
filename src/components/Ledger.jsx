@@ -218,7 +218,11 @@ export default function Ledger({ creditTotals, activeMonth }) {
                     {!isExpanded ? (
                       <tr key={it.id} className={`collapsed-row ${it.type === 'mov' ? 'row-mov' : 'row-desp'}`}>
                         <td>{it.date}</td>
-                        <td>{it.type === 'mov' ? 'Movimentação' : 'Despesa'}</td>
+                        <td>
+                          <span className={`chip ${it.type === 'mov' ? 'chip-mov' : 'chip-desp'}`}>
+                            {it.type === 'mov' ? 'Movimentação' : 'Despesa'}
+                          </span>
+                        </td>
                         <td>
                           <span className="truncate" title={it.descricao || ''}>{it.descricao || '-'}</span>
                         </td>

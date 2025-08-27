@@ -30,8 +30,12 @@
 
 body {
   background: var(--bg);
+  background-image: 
+    radial-gradient(circle at 20% 10%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(37, 99, 235, 0.02) 0%, transparent 50%);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  font-feature-settings: 'tnum' 1;
 }
 
 #root {
@@ -59,6 +63,8 @@ body {
   align-items: center;
   gap: 8px;
   flex: 0 1 auto;
+  padding-right: 16px;
+  border-right: 1px solid var(--border);
 }
 .brand-logo {
   width: 48px;
@@ -72,25 +78,31 @@ body {
   min-width: 0;
 }
 .brand-text .brand-title {
-  font-weight: 700;
-  font-size: 20px;
+  font-weight: 600;
+  font-size: 18px;
   line-height: 1.1;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 .brand-text .brand-subtitle {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   margin: 0;
   line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 .header-month-controls {
   flex: 0 0 auto;
+  margin-left: 16px;
 }
 .header-month-controls .current-month {
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 500;
+  font-size: 15px;
   min-width: 140px;
   text-align: center;
+  letter-spacing: -0.005em;
 }
 
 .section {
@@ -98,7 +110,11 @@ body {
 }
 .section-title {
   margin: 0 0 12px 0;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 /* Compact ENTRADAS DIARIAS section */
@@ -130,11 +146,38 @@ body {
 .sheet-table th,
 .sheet-table td {
   border: 1px solid var(--table-border);
-  padding: 6px;
+  padding: 6px 8px;
   text-align: left;
 }
 .sheet-table thead th {
   background: var(--thead);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* Right-align numeric columns */
+.sheet-table th:nth-child(3),
+.sheet-table th:nth-child(4),
+.sheet-table th:nth-child(5),
+.sheet-table th:nth-child(6),
+.sheet-table th:nth-child(7),
+.sheet-table th:nth-child(8),
+.sheet-table td:nth-child(3),
+.sheet-table td:nth-child(4), 
+.sheet-table td:nth-child(5),
+.sheet-table td:nth-child(6),
+.sheet-table td:nth-child(7),
+.sheet-table td:nth-child(8) {
+  text-align: right;
+}
+/* Zebra striping */
+.sheet-table tbody tr:nth-child(odd) {
+  background: rgba(0, 0, 0, 0.015);
+}
+.sheet-table tbody tr:nth-child(odd) .collapsed-row td {
+  background: rgba(0, 0, 0, 0.015);
 }
 
 .cell-input {
@@ -145,6 +188,12 @@ body {
   border-radius: 4px;
   background: var(--surface);
   color: var(--text);
+  transition: border-color 0.12s ease-out;
+}
+.cell-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .cell-input.readonly {
   background: var(--readonly);
@@ -164,18 +213,66 @@ body {
 .primary {
   background: var(--primary);
   color: #fff;
-  border: none;
-  padding: 8px 12px;
+  border: 1px solid var(--primary);
+  padding: 8px 16px;
   border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.12s ease-out;
 }
+.primary:hover {
+  background: color-mix(in srgb, var(--primary) 90%, black);
+  border-color: color-mix(in srgb, var(--primary) 90%, black);
+  transform: translateY(-1px);
+}
+.primary:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
+}
+
+.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.12s ease-out;
+}
+.secondary:hover {
+  background: color-mix(in srgb, var(--primary) 5%, transparent);
+}
+.secondary:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
+}
+
 .link-button {
   background: transparent;
   border: none;
   color: var(--primary);
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.12s ease-out;
+}
+.link-button:hover {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.link-button:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
 }
 .link-button.danger {
   color: var(--danger);
+}
+.link-button.danger:hover {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
 }
 
 .grid-two {
@@ -213,20 +310,31 @@ body {
 
 .tabs {
   display: inline-flex;
-  gap: 8px;
+  gap: 4px;
   margin: 8px 0 12px 0;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
 }
 .tab {
   background: transparent;
   color: var(--text);
-  border: 1px solid var(--border);
-  padding: 6px 10px;
-  border-radius: 999px;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s ease-out;
+}
+.tab:hover {
+  background: var(--surface);
 }
 .tab.active {
   background: var(--primary);
   color: #fff;
-  border-color: var(--primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .row-mov td {
@@ -251,22 +359,29 @@ body {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  min-width: 40px;
+  font-size: 14px;
+  font-weight: 400;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease-out;
 }
 
 .month-nav-btn:hover {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.month-nav-btn:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
 }
 
 .current-month {
@@ -377,19 +492,7 @@ body {
   font-size: 12px;
 }
 
-/* Secondary Button */
-.secondary {
-  background: transparent;
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
-.secondary:hover {
-  background: color-mix(in srgb, var(--primary) 5%, transparent);
-}
 
 /* Link Button Primary Variant */
 .link-button.primary {
@@ -424,19 +527,24 @@ body {
 /* Type chips for Mov/Desp */
 .chip {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.2;
   border: 1px solid var(--border);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 .chip-mov {
-  background: color-mix(in srgb, var(--primary) 15%, transparent);
-  border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+  color: color-mix(in srgb, var(--primary) 85%, var(--text));
 }
 .chip-desp {
-  background: color-mix(in srgb, var(--danger) 15%, transparent);
-  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 25%, var(--border));
+  color: color-mix(in srgb, var(--danger) 85%, var(--text));
 }
 
 /* Collapsed row styling for Dia/Noite/Total breakdown */
