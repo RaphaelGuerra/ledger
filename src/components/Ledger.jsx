@@ -149,7 +149,7 @@ export default function Ledger({ creditTotals, activeMonth }) {
     for (const it of visibleItems) {
       if (it.type === 'mov') {
         const deb = toNumberOrZero(it.debito)
-        const cre = toNumberOrZero(it.credito) // allow credito here if needed, but by spec credits come from Diarias
+        // Credits originate from daily entries, so only debits affect the balance here
         totalDebitosMovDesp += deb // only count debits toward final balance subtraction
       } else {
         const qtd = toNumberOrZero(it.qtd)
