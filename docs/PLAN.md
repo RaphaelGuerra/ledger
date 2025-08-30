@@ -21,16 +21,19 @@ This document outlines a phased roadmap to transform the current BRL-only ledger
 - Unify schemas and improve developer experience.
 
 ### Tasks
-- **Money utilities**:
+- [x] **Money utilities**:
   - `toCentavos(brlString)`
   - `fromCentavos(i64)`
   - `applyRate(amountCents, rateDecimal, rounding='bankers')`
-- **Shared Zod schemas**:
+- [x] **Shared Zod schemas**:
   - `Account`
   - `TxLine { accountId, debitCents: bigint, creditCents: bigint }`
   - `TransactionCreate { idempotencyKey, date: 'YYYY-MM-DD', memo?, lines[] }`
-- **Fetch wrapper** with JSON handling, `AbortController`, timeout, retry (exponential backoff + jitter).
-- **Env schema loader**, `.env.example`, and one-command dev script.
+- [ ] **Fetch wrapper** with JSON handling, `AbortController`, timeout, retry (exponential backoff + jitter).
+- [ ] **Env schema loader**, `.env.example`, and one-command dev script.
+
+### Next Steps
+- Implement the fetch wrapper and env schema loader to complete Phase 0.
 
 ### Code Snippet
 ```ts
