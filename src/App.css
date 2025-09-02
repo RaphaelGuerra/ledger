@@ -287,6 +287,17 @@ body {
   }
 }
 
+/* Remove spinners for all number inputs (typed only) */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

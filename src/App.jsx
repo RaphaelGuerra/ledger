@@ -101,6 +101,37 @@ export default function App() {
     return { totalEntradas, totalCozinha, totalBar, totalOutros, totalCreditos }
   }, [visibleDiariasRows])
 
+  const acumulado = useMemo(() => {
+    let diaN = 0, diaTot = 0, diaC = 0, diaB = 0, diaO = 0
+    let noiN = 0, noiTot = 0, noiC = 0, noiB = 0, noiO = 0
+    for (const r of visibleDiariasRows) {
+      diaN += r.dia?.nEntradas || 0
+      diaTot += r.dia?.totalEntradas || 0
+      diaC += r.dia?.cozinha || 0
+      diaB += r.dia?.bar || 0
+      diaO += r.dia?.outros || 0
+
+      noiN += r.noite?.nEntradas || 0
+      noiTot += r.noite?.totalEntradas || 0
+      noiC += r.noite?.cozinha || 0
+      noiB += r.noite?.bar || 0
+      noiO += r.noite?.outros || 0
+    }
+    const totN = diaN + noiN
+    const totTot = diaTot + noiTot
+    const totC = diaC + noiC
+    const totB = diaB + noiB
+    const totO = diaO + noiO
+    const mediaDia = diaN > 0 ? diaTot / diaN : ''
+    const mediaNoite = noiN > 0 ? noiTot / noiN : ''
+    const mediaTot = totN > 0 ? totTot / totN : ''
+    return {
+      dia: { n: diaN, entradas: diaTot, cozinha: diaC, bar: diaB, outros: diaO, media: mediaDia },
+      noite: { n: noiN, entradas: noiTot, cozinha: noiC, bar: noiB, outros: noiO, media: mediaNoite },
+      total: { n: totN, entradas: totTot, cozinha: totC, bar: totB, outros: totO, media: mediaTot },
+    }
+  }, [visibleDiariasRows])
+
   function getMonthDisplayName(monthStr) {
     const date = new Date(monthStr + '-01')
     return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
@@ -160,6 +191,53 @@ export default function App() {
         </div>
       </header>
       <main>
+        <section className="section entradas-section">
+          <h2 className="section-title">Acumulado</h2>
+          <div className="table-wrap">
+            <table className="sheet-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>N</th>
+                  <th>Entradas</th>
+                  <th>Cozinha</th>
+                  <th>Bar</th>
+                  <th>Outros</th>
+                  <th>Média</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="shift-label">Dia</td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.n || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.entradas || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.cozinha || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.bar || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.outros || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.media || ''} /></td>
+                </tr>
+                <tr>
+                  <td className="shift-label">Noite</td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.n || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.entradas || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.cozinha || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.bar || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.outros || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.media || ''} /></td>
+                </tr>
+                <tr className="subtotal-row">
+                  <td className="shift-label">Total</td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.total.n || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.total.entradas || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.total.cozinha || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.total.bar || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.total.outros || ''} /></td>
+                  <td><input className="cell-input readonly" readOnly value={acumulado.total.media || ''} /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
         <Ledger
           creditTotals={creditTotals}
           activeMonth={activeMonth}
