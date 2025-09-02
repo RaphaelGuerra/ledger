@@ -2,7 +2,6 @@ import './App.css'
 import { useMemo, useState, useEffect } from 'react'
 import logo from './assets/Gemini_Generated_Image_isbz06isbz06isbz.png'
 import EntradasDiarias from './components/EntradasDiarias'
-import ApiStatus from './components/ApiStatus.jsx'
 import Ledger from './components/Ledger'
 
 export default function App() {
@@ -105,7 +104,6 @@ export default function App() {
               →
             </button>
           </div>
-          <ApiStatus />
         </div>
       </header>
       <main>
