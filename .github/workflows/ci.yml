@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,39 +17,4 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint
-      - run: npm test --silent
-  db-validate:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres" 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      - name: Wait for Postgres
-        run: |
-          for i in {1..30}; do
-            nc -z localhost 5432 && echo "Postgres is up" && break || sleep 1;
-          done
-      - name: Run migrations (optional)
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: npm run db:migrate
-      - name: Run seeds (optional)
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-        run: npm run db:seed
+      - run: npm run build

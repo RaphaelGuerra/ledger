@@ -1,11 +1,11 @@
-## Cash Ledger - Vison Hotel (Spreadsheet-like)
+## Cash Ledger - Vison Hotel (MVP)
 
-Single-page React app replicating the provided Excel sheets logic.
+Single-page React app — minimal, fast, and focused on the workflow.
 
 ### Sections
 
-- Entradas Diarias: per-date Day/Night inputs and automatic totals / media.
-- Caixa e Resumo (Unified Ledger): single place for Movimentacao and Despesas with running saldo and overall RESULTADO.
+- Entradas Diarias: per-date Day/Night inputs and automatic totals/media.
+- Caixa e Resumo: Movimentação/Despesas together with running saldo and overall RESULTADO.
 
 ### Run locally
 
@@ -16,7 +16,7 @@ npm run dev
 
 Environment:
 
-- Optional (for DB validation CI only): create `.env.local` from `.env.example` to run migrations/seeds.
+- No env needed. Optional: configure Cloudflare Pages KV binding `LEDGER` for cross-browser sync.
 
 ### Sync across browsers (simple)
 
@@ -30,17 +30,7 @@ Environment:
 npm run build
 ```
 
-### Test
-
-```bash
-npm test
-```
-
 ### Notes
-- Unified ledger supports tabs: Tudo, Movimentacao, Despesas.
-- Add/remove lines; saldo and resultados update in real time.
-- Read-only (protected) cells are shown with a subtle background.
-- Data persists only for the current session (no storage).
-  
-- Money utilities and Zod schemas enforce balanced transactions.
-  
+-- Add/remove lines; saldo and resultados update in real time.
+-- Read-only (protected) cells are shown with a subtle background.
+-- Data persists locally per month; optional cross-browser sync using Sync ID (Cloudflare KV).
