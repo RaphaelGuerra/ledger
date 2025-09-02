@@ -29,11 +29,12 @@ This document outlines a phased roadmap to transform the current BRL-only ledger
   - `Account`
   - `TxLine { accountId, debitCents: bigint, creditCents: bigint }`
   - `TransactionCreate { idempotencyKey, date: 'YYYY-MM-DD', memo?, lines[] }`
-- [ ] **Fetch wrapper** with JSON handling, `AbortController`, timeout, retry (exponential backoff + jitter).
-- [ ] **Env schema loader**, `.env.example`, and one-command dev script.
+- [x] **Fetch wrapper** with JSON handling, `AbortController`, timeout, retry (exponential backoff + jitter).
+- [x] **Env schema loader**, `.env.example`, and one-command dev script.
 
 ### Next Steps
-- Implement the fetch wrapper and env schema loader to complete Phase 0.
+- Keep schemas and money utils stable; expand unit tests as new cases arise.
+- Add CI (lint + tests) to guard regressions.
 
 ### Code Snippet
 ```ts
