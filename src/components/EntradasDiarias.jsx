@@ -60,24 +60,29 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
         <table className="sheet-table">
           <thead>
             <tr>
-              <th>Data</th>
-              <th>Dia N</th>
-              <th>Dia Total</th>
-              <th>Dia Cozinha</th>
-              <th>Dia Bar</th>
-              <th>Dia Outros</th>
-              <th>Noite N</th>
-              <th>Noite Total</th>
-              <th>Noite Cozinha</th>
-              <th>Noite Bar</th>
-              <th>Noite Outros</th>
-              <th>Tot N</th>
-              <th>Tot Entradas</th>
-              <th>Tot Cozinha</th>
-              <th>Tot Bar</th>
-              <th>Tot Outros</th>
+              <th rowSpan="2">Data</th>
+              <th colSpan="5">Dia</th>
+              <th colSpan="5">Noite</th>
+              <th colSpan="6">Totais</th>
+              <th rowSpan="2">Ações</th>
+            </tr>
+            <tr>
+              <th>N</th>
+              <th>Total</th>
+              <th>Cozinha</th>
+              <th>Bar</th>
+              <th>Outros</th>
+              <th>N</th>
+              <th>Total</th>
+              <th>Cozinha</th>
+              <th>Bar</th>
+              <th>Outros</th>
+              <th>N</th>
+              <th>Entradas</th>
+              <th>Cozinha</th>
+              <th>Bar</th>
+              <th>Outros</th>
               <th>Média</th>
-              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -88,12 +93,12 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                   <td>
                     <input type="date" className="cell-input" value={r.date} onChange={e => updateDate(r.id, e.target.value)} />
                   </td>
-                  <td><input type="number" className="cell-input" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></td>
+                  <td><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></td>
+                  <td><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} /></td>
                   <td><input type="number" className="cell-input" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} /></td>
@@ -119,4 +124,3 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     </section>
   )
 }
-
