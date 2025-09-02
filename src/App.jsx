@@ -191,6 +191,12 @@ export default function App() {
         </div>
       </header>
       <main>
+        <Ledger
+          creditTotals={creditTotals}
+          activeMonth={activeMonth}
+          initialItems={ledgerInitialItems}
+          onItemsChange={items => persist({ ledgerItems: items })}
+        />
         <section className="section entradas-section">
           <h2 className="section-title">Acumulado</h2>
           <div className="table-wrap">
@@ -238,12 +244,6 @@ export default function App() {
             </table>
           </div>
         </section>
-        <Ledger
-          creditTotals={creditTotals}
-          activeMonth={activeMonth}
-          initialItems={ledgerInitialItems}
-          onItemsChange={items => persist({ ledgerItems: items })}
-        />
         <EntradasDiarias
           rows={diariasRows}
           onChange={(rows) => { setDiariasRows(rows); persist({ entradasRows: rows }) }}
