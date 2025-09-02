@@ -14,6 +14,11 @@ npm install
 npm run dev
 ```
 
+Environment:
+
+- Create `.env.local` from `.env.example`. Required variables:
+  - `VITE_API_URL`: Base URL for backend (e.g., `http://localhost:3000/api`). Used by the header status ping and any future API calls.
+
 ### Build
 
 ```bash
@@ -32,3 +37,4 @@ npm test
 - Read-only (protected) cells are shown with a subtle background.
 - Data persists only for the current session (no storage).
 - Money utilities and Zod schemas enforce balanced transactions.
+- Header shows API connectivity (uses `VITE_API_URL`).
