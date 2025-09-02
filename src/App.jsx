@@ -3,12 +3,14 @@ import { useMemo, useState, useEffect } from 'react'
 import logo from './assets/Gemini_Generated_Image_isbz06isbz06isbz.png'
 import EntradasDiarias from './components/EntradasDiarias'
 import Ledger from './components/Ledger'
+import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRemoteDebounced } from './lib/store.js'
 
 export default function App() {
   // Get first day of current month for initial record
   const now = new Date()
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
   const [activeMonth, setActiveMonth] = useState(firstDayOfMonth.slice(0, 7)) // YYYY-MM
+  const [syncId, setSyncIdState] = useState('')
   
   const [diariasRows, setDiariasRows] = useState([
     {
@@ -18,6 +20,45 @@ export default function App() {
       noite: { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 },
     },
   ])
+  const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
+
+  // Sync ID init
+  useEffect(() => {
+    setSyncIdState(getSyncId())
+  }, [])
+
+  function handleSyncIdChange(id) {
+    setSyncIdState(id)
+    setSyncId(id)
+  }
+
+  // Load month data (remote first if syncId, then local)
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      let data = null
+      if (syncId) data = await loadRemote(syncId, activeMonth)
+      if (!data) data = loadLocal(activeMonth)
+      if (cancelled) return
+      if (data?.entradasRows) setDiariasRows(data.entradasRows)
+      if (data?.ledgerItems) setLedgerInitialItems(data.ledgerItems)
+      if (!data) {
+        setLedgerInitialItems(null)
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [activeMonth, syncId])
+
+  // Persist helpers
+  function persist(partial) {
+    const payload = {
+      entradasRows: partial.entradasRows ?? diariasRows,
+      ledgerItems: partial.ledgerItems ?? null,
+    }
+    saveLocalDebounced(activeMonth, payload)
+    if (syncId) saveRemoteDebounced(syncId, activeMonth, payload)
+  }
 
   // Ensure each month has at least one entry of each type
   useEffect(() => {
@@ -104,11 +145,32 @@ export default function App() {
               →
             </button>
           </div>
+          <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+            <label style={{ fontSize: 12, color: 'var(--muted)' }}>
+              Sync ID
+              <input
+                style={{ marginLeft: 8 }}
+                className="cell-input"
+                placeholder="opcional"
+                value={syncId}
+                onChange={e => handleSyncIdChange(e.target.value.trim())}
+              />
+            </label>
+          </div>
         </div>
       </header>
       <main>
-        <Ledger creditTotals={creditTotals} activeMonth={activeMonth} />
-        <EntradasDiarias rows={diariasRows} onChange={setDiariasRows} activeMonth={activeMonth} />
+        <Ledger
+          creditTotals={creditTotals}
+          activeMonth={activeMonth}
+          initialItems={ledgerInitialItems}
+          onItemsChange={items => persist({ ledgerItems: items })}
+        />
+        <EntradasDiarias
+          rows={diariasRows}
+          onChange={(rows) => { setDiariasRows(rows); persist({ entradasRows: rows }) }}
+          activeMonth={activeMonth}
+        />
       </main>
     </div>
   )

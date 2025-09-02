@@ -45,11 +45,11 @@ jobs:
           for i in {1..30}; do
             nc -z localhost 5432 && echo "Postgres is up" && break || sleep 1;
           done
-      - name: Run migrations
+      - name: Run migrations (optional)
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         run: npm run db:migrate
-      - name: Run seeds
+      - name: Run seeds (optional)
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         run: npm run db:seed

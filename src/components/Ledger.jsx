@@ -28,13 +28,24 @@ function createEmptyDespesa(defaultDate) {
   }
 }
 
-export default function Ledger({ creditTotals, activeMonth }) {
+export default function Ledger({ creditTotals, activeMonth, initialItems, onItemsChange }) {
   const [activeTab, setActiveTab] = useState('all') // all | mov | desp
   const [items, setItems] = useState(() => {
     const initialDate = (activeMonth ? `${activeMonth}-01` : new Date().toISOString().slice(0, 10))
+    if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return initialItems
     return [createEmptyMov(initialDate), createEmptyDespesa(initialDate)]
   })
   const [expandedRowId, setExpandedRowId] = useState(null)
+
+  // Reset items when month or initialItems change
+  useEffect(() => {
+    const first = `${activeMonth}-01`
+    if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) {
+      setItems(initialItems)
+    } else {
+      setItems([createEmptyMov(first), createEmptyDespesa(first)])
+    }
+  }, [activeMonth, initialItems])
 
   // Ensure each month has at least one mov and one desp entry
   useEffect(() => {
@@ -61,6 +72,11 @@ export default function Ledger({ creditTotals, activeMonth }) {
       return prev
     })
   }, [activeMonth])
+
+  // Notify parent of changes to persist
+  useEffect(() => {
+    onItemsChange && onItemsChange(items)
+  }, [items, onItemsChange])
 
   const visibleItems = useMemo(() => {
     return items.filter(it => (it.date || '').startsWith(activeMonth))
@@ -294,6 +310,5 @@ export default function Ledger({ creditTotals, activeMonth }) {
     </section>
   )
 }
-
 
 
