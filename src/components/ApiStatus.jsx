@@ -12,7 +12,7 @@ export default function ApiStatus() {
         // Try simple GET; accept empty body or JSON
         await fetchJson(env.VITE_API_URL, { method: 'GET' }, { timeout: 1500, retries: 0 })
         if (!cancelled) setStatus('online')
-      } catch (_) {
+      } catch {
         if (!cancelled) setStatus('offline')
       }
     }
@@ -27,4 +27,3 @@ export default function ApiStatus() {
 
   return <span className={cls} title={env.VITE_API_URL}>{label}</span>
 }
-
