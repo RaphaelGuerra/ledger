@@ -128,7 +128,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       </div>
       <h2 className="section-title entries-title">Lançamentos</h2>
 
-      <div className="entries-container">
+      <div className="entries-container desktop-only">
         <div className="table-wrap">
           <table className="sheet-table ledger-table">
             <thead>
@@ -181,6 +181,38 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Mobile cards */}
+      <div className="mobile-only">
+        <div className="mov-cards">
+          {sorted.length === 0 ? (
+            <div className="empty-state"><p>Nenhum lançamento. Toque em "Adicionar Lançamento".</p></div>
+          ) : sorted.map((it, idx) => (
+            <div key={it.id} className="mov-card">
+              <div className="mov-card-header">
+                <div className="date-compact-wrap">
+                  <input
+                    type="date"
+                    lang="pt-BR"
+                    className="cell-input date-compact"
+                    value={it.date}
+                    onChange={e => updateItem(it.id, 'date', e.target.value)}
+                  />
+                  <div className="date-overlay">{formatDDMM(it.date)}</div>
+                </div>
+                <div className="currency-input"><span className="prefix">R$</span>
+                  <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
+                </div>
+                <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)}>✖</button>
+              </div>
+              <div className="desc-input">
+                <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" />
+              </div>
+              <div className="saldo-caption">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
+            </div>
+          ))}
         </div>
       </div>
 

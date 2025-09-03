@@ -512,6 +512,14 @@ input[type=number] {
   background: var(--surface);
 }
 
+/* Mobile card containers hidden on desktop */
+.mobile-only { display: none; }
+.desktop-only { display: block; }
+@media (max-width: 768px) {
+  .mobile-only { display: block; }
+  .desktop-only { display: none; }
+}
+
 /* Sticky table header inside scrollable containers */
 .entries-container .sheet-table thead th {
   position: sticky;
@@ -519,6 +527,30 @@ input[type=number] {
   z-index: 2;
   background: var(--thead);
 }
+
+/* Lançamentos mobile card */
+.mov-cards { display: grid; gap: 8px; }
+.mov-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--surface);
+}
+.mov-card-header { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; }
+.mov-card .date-compact-wrap { width: 100%; }
+.mov-card .currency-input .cell-input { text-align: right; }
+.mov-card .desc-input { margin-top: 6px; }
+.mov-card .saldo-caption { margin-top: 4px; font-size: 12px; color: var(--muted); text-align: right; }
+
+/* Entradas mobile cards */
+.ent-cards { display: grid; gap: 8px; }
+.ent-card { border: 1px solid var(--border); border-radius: 10px; padding: 8px; background: var(--surface); }
+.ent-card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ent-card .summary { display: inline-flex; gap: 8px; font-size: 12px; color: var(--muted); }
+.ent-card .summary .val { font-weight: 600; color: var(--text); }
+.ent-card .expand-toggle { background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.ent-card .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+.ent-card .row-title { font-weight: 600; font-size: 12px; color: var(--muted); margin-top: 6px; }
 
 /* Compact table styling for ENTRADAS DIARIAS */
 .entries-container .sheet-table {

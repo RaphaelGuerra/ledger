@@ -23,6 +23,8 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     const nextDate = valid.length > 0 ? isoAddDays(valid[valid.length - 1], 1) : `${activeMonth}-01`
     return (nextDate || '') > lastDayOfMonthStr(activeMonth)
   }, [visibleRows, activeMonth])
+  const [expanded, setExpanded] = useState({})
+  const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
 
   function fillMonth() {
     // Generate every missing date from the next date through the last day of the month
@@ -97,7 +99,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   return (
     <section className="section entradas-section">
       <h2 className="section-title">Entradas</h2>
-      <div className="entries-container">
+      <div className="entries-container desktop-only">
         {sortedRows.length === 0 && (
           <div className="empty-state">
             <p>Nenhuma entrada no mês. Use "Adicionar Data" ou "Preencher Mês".</p>
@@ -224,6 +226,78 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
               })}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Mobile cards */}
+      <div className="mobile-only">
+        <div className="ent-cards">
+          {sortedRows.length === 0 ? (
+            <div className="empty-state"><p>Nenhuma entrada no mês. Use "Adicionar Data" ou "Preencher Mês".</p></div>
+          ) : sortedRows.map(r => {
+            const t = totalsFor(r)
+            const isOpen = !!expanded[r.id]
+            return (
+              <div key={r.id} className="ent-card">
+                <div className="ent-card-header">
+                  <div className="date-compact-wrap" style={{ width: 90 }}>
+                    <input type="date" lang="pt-BR" className="cell-input date-compact" value={r.date} disabled />
+                    <div className="date-overlay">{formatDDMM(r.date)}</div>
+                  </div>
+                  <div className="summary">
+                    <span>Entradas <span className="val">{t.nEntradas || 0}</span></span>
+                    <span>Diárias <span className="val">R$ {t.totalEntradas || 0}</span></span>
+                  </div>
+                  <div style={{ display: 'inline-flex', gap: 6 }}>
+                    <button className="expand-toggle" onClick={() => toggle(r.id)}>{isOpen ? 'Recolher' : 'Expandir'}</button>
+                    <button className="link-button danger" onClick={() => removeDateRow(r.id)}>Remover</button>
+                  </div>
+                </div>
+                {isOpen && (
+                  <div>
+                    <div className="row-title">Dia</div>
+                    <div className="grid">
+                      <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} placeholder="N" />
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} placeholder="Diárias" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" readOnly value={fmt2(r.dia.nEntradas > 0 ? (r.dia.totalEntradas / r.dia.nEntradas) : '')} placeholder="Média" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} placeholder="Cozinha" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} placeholder="Bar" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} placeholder="Outros" />
+                      </div>
+                    </div>
+                    <div className="row-title">Noite</div>
+                    <div className="grid">
+                      <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} placeholder="N" />
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} placeholder="Diárias" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" readOnly value={fmt2(r.noite.nEntradas > 0 ? (r.noite.totalEntradas / r.noite.nEntradas) : '')} placeholder="Média" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} placeholder="Cozinha" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} placeholder="Bar" />
+                      </div>
+                      <div className="currency-input"><span className="prefix">R$</span>
+                        <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} placeholder="Outros" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
       <div className="section-actions">
