@@ -11,7 +11,8 @@ export default function App() {
   const now = new Date()
   const firstDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)).toISOString().slice(0, 10)
   const [activeMonth, setActiveMonth] = useState(firstDayOfMonth.slice(0, 7)) // YYYY-MM
-  const [syncId, setSyncIdState] = useState('')
+  const [syncId, setSyncIdState] = useState('') // active (connected) ID
+  const [syncIdDraft, setSyncIdDraft] = useState('') // user input (not yet connected)
   const [syncStatus, setSyncStatus] = useState('off') // off | loading | ok | error
   
   const [diariasRows, setDiariasRows] = useState([])
@@ -21,13 +22,26 @@ export default function App() {
 
   // Sync ID init
   useEffect(() => {
-    setSyncIdState(getSyncId())
+    const id = getSyncId()
+    setSyncIdState(id)
+    setSyncIdDraft(id)
   }, [])
 
   function handleSyncIdChange(id) {
+    setSyncIdDraft(id)
+  }
+
+  function connectSync() {
+    const id = (syncIdDraft || '').trim()
     setSyncIdState(id)
     setSyncId(id)
     setSyncStatus(id ? 'loading' : 'off')
+  }
+
+  function disconnectSync() {
+    setSyncIdState('')
+    setSyncId('')
+    setSyncStatus('off')
   }
 
   // Load month data (remote first if syncId, then local)
@@ -179,22 +193,29 @@ export default function App() {
                 style={{ marginLeft: 8 }}
                 className="cell-input"
                 placeholder="opcional"
-                value={syncId}
+                value={syncIdDraft}
                 onChange={e => handleSyncIdChange(e.target.value.trim())}
               />
             </label>
-            <div className="sync-status">
+            <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
               {syncId ? (
-                syncStatus === 'ok' ? (
-                  <span className="sync-ok"><span className="sync-dot">●</span> Sync OK</span>
-                ) : syncStatus === 'error' ? (
-                  <span className="sync-err"><span className="sync-dot">●</span> Sync erro</span>
-                ) : (
-                  <span className="sync-loading"><span className="sync-dot">●</span> Sincronizando…</span>
-                )
+                <button className="secondary" onClick={disconnectSync}>Desconectar</button>
               ) : (
-                <span className="sync-off"><span className="sync-dot">●</span> Sync desligado</span>
+                <button className="secondary" onClick={connectSync} disabled={!syncIdDraft}>Conectar</button>
               )}
+              <div className="sync-status">
+                {syncId ? (
+                  syncStatus === 'ok' ? (
+                    <span className="sync-ok"><span className="sync-dot">●</span> Sync OK</span>
+                  ) : syncStatus === 'error' ? (
+                    <span className="sync-err"><span className="sync-dot">●</span> Sync erro</span>
+                  ) : (
+                    <span className="sync-loading"><span className="sync-dot">●</span> Sincronizando…</span>
+                  )
+                ) : (
+                  <span className="sync-off"><span className="sync-dot">●</span> Sync desligado</span>
+                )}
+              </div>
             </div>
             <button className="secondary" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
           </div>
