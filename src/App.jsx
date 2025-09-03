@@ -197,7 +197,7 @@ export default function App() {
           initialItems={ledgerInitialItems}
           onItemsChange={items => persist({ ledgerItems: items })}
         />
-        <section className="section entradas-section">
+        <section className="section acumulado-section">
           <h2 className="section-title">Acumulado</h2>
           <div className="table-wrap">
             <table className="sheet-table">
