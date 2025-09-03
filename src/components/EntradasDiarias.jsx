@@ -257,41 +257,21 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                   <div>
                     <div className="row-title">Dia</div>
                     <div className="grid">
-                      <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} placeholder="N" />
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} placeholder="Diárias" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" readOnly value={fmt2(r.dia.nEntradas > 0 ? (r.dia.totalEntradas / r.dia.nEntradas) : '')} placeholder="Média" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} placeholder="Cozinha" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} placeholder="Bar" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} placeholder="Outros" />
-                      </div>
+                      <label className="field-pair"><span className="field-tag">Entradas</span><input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Diárias R$</span><input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Média R$</span><input className="cell-input" readOnly value={fmt2(r.dia.nEntradas > 0 ? (r.dia.totalEntradas / r.dia.nEntradas) : '')} /></label>
+                      <label className="field-pair"><span className="field-tag">Cozinha R$</span><input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Bar R$</span><input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Outros R$</span><input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} /></label>
                     </div>
                     <div className="row-title">Noite</div>
                     <div className="grid">
-                      <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} placeholder="N" />
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} placeholder="Diárias" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" readOnly value={fmt2(r.noite.nEntradas > 0 ? (r.noite.totalEntradas / r.noite.nEntradas) : '')} placeholder="Média" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} placeholder="Cozinha" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} placeholder="Bar" />
-                      </div>
-                      <div className="currency-input"><span className="prefix">R$</span>
-                        <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} placeholder="Outros" />
-                      </div>
+                      <label className="field-pair"><span className="field-tag">Entradas</span><input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Diárias R$</span><input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Média R$</span><input className="cell-input" readOnly value={fmt2(r.noite.nEntradas > 0 ? (r.noite.totalEntradas / r.noite.nEntradas) : '')} /></label>
+                      <label className="field-pair"><span className="field-tag">Cozinha R$</span><input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Bar R$</span><input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} /></label>
+                      <label className="field-pair"><span className="field-tag">Outros R$</span><input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} /></label>
                     </div>
                   </div>
                 )}

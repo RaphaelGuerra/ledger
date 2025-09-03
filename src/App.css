@@ -537,6 +537,8 @@ input[type=number] {
 }
 .mov-card-header { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; }
 .mov-card .date-compact-wrap { width: 100%; }
+.mov-card .date-compact-wrap { width: 80px; }
+.mov-card .date-overlay { font-size: 12px; }
 .mov-card .currency-input .cell-input { text-align: right; }
 .mov-card .desc-input { margin-top: 6px; }
 .mov-card .saldo-caption { margin-top: 4px; font-size: 12px; color: var(--muted); text-align: right; }
@@ -550,6 +552,11 @@ input[type=number] {
 .ent-card .expand-toggle { background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 .ent-card .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
 .ent-card .row-title { font-weight: 600; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.ent-card .date-compact-wrap { width: 80px; }
+.ent-card .date-overlay { font-size: 12px; }
+.ent-card .field-pair { display: flex; align-items: center; gap: 6px; }
+.ent-card .field-tag { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.ent-card .field-pair .cell-input { flex: 1 1 auto; }
 
 /* Compact table styling for ENTRADAS DIARIAS */
 .entries-container .sheet-table {
@@ -790,7 +797,7 @@ input[type=number] {
   #root { padding: 12px; max-width: 100%; }
   .app-header-inner.header-grid { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
   .brand { justify-content: flex-start; padding-right: 0; border-right: 0; }
-  .month-navigation { gap: 8px; padding: 4px 6px; width: 100%; justify-content: space-between; }
+  .month-navigation { gap: 8px; width: 100%; justify-content: space-between; box-sizing: border-box; padding: 2px 4px; border: none; background: transparent; }
   .month-nav-btn { padding: 6px 8px; font-size: 14px; width: 32px; height: 32px; }
   .header-month-controls .current-month { min-width: 0; flex: 1 1 auto; font-size: 14px; text-align: center; }
   .sync-group { width: 100%; }
@@ -1003,6 +1010,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 .sync-input { min-width: 0; }
 .sync-actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
 .print-btn { white-space: nowrap; }
+.sync-group .print-btn { margin-top: 6px; }
   table-layout: fixed;
 }
 
