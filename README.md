@@ -16,6 +16,19 @@ Detalhes de UX
 - “Adicionar Lançamento” reutiliza a mesma Data do último lançamento; exige Descrição e Valor preenchidos (botão desabilita com mensagem explicativa).
 - Campos monetários têm dica “R$” e alinham à direita; totais são somente leitura com “R$”.
 
+### Impressão (A4)
+
+- Botão “Imprimir” no cabeçalho gera uma folha compacta (A4 retrato) com:
+  - Cabeçalho: logo, nome, Mês/Ano, ID (opcional) e data/hora da impressão.
+  - Resumo: Créditos, Movimentos e Resultado.
+  - Acumulado: Entradas (N), Diárias (R$), Média (R$), Cozinha (R$), Bar (R$), Outros (R$).
+  - Lançamentos: Data, Descrição, Valor, Saldo (apenas linhas preenchidas).
+  - Entradas: por Data (Dia, Noite, Total) com separadores visuais e linha de total destacada.
+- Estilo tipo planilha: bordas finas, números alinhados à direita, sem sombras/cores fortes.
+- Dicas:
+  - Escala 100%. Margens ~10mm. Cabeçalhos/rodapés do navegador podem ser desativados.
+  - Melhor visual no Chrome/Edge; verifique pré‑visualização antes de imprimir.
+
 ### Rodar localmente
 
 ```bash
