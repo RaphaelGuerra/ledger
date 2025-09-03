@@ -31,6 +31,10 @@ export default function App() {
   // Load month data (remote first if syncId, then local)
   useEffect(() => {
     let cancelled = false
+    // Immediately clear current month views to avoid flicker/ghost rows
+    setDiariasRows([])
+    setLedgerInitialItems(null)
+    setLedgerItems(null)
     async function load() {
       let data = null
       if (syncId) data = await loadRemote(syncId, activeMonth)
@@ -38,9 +42,6 @@ export default function App() {
       if (cancelled) return
       if (data?.entradasRows) setDiariasRows(data.entradasRows)
       if (data?.ledgerItems) setLedgerInitialItems(data.ledgerItems)
-      if (!data) {
-        setLedgerInitialItems(null)
-      }
     }
     load()
     return () => { cancelled = true }
