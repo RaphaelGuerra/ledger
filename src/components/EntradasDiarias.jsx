@@ -69,7 +69,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   }
 
   function removeDateRow(rowId) {
-    onChange(rows.length === 1 ? rows : rows.filter(r => r.id !== rowId))
+    onChange(rows.filter(r => r.id !== rowId))
   }
 
   function totalsFor(r) {

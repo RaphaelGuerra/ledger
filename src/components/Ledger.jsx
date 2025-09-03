@@ -74,7 +74,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   }
 
   function removeItem(id) {
-    setItems(prev => (prev.length === 1 ? prev : prev.filter(it => it.id !== id)))
+    setItems(prev => prev.filter(it => it.id !== id))
   }
 
   function updateItem(id, field, value) {
