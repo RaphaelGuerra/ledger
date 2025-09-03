@@ -98,6 +98,11 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     <section className="section entradas-section">
       <h2 className="section-title">Entradas</h2>
       <div className="entries-container">
+        {sortedRows.length === 0 && (
+          <div className="empty-state">
+            <p>Nenhuma entrada no mês. Use "Adicionar Data" ou "Preencher Mês".</p>
+          </div>
+        )}
         <div className="table-wrap">
           <table className="sheet-table diarias-table">
             <tbody>

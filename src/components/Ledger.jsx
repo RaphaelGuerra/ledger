@@ -141,7 +141,13 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
               </tr>
             </thead>
             <tbody>
-              {sorted.map((it, idx) => (
+              {sorted.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', color: 'var(--muted)' }}>
+                    Nenhum lançamento. Clique em "Adicionar Lançamento".
+                  </td>
+                </tr>
+              ) : sorted.map((it, idx) => (
                 <tr key={it.id}>
                   <td>
                     <div className="date-compact-wrap">
