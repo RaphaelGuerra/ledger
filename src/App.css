@@ -39,7 +39,7 @@ body {
 }
 
 #root {
-  max-width: 1200px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -302,9 +302,32 @@ input[type=number] {
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr; /* default: stack */
   gap: 12px;
   margin-bottom: 12px;
+}
+
+@media (min-width: 480px) {
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 720px) {
+  .summary-cards {
+    grid-template-columns: repeat(3, 1fr); /* ensure 3 side by side */
+    gap: 8px; /* tighter gap to fit within 720 */
+  }
+  #root {
+    padding-left: 12px; /* reclaim inner width at 720 */
+    padding-right: 12px;
+  }
+  .summary-card {
+    padding: 8px 10px; /* slightly tighter card padding */
+  }
+  .summary-card .value {
+    font-size: 15px; /* small reduction to avoid wrapping */
+  }
 }
 .summary-card {
   border: 1px solid #e5e7eb;
@@ -620,82 +643,95 @@ input[type=number] {
     max-width: 100%;
   }
 
+  /* Keep header items side-by-side; tighten spacing */
   .app-header-inner {
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    gap: 8px;
     padding: 12px;
+    flex-wrap: nowrap;
   }
-  
   .brand {
-    justify-content: center;
+    justify-content: flex-start;
   }
-  
   .month-navigation {
     gap: 8px;
-    padding: 6px 8px;
+    padding: 4px 6px;
   }
-  
   .month-nav-btn {
-    padding: 6px 10px;
-    font-size: 16px;
-    width: 40px;
-    height: 40px;
+    padding: 6px 8px;
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
   }
-  
   .header-month-controls .current-month {
-    min-width: 120px;
+    min-width: 110px;
     font-size: 14px;
   }
-  
+
   .entries-container {
     max-height: 500px;
   }
-  
   .entries-container .sheet-table {
     font-size: 12px;
   }
-  
   .entries-container .collapsed-row td {
     padding: 3px 4px;
     font-size: 12px;
   }
-  
   .entries-container .link-button {
     font-size: 11px;
     padding: 1px 4px;
   }
-  
   .collapsed-row .shift-label {
     font-size: 11px;
     width: 40px;
   }
-  
   .collapsed-row .date-cell {
     font-size: 11px;
   }
-  
-  .sheet-table {
-    font-size: 14px;
-  }
-  
-  .cell-input {
-    padding: 8px 10px; /* larger tap target */
-    font-size: 16px;   /* avoid iOS zoom on focus */
-  }
+  .sheet-table { font-size: 14px; }
+  .cell-input { padding: 8px 10px; font-size: 16px; }
+  .brand-logo { width: 32px; height: 32px; }
+}
 
-  .brand-logo {
-    width: 40px;
-    height: 40px;
-  }
+/* Ensure side-by-side at and below 720px explicitly */
+@media (max-width: 720px) {
+  .app-header-inner { flex-direction: row; }
 }
 
 /* Provide sensible min-widths so wide tables scroll horizontally rather than squish */
 .entries-container .sheet-table {
-  min-width: 900px;
+  min-width: 0;
+  width: 100%;
+  table-layout: fixed;
 }
 
+/* Ledger table column sizing to fit within 720px */
+.ledger-table th:nth-child(1),
+.ledger-table td:nth-child(1) { width: 18%; }
+.ledger-table th:nth-child(2),
+.ledger-table td:nth-child(2) { width: 38%; }
+.ledger-table th:nth-child(3),
+.ledger-table td:nth-child(3) { width: 12%; }
+.ledger-table th:nth-child(4),
+.ledger-table td:nth-child(4) { width: 11%; }
+.ledger-table th:nth-child(5),
+.ledger-table td:nth-child(5) { width: 11%; }
+.ledger-table th:nth-child(6),
+.ledger-table td:nth-child(6) { width: 6%; }
+
+/* Entradas Diarias: optimize for max 720px container */
+.entradas-section {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure Entradas summary tables fit the 720px container without forced overflow */
 .entradas-section .sheet-table {
-  min-width: 1200px;
+  min-width: 0;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .acumulado-section .sheet-table {
@@ -705,7 +741,7 @@ input[type=number] {
 /* Compact card layout for Entradas Diarias (auto on very small screens) */
 .entradas-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 1fr; /* stacked vertically by default */
   gap: 12px;
 }
 
@@ -771,21 +807,37 @@ input[type=number] {
   font-size: 12px;
 }
 
-@media (max-width: 420px) {
-  .entradas-cards {
-    grid-template-columns: 1fr;
+/* Baseline target up to 720px: show everything fully without scrolling */
+@media (max-width: 720px) {
+  .entrada-card .summary-table {
+    width: 100%;
+    table-layout: fixed;
+    font-size: 12px;
+  }
+  .entrada-card .summary-table th,
+  .entrada-card .summary-table td {
+    padding: 4px;
+  }
+  /* 1st column label narrower; remaining 6 columns evenly distributed */
+  .entrada-card .summary-table th:first-child,
+  .entrada-card .summary-table td:first-child { width: 16%; }
+  .entrada-card .summary-table th:nth-child(n+2),
+  .entrada-card .summary-table td:nth-child(n+2) { width: 14%; }
+}
+
+/* Above 720px: expand spacing and use 3 columns in edit grids */
+@media (min-width: 721px) {
+  .entrada-card .summary-table {
+    font-size: 13px;
+  }
+  .entrada-card .summary-table th,
+  .entrada-card .summary-table td {
+    padding: 6px;
+  }
+  .entrada-card .field-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
 }
 
-/* Make summary cards wrap nicely on narrow screens */
-@media (max-width: 920px) {
-  .summary-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .summary-cards {
-    grid-template-columns: 1fr;
-  }
-}
+/* (Removed conflicting older summary-cards breakpoints; see new rules above) */

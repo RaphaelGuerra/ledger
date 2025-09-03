@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 function createEmptyShift() {
   return { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 }
@@ -16,6 +16,7 @@ function toNumberOrZero(value) {
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
+  const [editingId, setEditingId] = useState(null)
 
   function updateShift(rowId, shiftKey, field, value) {
     onChange(
@@ -54,8 +55,9 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     return { nEntradas, totalEntradas, cozinha, bar, outros, media }
   }
 
-  function saveDraft(rowId) {
+  function saveRow(rowId) {
     onChange(rows.map(r => (r.id === rowId ? { ...r, draft: false } : r)))
+    if (editingId === rowId) setEditingId(null)
   }
 
   return (
@@ -68,13 +70,17 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
           const mediaNoite = r.noite.nEntradas > 0 ? r.noite.totalEntradas / r.noite.nEntradas : ''
           return (
             <div key={r.id} className="entrada-card">
-              {r.draft ? (
+              {r.draft || r.id === editingId ? (
                 <>
                   <div className="card-header">
                     <input type="date" className="cell-input" value={r.date} onChange={e => updateDate(r.id, e.target.value)} />
                     <div className="card-actions">
-                      <button className="link-button primary" onClick={() => saveDraft(r.id)}>Salvar</button>
-                      <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Cancelar</button>
+                      <button className="link-button primary" onClick={() => saveRow(r.id)}>Salvar</button>
+                      {r.draft ? (
+                        <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Cancelar</button>
+                      ) : (
+                        <button className="link-button" onClick={() => setEditingId(null)}>Cancelar</button>
+                      )}
                     </div>
                   </div>
                   <div className="card-group">
@@ -114,6 +120,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                   <div className="card-header">
                     <div className="date-label">{r.date}</div>
                     <div className="card-actions">
+                      <button className="link-button" onClick={() => setEditingId(r.id)}>Editar</button>
                       <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Remover</button>
                     </div>
                   </div>

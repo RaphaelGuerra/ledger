@@ -6,42 +6,49 @@ function toNumberOrZero(value) {
   return Number.isFinite(n) ? n : 0
 }
 
-function createEmptyMov(defaultDate) {
+function createEmptyItem(defaultDate) {
   return {
     id: Math.random().toString(36).slice(2),
-    type: 'mov',
     date: defaultDate || new Date().toISOString().slice(0, 10),
     descricao: '',
-    debito: 0,
-    credito: 0,
+    valor: 0, // positive for credit, negative for debit
   }
 }
 
-function createEmptyDespesa(defaultDate) {
-  return {
-    id: Math.random().toString(36).slice(2),
-    type: 'desp',
-    date: defaultDate || new Date().toISOString().slice(0, 10),
-    descricao: '',
-    qtd: 0,
-    debito: 0,
-  }
+function migrateItems(items, activeMonth) {
+  if (!Array.isArray(items)) return []
+  return items.map(it => {
+    if (typeof it?.valor === 'number') return { id: it.id || Math.random().toString(36).slice(2), date: it.date, descricao: it.descricao || '', valor: it.valor }
+    // legacy conversion
+    if (it?.type === 'mov') {
+      const deb = toNumberOrZero(it.debito)
+      const cre = toNumberOrZero(it.credito)
+      const valor = cre - deb
+      return { id: it.id || Math.random().toString(36).slice(2), date: it.date, descricao: it.descricao || '', valor }
+    } else {
+      const qtd = toNumberOrZero(it.qtd)
+      const deb = toNumberOrZero(it.debito)
+      const raw = qtd ? qtd * deb : deb
+      const valor = -raw
+      return { id: it.id || Math.random().toString(36).slice(2), date: it.date, descricao: it.descricao || '', valor }
+    }
+  })
 }
 
 export default function Ledger({ creditTotals, activeMonth, initialItems, onItemsChange }) {
   const [items, setItems] = useState(() => {
     const initialDate = (activeMonth ? `${activeMonth}-01` : new Date().toISOString().slice(0, 10))
-    if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return initialItems
-    return [createEmptyMov(initialDate), createEmptyDespesa(initialDate)]
+    if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return migrateItems(initialItems, activeMonth)
+    return [createEmptyItem(initialDate)]
   })
 
   // Reset when month or initialItems change
   useEffect(() => {
     const first = `${activeMonth}-01`
     if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) {
-      setItems(initialItems)
+      setItems(migrateItems(initialItems, activeMonth))
     } else {
-      setItems([createEmptyMov(first), createEmptyDespesa(first)])
+      setItems([createEmptyItem(first)])
     }
   }, [activeMonth, initialItems])
 
@@ -49,12 +56,8 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   useEffect(() => {
     const monthFirstDay = `${activeMonth}-01`
     setItems(prev => {
-      const hasMov = prev.some(it => it.type === 'mov' && (it.date || '').startsWith(activeMonth))
-      const hasDesp = prev.some(it => it.type === 'desp' && (it.date || '').startsWith(activeMonth))
-      const add = []
-      if (!hasMov) add.push(createEmptyMov(monthFirstDay))
-      if (!hasDesp) add.push(createEmptyDespesa(monthFirstDay))
-      return add.length ? [...prev, ...add] : prev
+      const hasAny = prev.some(it => (it.date || '').startsWith(activeMonth))
+      return hasAny ? prev : [...prev, createEmptyItem(monthFirstDay)]
     })
   }, [activeMonth])
 
@@ -64,7 +67,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   const visibleItems = useMemo(() => items.filter(it => (it.date || '').startsWith(activeMonth)), [items, activeMonth])
   const sorted = useMemo(() => [...visibleItems].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleItems])
 
-  function addMov() {
+  function addItem() {
     const validDates = visibleItems.map(it => it.date).filter(Boolean).sort()
     let nextDate = `${activeMonth}-01`
     if (validDates.length > 0) {
@@ -72,18 +75,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       lastDate.setDate(lastDate.getDate() + 1)
       nextDate = lastDate.toISOString().slice(0, 10)
     }
-    setItems(prev => [...prev, createEmptyMov(nextDate)])
-  }
-
-  function addDesp() {
-    const validDates = visibleItems.map(it => it.date).filter(Boolean).sort()
-    let nextDate = `${activeMonth}-01`
-    if (validDates.length > 0) {
-      const lastDate = new Date(validDates[validDates.length - 1])
-      lastDate.setDate(lastDate.getDate() + 1)
-      nextDate = lastDate.toISOString().slice(0, 10)
-    }
-    setItems(prev => [...prev, createEmptyDespesa(nextDate)])
+    setItems(prev => [...prev, createEmptyItem(nextDate)])
   }
 
   function removeItem(id) {
@@ -93,7 +85,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   function updateItem(id, field, value) {
     setItems(prev => prev.map(it => {
       if (it.id !== id) return it
-      if (['date', 'descricao', 'type'].includes(field)) return { ...it, [field]: value }
+      if (['date', 'descricao'].includes(field)) return { ...it, [field]: value }
       return { ...it, [field]: toNumberOrZero(value) }
     }))
   }
@@ -102,39 +94,21 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
     const results = []
     let saldo = 0
     for (const it of sorted) {
-      if (it.type === 'mov') {
-        const hasDeb = it.debito !== '' && it.debito !== null && it.debito !== undefined && !Number.isNaN(Number(it.debito))
-        const hasCre = it.credito !== '' && it.credito !== null && it.credito !== undefined && !Number.isNaN(Number(it.credito))
-        const deb = toNumberOrZero(it.debito)
-        const cre = toNumberOrZero(it.credito)
-        const resultado = hasDeb && hasCre ? cre - deb : hasDeb ? -deb : hasCre ? cre : ''
-        if (typeof resultado === 'number') saldo += resultado
-        results.push({ resultado, saldo })
-      } else {
-        const qtd = toNumberOrZero(it.qtd)
-        const deb = toNumberOrZero(it.debito)
-        const valor = qtd ? qtd * deb : deb
-        const negativeValor = -valor
-        if (valor !== undefined && typeof valor === 'number') saldo += negativeValor
-        results.push({ resultado: valor || '', saldo: typeof valor === 'number' ? saldo : '' })
-      }
+      const hasVal = it.valor !== '' && it.valor !== null && it.valor !== undefined && !Number.isNaN(Number(it.valor))
+      const resultado = hasVal ? toNumberOrZero(it.valor) : ''
+      if (typeof resultado === 'number') saldo += resultado
+      results.push({ resultado, saldo })
     }
     return results
   }, [sorted])
 
   const totals = useMemo(() => {
     const totalCreditos = toNumberOrZero(creditTotals?.totalCreditos || 0)
-    let totalDebitos = 0
+    let totalMovimentos = 0
     for (const it of visibleItems) {
-      if (it.type === 'mov') {
-        totalDebitos += toNumberOrZero(it.debito)
-      } else {
-        const qtd = toNumberOrZero(it.qtd)
-        const deb = toNumberOrZero(it.debito)
-        totalDebitos += qtd ? qtd * deb : deb
-      }
+      totalMovimentos += toNumberOrZero(it.valor)
     }
-    return { totalCreditos, totalDebitos, resultado: totalCreditos - totalDebitos }
+    return { totalCreditos, totalMovimentos, resultado: totalCreditos + totalMovimentos }
   }, [visibleItems, creditTotals])
 
   return (
@@ -151,22 +125,19 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
           <div className="value">R$ {totals.totalCreditos.toFixed(2)}</div>
         </div>
         <div className="summary-card">
-          <div className="label">Total Debitos (Mov + Desp)</div>
-          <div className="value">R$ {totals.totalDebitos.toFixed(2)}</div>
+          <div className="label">Total Movimentos</div>
+          <div className="value">R$ {totals.totalMovimentos.toFixed(2)}</div>
         </div>
       </div>
 
       <div className="entries-container">
         <div className="table-wrap">
-          <table className="sheet-table">
+          <table className="sheet-table ledger-table">
             <thead>
               <tr>
                 <th>Data</th>
-                <th>Tipo</th>
                 <th>Descricao</th>
-                <th>QTD.</th>
-                <th>Debito (R$)</th>
-                <th>Credito (R$)</th>
+                <th>Valor (R$)</th>
                 <th className="readonly">Resultado (R$)</th>
                 <th className="readonly">Saldo (R$)</th>
                 <th>Acoes</th>
@@ -174,35 +145,15 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
             </thead>
             <tbody>
               {sorted.map((it, idx) => (
-                <tr key={it.id} className={it.type === 'mov' ? 'row-mov' : 'row-desp'}>
+                <tr key={it.id}>
                   <td>
                     <input type="date" className="cell-input" value={it.date} onChange={e => updateItem(it.id, 'date', e.target.value)} />
-                  </td>
-                  <td>
-                    <select className="cell-input" value={it.type} onChange={e => updateItem(it.id, 'type', e.target.value)}>
-                      <option value="mov">Movimentação</option>
-                      <option value="desp">Despesa</option>
-                    </select>
                   </td>
                   <td>
                     <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descricao" />
                   </td>
                   <td>
-                    {it.type === 'desp' ? (
-                      <input type="number" inputMode="numeric" className="cell-input" value={it.qtd || 0} onChange={e => updateItem(it.id, 'qtd', e.target.value)} />
-                    ) : (
-                      <input className="cell-input readonly" readOnly value="-" />
-                    )}
-                  </td>
-                  <td>
-                    <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.debito || 0} onChange={e => updateItem(it.id, 'debito', e.target.value)} />
-                  </td>
-                  <td>
-                    {it.type === 'mov' ? (
-                      <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.credito || 0} onChange={e => updateItem(it.id, 'credito', e.target.value)} />
-                    ) : (
-                      <input className="cell-input readonly" readOnly value="-" />
-                    )}
+                    <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor || 0} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
                   </td>
                   <td>
                     <input className="cell-input readonly" readOnly value={typeof rowResults[idx].resultado === 'number' ? rowResults[idx].resultado.toFixed(2) : ''} />
@@ -221,10 +172,8 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       </div>
 
       <div className="section-actions">
-        <button className="primary" onClick={addMov}>Adicionar Movimentação</button>
-        <button className="primary" style={{ marginLeft: 8 }} onClick={addDesp}>Adicionar Despesa</button>
+        <button className="primary" onClick={addItem}>Adicionar Lançamento</button>
       </div>
     </section>
   )
 }
-
