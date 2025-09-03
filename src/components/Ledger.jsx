@@ -39,29 +39,18 @@ function migrateItems(items, activeMonth) {
 
 export default function Ledger({ creditTotals, activeMonth, initialItems, onItemsChange }) {
   const [items, setItems] = useState(() => {
-    const initialDate = (activeMonth ? `${activeMonth}-01` : new Date().toISOString().slice(0, 10))
     if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return migrateItems(initialItems, activeMonth)
-    return [createEmptyItem(initialDate)]
+    return []
   })
 
-  // Reset when month or initialItems change
+  // Reset when month or initialItems change (no auto-create)
   useEffect(() => {
-    const first = `${activeMonth}-01`
     if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) {
       setItems(migrateItems(initialItems, activeMonth))
     } else {
-      setItems([createEmptyItem(first)])
+      setItems([])
     }
   }, [activeMonth, initialItems])
-
-  // Ensure at least one mov and one desp item for the month
-  useEffect(() => {
-    const monthFirstDay = `${activeMonth}-01`
-    setItems(prev => {
-      const hasAny = prev.some(it => (it.date || '').startsWith(activeMonth))
-      return hasAny ? prev : [...prev, createEmptyItem(monthFirstDay)]
-    })
-  }, [activeMonth])
 
   // Notify parent to persist
   useEffect(() => { onItemsChange && onItemsChange(items) }, [items, onItemsChange])

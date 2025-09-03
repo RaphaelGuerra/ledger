@@ -13,14 +13,7 @@ export default function App() {
   const [activeMonth, setActiveMonth] = useState(firstDayOfMonth.slice(0, 7)) // YYYY-MM
   const [syncId, setSyncIdState] = useState('')
   
-  const [diariasRows, setDiariasRows] = useState([
-    {
-      id: Math.random().toString(36).slice(2),
-      date: firstDayOfMonth,
-      dia: { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 },
-      noite: { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 },
-    },
-  ])
+  const [diariasRows, setDiariasRows] = useState([])
   const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
   const [ledgerItems, setLedgerItems] = useState(null)
   const [printMode, setPrintMode] = useState(false)
@@ -63,27 +56,7 @@ export default function App() {
     if (syncId) saveRemoteDebounced(syncId, activeMonth, payload)
   }
 
-  // Ensure each month has at least one entry of each type
-  useEffect(() => {
-    const monthFirstDay = `${activeMonth}-01`
-    
-    setDiariasRows(prev => {
-      // Check if current month has any diarias entries
-      const hasEntradasForMonth = prev.some(r => (r.date || '').startsWith(activeMonth))
-      
-      if (!hasEntradasForMonth) {
-        // Add a default entrada for this month
-        const newEntry = {
-          id: Math.random().toString(36).slice(2),
-          date: monthFirstDay,
-          dia: { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 },
-          noite: { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 },
-        }
-        return [...prev, newEntry]
-      }
-      return prev
-    })
-  }, [activeMonth])
+  // Do not auto-create rows when month changes; users add explicitly
 
   const visibleDiariasRows = useMemo(() => {
     return diariasRows.filter(r => (r.date || '').startsWith(activeMonth))
