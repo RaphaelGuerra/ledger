@@ -58,6 +58,9 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   min-height: 72px;
 }
+.app-header-inner .brand { flex: 1 1 0; }
+.app-header-inner .header-month-controls { flex: 1 1 0; display: flex; justify-content: center; }
+.app-header-inner .sync-group { flex: 1 1 0; display: flex; justify-content: flex-end; }
 .brand {
   display: flex;
   align-items: center;
@@ -94,7 +97,7 @@ body {
   font-weight: 500;
 }
 .header-month-controls {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   margin-left: 16px;
 }
 .header-month-controls .current-month {
@@ -174,6 +177,12 @@ body {
 .sheet-table td:nth-child(8) {
   text-align: right;
 }
+/* Also right-align numeric inputs */
+.sheet-table .cell-input[type="number"],
+.sheet-table .cell-input[inputmode="numeric"],
+.sheet-table .cell-input[inputmode="decimal"] {
+  text-align: right;
+}
 /* Zebra striping */
 .sheet-table tbody tr:nth-child(odd) {
   background: rgba(0, 0, 0, 0.015);
@@ -208,9 +217,12 @@ body {
   font-weight: 600;
 }
 
+/* Align the 'Total' row label consistently (center aligned via rules below) */
+
 .section-actions {
   margin-top: 8px;
 }
+.section-actions button + button { margin-left: 8px; }
 
 .primary {
   background: var(--primary);
@@ -227,6 +239,14 @@ body {
   background: color-mix(in srgb, var(--primary) 90%, black);
   border-color: color-mix(in srgb, var(--primary) 90%, black);
   transform: translateY(-1px);
+}
+.primary:disabled {
+  background: #c7cbd4;
+  border-color: #c7cbd4;
+  color: #ffffff;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.9;
 }
 .primary:focus {
   outline: 2px solid rgba(37, 99, 235, 0.3);
@@ -250,6 +270,12 @@ body {
 .secondary:focus {
   outline: 2px solid rgba(37, 99, 235, 0.3);
   outline-offset: 2px;
+}
+.secondary:disabled {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 
 .link-button {
@@ -306,6 +332,12 @@ input[type=number] {
   gap: 12px;
   margin-bottom: 12px;
 }
+/* Currency prefix for summary card values */
+.summary-card .value.currency { display: inline-flex; align-items: baseline; gap: 4px; }
+.summary-card .value.currency .prefix { color: var(--muted); font-size: 0.9em; }
+
+/* Slightly extra space before entries title after RESUMO */
+.entries-title { margin-top: 20px; }
 
 @media (min-width: 480px) {
   .summary-cards {
@@ -699,6 +731,19 @@ input[type=number] {
   .app-header-inner { flex-direction: row; }
 }
 
+/* Align header into 3 equal columns at >= 720px to match summary cards grid */
+@media (min-width: 720px) {
+  .app-header-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+  .app-header-inner .brand { justify-self: start; }
+  .app-header-inner .header-month-controls { justify-self: center; }
+  .app-header-inner .sync-group { justify-self: start; justify-content: flex-start; }
+}
+
 /* Provide sensible min-widths so wide tables scroll horizontally rather than squish */
 .entries-container .sheet-table {
   min-width: 0;
@@ -708,38 +753,126 @@ input[type=number] {
 
 /* Ledger table column sizing to fit within 720px */
 .ledger-table th:nth-child(1),
-.ledger-table td:nth-child(1) { width: 18%; }
+.ledger-table td:nth-child(1) { width: 14%; }
 .ledger-table th:nth-child(2),
-.ledger-table td:nth-child(2) { width: 42%; }
+.ledger-table td:nth-child(2) { width: 56%; }
 .ledger-table th:nth-child(3),
-.ledger-table td:nth-child(3) { width: 12%; }
+.ledger-table td:nth-child(3) { width: 11%; }
 .ledger-table th:nth-child(4),
-.ledger-table td:nth-child(4) { width: 12%; }
+.ledger-table td:nth-child(4) { width: 16%; }
 .ledger-table th:nth-child(5),
-.ledger-table td:nth-child(5) { width: 12%; }
-.ledger-table th:nth-child(6),
-.ledger-table td:nth-child(6) { width: 4%; }
+.ledger-table td:nth-child(5) { width: 3%; }
 
-/* Icon-only action button for tighter Acoes column */
+/* Icon-only action button for tighter Ações column */
 .link-button.icon {
   padding: 0;
-  width: 28px;
-  height: 28px;
+  margin: 0;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  line-height: 1;
+  font-size: 13px;
+  vertical-align: middle;
 }
 .entries-container .actions-cell {
   text-align: center;
 }
 
-/* Entradas Diarias: optimize for max 720px container */
-.entradas-section {
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
+/* Compact date input for ledger */
+.date-compact-wrap { position: relative; width: 84px; overflow: hidden; }
+.date-compact { width: 84px; text-align: center; color: transparent; caret-color: transparent; min-width: 0; }
+/* Hide native date text while preserving picker icon */
+input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
+/* Overlay with formatted DD/MM text */
+.date-compact-wrap .date-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: inherit;
 }
+
+/* Entradas Diárias group header */
+.diarias-table .entry-header th {
+  background: var(--thead);
+  padding: 6px 8px;
+}
+/* Right-align numeric columns for diarias (cols 3..7); keep col 1 (date) and col 2 (Entradas) special */
+.diarias-table th:nth-child(3),
+.diarias-table th:nth-child(4),
+.diarias-table th:nth-child(5),
+.diarias-table th:nth-child(6),
+.diarias-table th:nth-child(7),
+.diarias-table td:nth-child(3),
+.diarias-table td:nth-child(4),
+.diarias-table td:nth-child(5),
+.diarias-table td:nth-child(6),
+.diarias-table td:nth-child(7) {
+  text-align: right;
+}
+
+/* Center the Entradas (count) column */
+.diarias-table th:nth-child(2),
+.diarias-table td:nth-child(2) { text-align: center; }
+
+/* But right-align the Totais Entradas (subtotal row, col 2) */
+.diarias-table .subtotal-row td:nth-child(2) { text-align: right; }
+
+/* Center the Dia/Noite/Total labels */
+.diarias-table td.shift-label,
+.diarias-table .subtotal-row .shift-label { text-align: center; }
+
+/* Entradas Diárias column sizing */
+.diarias-table th:nth-child(1),
+.diarias-table td:nth-child(1) { width: 88px; padding-left: 2px; padding-right: 2px; }
+/* Entradas (count) column is small */
+.diarias-table th:nth-child(2),
+.diarias-table td:nth-child(2) { width: 56px; padding-left: 2px; padding-right: 2px; }
+/* Actions */
+.diarias-table th:nth-child(8),
+.diarias-table td:nth-child(8) { width: 28px; padding-left: 2px; padding-right: 2px; }
+.diarias-table .turno-date-cell .date-compact-wrap { width: 80px; }
+.diarias-table .turno-date-cell .date-compact { width: 80px; }
+.diarias-table .actions-cell { text-align: center; vertical-align: middle; }
+
+/* Tighter padding for Date and Actions cells to avoid spillover */
+.ledger-table th:nth-child(1),
+.ledger-table td:nth-child(1),
+.ledger-table th:nth-child(5),
+.ledger-table td:nth-child(5) {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.ledger-table .actions-cell { text-align: center; vertical-align: middle; }
+
+/* Currency prefix helper for editable BRL fields */
+.currency-input { position: relative; }
+.currency-input .prefix {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+.currency-input .cell-input { padding-left: 24px; }
+.currency-input .cell-input { text-align: right; }
+
+/* Disabled hint text near actions */
+.disabled-hint {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.disabled-hint { display: inline-flex; align-items: center; gap: 6px; }
+.info-icon { font-size: 12px; line-height: 1; }
+
+/* Entradas section inherits #root width like other sections */
 
 /* Ensure Entradas summary tables fit the 720px container without forced overflow */
 .entradas-section .sheet-table {
@@ -752,106 +885,5 @@ input[type=number] {
   min-width: 520px;
 }
 
-/* Compact card layout for Entradas Diarias (auto on very small screens) */
-.entradas-cards {
-  display: grid;
-  grid-template-columns: 1fr; /* stacked vertically by default */
-  gap: 12px;
-}
-
-.entrada-card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  padding: 10px;
-}
-
-.entrada-card .card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.entrada-card .card-group {
-  margin-top: 8px;
-}
-
-.entrada-card .group-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-.entrada-card .field-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.entrada-card .field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.entrada-card .field-label {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.entrada-card .totals .cell-input.readonly {
-  background: var(--readonly);
-}
-
-.entrada-card .card-actions {
-  display: inline-flex;
-  gap: 6px;
-}
-
-.entrada-card .date-label {
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-.entrada-card .summary-table {
-  font-size: 12px;
-}
-
-/* Baseline target up to 720px: show everything fully without scrolling */
-@media (max-width: 720px) {
-  .entrada-card .summary-table {
-    width: 100%;
-    table-layout: fixed;
-    font-size: 12px;
-  }
-  .entrada-card .summary-table th,
-  .entrada-card .summary-table td {
-    padding: 4px;
-  }
-  /* 1st column label narrower; remaining 6 columns evenly distributed */
-  .entrada-card .summary-table th:first-child,
-  .entrada-card .summary-table td:first-child { width: 16%; }
-  .entrada-card .summary-table th:nth-child(n+2),
-  .entrada-card .summary-table td:nth-child(n+2) { width: 14%; }
-}
-
-/* Above 720px: expand spacing and use 3 columns in edit grids */
-@media (min-width: 721px) {
-  .entrada-card .summary-table {
-    font-size: 13px;
-  }
-  .entrada-card .summary-table th,
-  .entrada-card .summary-table td {
-    padding: 6px;
-  }
-  .entrada-card .field-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-}
-
-/* (Removed conflicting older summary-cards breakpoints; see new rules above) */
+/* (Removed older card-based Entradas Diárias styles to slim MVP) */
+.ledger-table td.actions-cell { padding: 0; }

@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import { formatDDMM } from '../lib/date.js'
 
 function toNumberOrZero(value) {
   if (value === '' || value === null || value === undefined) return 0
@@ -6,12 +7,13 @@ function toNumberOrZero(value) {
   return Number.isFinite(n) ? n : 0
 }
 
+
 function createEmptyItem(defaultDate) {
   return {
     id: Math.random().toString(36).slice(2),
     date: defaultDate || new Date().toISOString().slice(0, 10),
     descricao: '',
-    valor: 0, // positive for credit, negative for debit
+    valor: '', // value typed by user; '' renders blank
   }
 }
 
@@ -67,14 +69,18 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   const visibleItems = useMemo(() => items.filter(it => (it.date || '').startsWith(activeMonth)), [items, activeMonth])
   const sorted = useMemo(() => [...visibleItems].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleItems])
 
+  const addDisabled = useMemo(() => {
+    return visibleItems.some(it => {
+      const missingValor = it.valor === '' || it.valor === null || it.valor === undefined || Number.isNaN(Number(it.valor))
+      const missingDesc = (typeof it.descricao !== 'string') || it.descricao.trim() === ''
+      return missingValor || missingDesc
+    })
+  }, [visibleItems])
+
   function addItem() {
+    if (addDisabled) return
     const validDates = visibleItems.map(it => it.date).filter(Boolean).sort()
-    let nextDate = `${activeMonth}-01`
-    if (validDates.length > 0) {
-      const lastDate = new Date(validDates[validDates.length - 1])
-      lastDate.setDate(lastDate.getDate() + 1)
-      nextDate = lastDate.toISOString().slice(0, 10)
-    }
+    const nextDate = validDates.length > 0 ? validDates[validDates.length - 1] : `${activeMonth}-01`
     setItems(prev => [...prev, createEmptyItem(nextDate)])
   }
 
@@ -86,6 +92,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
     setItems(prev => prev.map(it => {
       if (it.id !== id) return it
       if (['date', 'descricao'].includes(field)) return { ...it, [field]: value }
+      if (field === 'valor') return { ...it, [field]: value === '' ? '' : toNumberOrZero(value) }
       return { ...it, [field]: toNumberOrZero(value) }
     }))
   }
@@ -108,27 +115,29 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
     for (const it of visibleItems) {
       totalMovimentos += toNumberOrZero(it.valor)
     }
-    return { totalCreditos, totalMovimentos, resultado: totalCreditos + totalMovimentos }
+    // Lancamentos are debits: subtract from resultado
+    return { totalCreditos, totalMovimentos, resultado: totalCreditos - totalMovimentos }
   }, [visibleItems, creditTotals])
 
   return (
     <section className="section">
-      <h2 className="section-title">Caixa e Resumo</h2>
+      <h2 className="section-title">RESUMO</h2>
 
       <div className="summary-cards">
         <div className="summary-card">
-          <div className="label">RESULTADO</div>
-          <div className="value">R$ {totals.resultado.toFixed(2)}</div>
-        </div>
-        <div className="summary-card">
-          <div className="label">Total Creditos (Entradas Diarias)</div>
-          <div className="value">R$ {totals.totalCreditos.toFixed(2)}</div>
+          <div className="label">Total Créditos</div>
+          <div className="value currency"><span className="prefix">R$</span><span className="val">{totals.totalCreditos.toFixed(2)}</span></div>
         </div>
         <div className="summary-card">
           <div className="label">Total Movimentos</div>
-          <div className="value">R$ {totals.totalMovimentos.toFixed(2)}</div>
+          <div className="value currency"><span className="prefix">R$</span><span className="val">{totals.totalMovimentos.toFixed(2)}</span></div>
+        </div>
+        <div className="summary-card">
+          <div className="label">RESULTADO</div>
+          <div className="value currency"><span className="prefix">R$</span><span className="val">{totals.resultado.toFixed(2)}</span></div>
         </div>
       </div>
+      <h2 className="section-title entries-title">Lançamentos</h2>
 
       <div className="entries-container">
         <div className="table-wrap">
@@ -136,33 +145,42 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
             <thead>
               <tr>
                 <th>Data</th>
-                <th>Descricao</th>
+                <th>Descrição</th>
                 <th>Valor (R$)</th>
-                <th className="readonly">Resultado (R$)</th>
                 <th className="readonly">Saldo (R$)</th>
-                <th>Acoes</th>
+                <th className="actions-col" aria-label="Ações"></th>
               </tr>
             </thead>
             <tbody>
               {sorted.map((it, idx) => (
                 <tr key={it.id}>
                   <td>
-                    <input type="date" className="cell-input" value={it.date} onChange={e => updateItem(it.id, 'date', e.target.value)} />
+                    <div className="date-compact-wrap">
+                      <input
+                        type="date"
+                        lang="pt-BR"
+                        className="cell-input date-compact"
+                        value={it.date}
+                        onChange={e => updateItem(it.id, 'date', e.target.value)}
+                      />
+                      <div className="date-overlay">{formatDDMM(it.date)}</div>
+                    </div>
                   </td>
                   <td>
-                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descricao" />
+                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" />
                   </td>
                   <td>
-                    <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor || 0} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
+                    <div className="currency-input"><span className="prefix">R$</span>
+                      <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
+                    </div>
                   </td>
                   <td>
-                    <input className="cell-input readonly" readOnly value={typeof rowResults[idx].resultado === 'number' ? rowResults[idx].resultado.toFixed(2) : ''} />
-                  </td>
-                  <td>
-                    <input className="cell-input readonly" readOnly value={typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : ''} />
+                    <div className="currency-input"><span className="prefix">R$</span>
+                      <input className="cell-input readonly" readOnly value={typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : ''} />
+                    </div>
                   </td>
                   <td className="actions-cell">
-                    <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)} disabled={items.length === 1}>🗑</button>
+                    <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)} disabled={items.length === 1}>✖</button>
                   </td>
                 </tr>
               ))}
@@ -172,7 +190,10 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       </div>
 
       <div className="section-actions">
-        <button className="primary" onClick={addItem}>Adicionar Lançamento</button>
+        <button className="primary" onClick={addItem} disabled={addDisabled}>Adicionar Lançamento</button>
+        {addDisabled && (
+          <span className="disabled-hint"><span className="info-icon" aria-hidden>ⓘ</span>Preencha Descrição e Valor em todos os lançamentos para adicionar outro.</span>
+        )}
       </div>
     </section>
   )

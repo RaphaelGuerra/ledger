@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
+import { formatDDMM, isoAddDays, lastDayOfMonthStr } from '../lib/date.js'
 
 function createEmptyShift() {
-  return { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 }
+  return { nEntradas: '', totalEntradas: '', cozinha: '', bar: '', outros: '' }
 }
 
 export function createEmptyDateRow(dateString) {
@@ -16,11 +17,37 @@ function toNumberOrZero(value) {
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
-  const [editingId, setEditingId] = useState(null)
+  const sortedRows = useMemo(() => [...visibleRows].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleRows])
+  const addDisabled = useMemo(() => {
+    const valid = visibleRows.map(r => r.date).filter(Boolean).sort()
+    const nextDate = valid.length > 0 ? isoAddDays(valid[valid.length - 1], 1) : `${activeMonth}-01`
+    return (nextDate || '') > lastDayOfMonthStr(activeMonth)
+  }, [visibleRows, activeMonth])
+
+  function fillMonth() {
+    // Generate every missing date from the next date through the last day of the month
+    const have = new Set(visibleRows.map(r => r.date))
+    let nextDate = `${activeMonth}-01`
+    if (have.size > 0) {
+      const sorted = [...have].sort()
+      nextDate = isoAddDays(sorted[sorted.length - 1], 1)
+    }
+    const last = lastDayOfMonthStr(activeMonth)
+    const newRows = []
+    for (let d = nextDate; d <= last; d = isoAddDays(d, 1)) {
+      if (!have.has(d)) newRows.push(createEmptyDateRow(d))
+    }
+    if (newRows.length) onChange([...rows, ...newRows])
+  }
+
 
   function updateShift(rowId, shiftKey, field, value) {
     onChange(
-      rows.map(r => (r.id !== rowId ? r : { ...r, [shiftKey]: { ...r[shiftKey], [field]: toNumberOrZero(value) } })),
+      rows.map(r => (
+        r.id !== rowId
+          ? r
+          : { ...r, [shiftKey]: { ...r[shiftKey], [field]: value === '' ? '' : toNumberOrZero(value) } }
+      )),
     )
   }
 
@@ -28,16 +55,17 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     onChange(rows.map(r => (r.id === rowId ? { ...r, date: value } : r)))
   }
 
+
   function addDateRow() {
     let nextDate = `${activeMonth}-01`
     const valid = visibleRows.map(r => r.date).filter(Boolean).sort()
     if (valid.length > 0) {
-      const last = new Date(valid[valid.length - 1])
-      last.setDate(last.getDate() + 1)
-      nextDate = last.toISOString().slice(0, 10)
+      nextDate = isoAddDays(valid[valid.length - 1], 1)
     }
-    const draft = { ...createEmptyDateRow(nextDate), draft: true }
-    onChange([...rows, draft])
+    const lastDay = lastDayOfMonthStr(activeMonth)
+    if ((nextDate || '') > lastDay) return // do not add beyond month
+    const row = { ...createEmptyDateRow(nextDate) }
+    onChange([...rows, row])
   }
 
   function removeDateRow(rowId) {
@@ -55,128 +83,150 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     return { nEntradas, totalEntradas, cozinha, bar, outros, media }
   }
 
-  function saveRow(rowId) {
-    onChange(rows.map(r => (r.id === rowId ? { ...r, draft: false } : r)))
-    if (editingId === rowId) setEditingId(null)
+  function fmtBRL(v) {
+    if (v === '' || v === null || v === undefined || Number.isNaN(Number(v))) return ''
+    return `R$ ${Number(v).toFixed(2)}`
+  }
+
+  function fmt2(v) {
+    if (v === '' || v === null || v === undefined) return ''
+    const n = Number(v)
+    return Number.isFinite(n) ? n.toFixed(2) : ''
   }
 
   return (
     <section className="section entradas-section">
-      <h2 className="section-title">ENTRADAS DIARIAS</h2>
-      <div className="entradas-cards">
-        {visibleRows.map(r => {
-          const t = totalsFor(r)
-          const mediaDia = r.dia.nEntradas > 0 ? r.dia.totalEntradas / r.dia.nEntradas : ''
-          const mediaNoite = r.noite.nEntradas > 0 ? r.noite.totalEntradas / r.noite.nEntradas : ''
-          return (
-            <div key={r.id} className="entrada-card">
-              {r.draft || r.id === editingId ? (
-                <>
-                  <div className="card-header">
-                    <input type="date" className="cell-input" value={r.date} onChange={e => updateDate(r.id, e.target.value)} />
-                    <div className="card-actions">
-                      <button className="link-button primary" onClick={() => saveRow(r.id)}>Salvar</button>
-                      {r.draft ? (
-                        <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Cancelar</button>
-                      ) : (
-                        <button className="link-button" onClick={() => setEditingId(null)}>Cancelar</button>
-                      )}
-                    </div>
-                  </div>
-                  <div className="card-group">
-                    <div className="group-title">Dia</div>
-                    <div className="field-grid">
-                      <label className="field"><span className="field-label">N</span><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Total</span><input type="number" className="cell-input" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Cozinha</span><input type="number" className="cell-input" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Bar</span><input type="number" className="cell-input" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Outros</span><input type="number" className="cell-input" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} /></label>
-                    </div>
-                  </div>
-                  <div className="card-group">
-                    <div className="group-title">Noite</div>
-                    <div className="field-grid">
-                      <label className="field"><span className="field-label">N</span><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Total</span><input type="number" className="cell-input" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Cozinha</span><input type="number" className="cell-input" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Bar</span><input type="number" className="cell-input" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} /></label>
-                      <label className="field"><span className="field-label">Outros</span><input type="number" className="cell-input" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} /></label>
-                    </div>
-                  </div>
-                  <div className="card-group totals">
-                    <div className="group-title">Totais</div>
-                    <div className="field-grid">
-                      <label className="field"><span className="field-label">N</span><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></label>
-                      <label className="field"><span className="field-label">Entradas</span><input className="cell-input readonly" readOnly value={t.totalEntradas || ''} /></label>
-                      <label className="field"><span className="field-label">Cozinha</span><input className="cell-input readonly" readOnly value={t.cozinha || ''} /></label>
-                      <label className="field"><span className="field-label">Bar</span><input className="cell-input readonly" readOnly value={t.bar || ''} /></label>
-                      <label className="field"><span className="field-label">Outros</span><input className="cell-input readonly" readOnly value={t.outros || ''} /></label>
-                      <label className="field"><span className="field-label">Média</span><input className="cell-input readonly" readOnly value={t.media || ''} /></label>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="card-summary">
-                  <div className="card-header">
-                    <div className="date-label">{r.date}</div>
-                    <div className="card-actions">
-                      <button className="link-button" onClick={() => setEditingId(r.id)}>Editar</button>
-                      <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Remover</button>
-                    </div>
-                  </div>
-                  <div className="group-title">Resumo (Acumulado)</div>
-                  <div className="table-wrap">
-                    <table className="sheet-table summary-table">
-                      <thead>
-                        <tr>
-                          <th></th>
-                          <th>N</th>
-                          <th>Entradas</th>
-                          <th>Cozinha</th>
-                          <th>Bar</th>
-                          <th>Outros</th>
-                          <th>Média</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td className="shift-label">Dia</td>
-                          <td><input className="cell-input readonly" readOnly value={r.dia.nEntradas || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.dia.totalEntradas || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.dia.cozinha || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.dia.bar || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.dia.outros || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={mediaDia || ''} /></td>
-                        </tr>
-                        <tr>
-                          <td className="shift-label">Noite</td>
-                          <td><input className="cell-input readonly" readOnly value={r.noite.nEntradas || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.noite.totalEntradas || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.noite.cozinha || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.noite.bar || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={r.noite.outros || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={mediaNoite || ''} /></td>
-                        </tr>
-                        <tr className="subtotal-row">
-                          <td className="shift-label">Total</td>
-                          <td><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={t.totalEntradas || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={t.cozinha || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={t.bar || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={t.outros || ''} /></td>
-                          <td><input className="cell-input readonly" readOnly value={t.media || ''} /></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
-          )
-        })}
+      <h2 className="section-title">Entradas</h2>
+      <div className="entries-container">
+        <div className="table-wrap">
+          <table className="sheet-table diarias-table">
+            <tbody>
+              {sortedRows.map(r => {
+                const t = totalsFor(r)
+                const mediaDia = r.dia.nEntradas > 0 ? r.dia.totalEntradas / r.dia.nEntradas : ''
+                const mediaNoite = r.noite.nEntradas > 0 ? r.noite.totalEntradas / r.noite.nEntradas : ''
+                return (
+                  <React.Fragment key={r.id}>
+                    <tr className="entry-header">
+                      <th className="turno-date-cell">
+                        <div className="date-compact-wrap">
+                          <input type="date" lang="pt-BR" className="cell-input date-compact" value={r.date} disabled />
+                          <div className="date-overlay">{formatDDMM(r.date)}</div>
+                        </div>
+                      </th>
+                      <th>Entradas</th>
+                      <th>Diárias</th>
+                      <th>Média</th>
+                      <th>Cozinha</th>
+                      <th>Bar</th>
+                      <th>Outros</th>
+                      <th className="actions-cell">
+                        <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>✖</button>
+                      </th>
+                    </tr>
+                    <tr className="collapsed-row">
+                      <td className="shift-label">Dia</td>
+                      <td><input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(mediaDia)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} />
+                        </div>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr className="collapsed-row">
+                      <td className="shift-label">Noite</td>
+                      <td><input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(mediaNoite)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} />
+                        </div>
+                      </td>
+                      <td></td>
+                    </tr>
+                    <tr className="subtotal-row">
+                      <td className="shift-label">Total</td>
+                      <td><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(t.totalEntradas)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(t.media)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(t.cozinha)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(t.bar)} />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="currency-input"><span className="prefix">R$</span>
+                          <input className="cell-input readonly" readOnly value={fmt2(t.outros)} />
+                        </div>
+                      </td>
+                      <td></td>
+                    </tr>
+                  </React.Fragment>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className="section-actions">
-        <button className="primary" onClick={addDateRow}>Adicionar Data</button>
+        <button className="primary" onClick={addDateRow} disabled={addDisabled}>Adicionar Data</button>
+        <button className="secondary" onClick={fillMonth} disabled={addDisabled}>Preencher Mês</button>
+        {addDisabled && (
+          <span className="disabled-hint"><span className="info-icon" aria-hidden>ⓘ</span>Não há mais dias neste mês para adicionar.</span>
+        )}
       </div>
     </section>
   )

@@ -1,28 +1,37 @@
-## Cash Ledger - Vison Hotel (MVP)
+## Cash Ledger — Vison Hotel (MVP)
 
-Single-page React app — minimal, fast, and focused on the workflow.
+Single‑page React app — minimal, fast, and focused on daily cash workflow.
 
-### Sections
+### Seções
 
-- Entradas Diarias: per-date Day/Night inputs and automatic totals/media.
-- Caixa e Resumo: Movimentação/Despesas together with running saldo and overall RESULTADO.
+- Resumo: cartões com Total Créditos, Total Movimentos e Resultado.
+- Lançamentos: lista por data com Descrição, Valor (R$) e Saldo (R$).
+- Acumulado: cartões com Entradas (contagem), Diárias (R$), Média (R$), Cozinha (R$), Bar (R$), Outros (R$).
+- Entradas: por dia (Data) com três linhas (Dia, Noite, Total) e campos Entradas (N), Diárias (R$), Média (R$), Cozinha (R$), Bar (R$), Outros (R$).
 
-### Run locally
+Detalhes de UX
+
+- Datas exibidas em DD/MM com calendário; em Entradas a Data é fixa e avança do 1º ao último dia do mês.
+- “Adicionar Data” adiciona o próximo dia; “Preencher Mês” completa todos os dias restantes do mês.
+- “Adicionar Lançamento” reutiliza a mesma Data do último lançamento; exige Descrição e Valor preenchidos (botão desabilita com mensagem explicativa).
+- Campos monetários têm dica “R$” e alinham à direita; totais são somente leitura com “R$”.
+
+### Rodar localmente
 
 ```bash
 npm install
 npm run dev
 ```
 
-Environment:
+Ambiente:
 
-- No env needed. Optional: configure Cloudflare Pages KV binding `LEDGER` for cross-browser sync.
+- Sem variáveis obrigatórias. Opcional: configure um endpoint `/api/storage/<SyncID>/<YYYY-MM>` no seu host (ex.: Cloudflare Pages Functions + KV) para sincronizar entre dispositivos.
 
-### Sync across browsers (simple)
+### Sincronizar entre dispositivos (opcional)
 
-- Enter a Sync ID in the header. Data for the active month will auto-sync to `/api/storage/<SyncID>/<YYYY-MM>` using Cloudflare KV (Pages Functions).
-- No auth: choose a private Sync ID. For privacy, prefer long, unguessable IDs.
-- If not configured on your Pages project, the app still works with local-only storage.
+- Informe um ID na seção “ID” do cabeçalho. Os dados do mês ativo serão enviados/consultados em `/api/storage/<SyncID>/<YYYY-MM>`.
+- Sem autenticação: escolha um ID privado e difícil de adivinhar.
+- Se não houver backend configurado, o app funciona normalmente apenas com armazenamento local.
 
 ### Build
 
@@ -30,7 +39,7 @@ Environment:
 npm run build
 ```
 
-### Notes
--- Add/remove lines; saldo and resultados update in real time.
--- Read-only (protected) cells are shown with a subtle background.
--- Data persists locally per month; optional cross-browser sync using Sync ID (Cloudflare KV).
+### Notas
+- Saldo/Resultando atualizam em tempo real.
+- Campos somente leitura têm fundo sutil.
+- Dados persistem localmente por mês; sincronização opcional via Sync ID.

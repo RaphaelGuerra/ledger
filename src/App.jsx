@@ -8,7 +8,7 @@ import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRe
 export default function App() {
   // Get first day of current month for initial record
   const now = new Date()
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+  const firstDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)).toISOString().slice(0, 10)
   const [activeMonth, setActiveMonth] = useState(firstDayOfMonth.slice(0, 7)) // YYYY-MM
   const [syncId, setSyncIdState] = useState('')
   
@@ -133,8 +133,10 @@ export default function App() {
   }, [visibleDiariasRows])
 
   function getMonthDisplayName(monthStr) {
-    const date = new Date(monthStr + '-01')
-    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    const [y, m] = monthStr.split('-').map(Number)
+    const date = new Date(Date.UTC(y, m - 1, 1))
+    const s = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date)
+    return s.charAt(0).toUpperCase() + s.slice(1)
   }
 
   function navigateMonth(direction) {
@@ -176,9 +178,9 @@ export default function App() {
               →
             </button>
           </div>
-          <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+          <div className="sync-group" style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
             <label style={{ fontSize: 12, color: 'var(--muted)' }}>
-              Sync ID
+              ID
               <input
                 style={{ marginLeft: 8 }}
                 className="cell-input"
@@ -199,49 +201,31 @@ export default function App() {
         />
         <section className="section acumulado-section">
           <h2 className="section-title">Acumulado</h2>
-          <div className="table-wrap">
-            <table className="sheet-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>N</th>
-                  <th>Entradas</th>
-                  <th>Cozinha</th>
-                  <th>Bar</th>
-                  <th>Outros</th>
-                  <th>Média</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="shift-label">Dia</td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.n || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.entradas || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.cozinha || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.bar || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.outros || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.dia.media || ''} /></td>
-                </tr>
-                <tr>
-                  <td className="shift-label">Noite</td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.n || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.entradas || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.cozinha || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.bar || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.outros || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.noite.media || ''} /></td>
-                </tr>
-                <tr className="subtotal-row">
-                  <td className="shift-label">Total</td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.total.n || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.total.entradas || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.total.cozinha || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.total.bar || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.total.outros || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={acumulado.total.media || ''} /></td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="summary-cards">
+            <div className="summary-card">
+              <div className="label">Entradas</div>
+              <div className="value">{acumulado.total.n || 0}</div>
+            </div>
+            <div className="summary-card">
+              <div className="label">Diárias</div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.entradas || 0).toFixed(2)}</span></div>
+            </div>
+            <div className="summary-card">
+              <div className="label">Média</div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{typeof acumulado.total.media === 'number' ? acumulado.total.media.toFixed(2) : ''}</span></div>
+            </div>
+            <div className="summary-card">
+              <div className="label">Cozinha</div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.cozinha || 0).toFixed(2)}</span></div>
+            </div>
+            <div className="summary-card">
+              <div className="label">Bar</div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.bar || 0).toFixed(2)}</span></div>
+            </div>
+            <div className="summary-card">
+              <div className="label">Outros</div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.outros || 0).toFixed(2)}</span></div>
+            </div>
           </div>
         </section>
         <EntradasDiarias
