@@ -220,7 +220,6 @@ export default function App() {
                 value={syncIdDraft}
                 onChange={e => handleSyncIdChange(e.target.value.trim())}
               />
-              <button className="secondary print-btn" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
             </div>
             <div className="sync-actions">
               {syncId ? (
@@ -241,6 +240,9 @@ export default function App() {
                   <span className="sync-off"><span className="sync-dot">●</span> Sync desligado</span>
                 )}
               </div>
+            </div>
+            <div>
+              <button className="secondary print-btn" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
             </div>
           </div>
         </div>
