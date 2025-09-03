@@ -36,19 +36,23 @@ export const saveLocalDebounced = debounce((month, data) => {
 export async function loadRemote(syncId, month) {
   try {
     const res = await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`)
-    if (res.ok) return await res.json()
-    return null
+    if (!res.ok) return { ok: false, data: null }
+    const data = await res.json()
+    return { ok: true, data }
   } catch {
-    return null
+    return { ok: false, data: null }
   }
 }
 
-export const saveRemoteDebounced = debounce(async (syncId, month, data) => {
+export const saveRemoteDebounced = debounce(async (syncId, month, data, onDone) => {
   try {
-    await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`, {
+    const res = await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
-  } catch { /* ignore network errors */ }
+    if (typeof onDone === 'function') onDone(res.ok)
+  } catch {
+    if (typeof onDone === 'function') onDone(false)
+  }
 }, 500)

@@ -12,6 +12,7 @@ export default function App() {
   const firstDayOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)).toISOString().slice(0, 10)
   const [activeMonth, setActiveMonth] = useState(firstDayOfMonth.slice(0, 7)) // YYYY-MM
   const [syncId, setSyncIdState] = useState('')
+  const [syncStatus, setSyncStatus] = useState('off') // off | loading | ok | error
   
   const [diariasRows, setDiariasRows] = useState([])
   const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
@@ -26,6 +27,7 @@ export default function App() {
   function handleSyncIdChange(id) {
     setSyncIdState(id)
     setSyncId(id)
+    setSyncStatus(id ? 'loading' : 'off')
   }
 
   // Load month data (remote first if syncId, then local)
@@ -37,7 +39,16 @@ export default function App() {
     setLedgerItems(null)
     async function load() {
       let data = null
-      if (syncId) data = await loadRemote(syncId, activeMonth)
+      if (syncId) {
+        setSyncStatus('loading')
+        const res = await loadRemote(syncId, activeMonth)
+        if (res.ok) {
+          setSyncStatus('ok')
+          data = res.data
+        } else {
+          setSyncStatus('error')
+        }
+      }
       if (!data) data = loadLocal(activeMonth)
       if (cancelled) return
       if (data?.entradasRows) setDiariasRows(data.entradasRows)
@@ -54,7 +65,7 @@ export default function App() {
       ledgerItems: partial.ledgerItems ?? null,
     }
     saveLocalDebounced(activeMonth, payload)
-    if (syncId) saveRemoteDebounced(syncId, activeMonth, payload)
+    if (syncId) saveRemoteDebounced(syncId, activeMonth, payload, ok => setSyncStatus(ok ? 'ok' : 'error'))
   }
 
   // Do not auto-create rows when month changes; users add explicitly
@@ -172,6 +183,19 @@ export default function App() {
                 onChange={e => handleSyncIdChange(e.target.value.trim())}
               />
             </label>
+            <div className="sync-status">
+              {syncId ? (
+                syncStatus === 'ok' ? (
+                  <span className="sync-ok"><span className="sync-dot">●</span> Sync OK</span>
+                ) : syncStatus === 'error' ? (
+                  <span className="sync-err"><span className="sync-dot">●</span> Sync erro</span>
+                ) : (
+                  <span className="sync-loading"><span className="sync-dot">●</span> Sincronizando…</span>
+                )
+              ) : (
+                <span className="sync-off"><span className="sync-dot">●</span> Sync desligado</span>
+              )}
+            </div>
             <button className="secondary" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
           </div>
         </div>

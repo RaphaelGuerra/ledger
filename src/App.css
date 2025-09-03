@@ -96,6 +96,11 @@ body {
   text-transform: uppercase;
   font-weight: 500;
 }
+.sync-status { font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
+.sync-dot { font-size: 10px; }
+.sync-ok { color: #16a34a; }
+.sync-err { color: #b91c1c; }
+.sync-off, .sync-loading { color: var(--muted); }
 .header-month-controls {
   flex: 1 1 auto;
   margin-left: 16px;
