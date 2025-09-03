@@ -702,6 +702,60 @@ input[type=number] {
   min-width: 520px;
 }
 
+/* Compact card layout for Entradas Diarias (auto on very small screens) */
+.entradas-cards {
+  display: grid;
+  gap: 12px;
+}
+
+.entrada-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 10px;
+}
+
+.entrada-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.entrada-card .card-group {
+  margin-top: 8px;
+}
+
+.entrada-card .group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.entrada-card .field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.entrada-card .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entrada-card .field-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.entrada-card .totals .cell-input.readonly {
+  background: var(--readonly);
+}
+
 /* Make summary cards wrap nicely on narrow screens */
 @media (max-width: 920px) {
   .summary-cards {
