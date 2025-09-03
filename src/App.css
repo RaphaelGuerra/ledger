@@ -710,15 +710,29 @@ input[type=number] {
 .ledger-table th:nth-child(1),
 .ledger-table td:nth-child(1) { width: 18%; }
 .ledger-table th:nth-child(2),
-.ledger-table td:nth-child(2) { width: 38%; }
+.ledger-table td:nth-child(2) { width: 42%; }
 .ledger-table th:nth-child(3),
 .ledger-table td:nth-child(3) { width: 12%; }
 .ledger-table th:nth-child(4),
-.ledger-table td:nth-child(4) { width: 11%; }
+.ledger-table td:nth-child(4) { width: 12%; }
 .ledger-table th:nth-child(5),
-.ledger-table td:nth-child(5) { width: 11%; }
+.ledger-table td:nth-child(5) { width: 12%; }
 .ledger-table th:nth-child(6),
-.ledger-table td:nth-child(6) { width: 6%; }
+.ledger-table td:nth-child(6) { width: 4%; }
+
+/* Icon-only action button for tighter Acoes column */
+.link-button.icon {
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.entries-container .actions-cell {
+  text-align: center;
+}
 
 /* Entradas Diarias: optimize for max 720px container */
 .entradas-section {

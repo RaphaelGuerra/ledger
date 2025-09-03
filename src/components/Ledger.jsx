@@ -161,8 +161,8 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                   <td>
                     <input className="cell-input readonly" readOnly value={typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : ''} />
                   </td>
-                  <td>
-                    <button className="link-button danger" onClick={() => removeItem(it.id)} disabled={items.length === 1}>Remover</button>
+                  <td className="actions-cell">
+                    <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)} disabled={items.length === 1}>🗑</button>
                   </td>
                 </tr>
               ))}
