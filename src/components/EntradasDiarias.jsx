@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 
 function createEmptyShift() {
   return { nEntradas: 0, totalEntradas: 0, cozinha: 0, bar: 0, outros: 0 }
@@ -16,23 +16,6 @@ function toNumberOrZero(value) {
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
-
-  // Compact layout for very small screens
-  const [isCompact, setIsCompact] = useState(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return false
-    return window.matchMedia('(max-width: 420px)').matches
-  })
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return
-    const mql = window.matchMedia('(max-width: 420px)')
-    const handler = (e) => setIsCompact(e.matches)
-    if (mql.addEventListener) mql.addEventListener('change', handler)
-    else mql.addListener(handler)
-    return () => {
-      if (mql.removeEventListener) mql.removeEventListener('change', handler)
-      else mql.removeListener(handler)
-    }
-  }, [])
 
   function updateShift(rowId, shiftKey, field, value) {
     onChange(
@@ -70,125 +53,123 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     return { nEntradas, totalEntradas, cozinha, bar, outros, media }
   }
 
-  if (isCompact) {
-    return (
-      <section className="section entradas-section">
-        <h2 className="section-title">ENTRADAS DIARIAS</h2>
-        <div className="entradas-cards">
-          {visibleRows.map(r => {
-            const t = totalsFor(r)
-            return (
-              <div key={r.id} className="entrada-card">
-                <div className="card-header">
-                  <input type="date" className="cell-input" value={r.date} onChange={e => updateDate(r.id, e.target.value)} />
-                  <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Remover</button>
-                </div>
-                <div className="card-group">
-                  <div className="group-title">Dia</div>
-                  <div className="field-grid">
-                    <label className="field"><span className="field-label">N</span><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Total</span><input type="number" className="cell-input" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Cozinha</span><input type="number" className="cell-input" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Bar</span><input type="number" className="cell-input" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Outros</span><input type="number" className="cell-input" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} /></label>
-                  </div>
-                </div>
-                <div className="card-group">
-                  <div className="group-title">Noite</div>
-                  <div className="field-grid">
-                    <label className="field"><span className="field-label">N</span><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Total</span><input type="number" className="cell-input" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Cozinha</span><input type="number" className="cell-input" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Bar</span><input type="number" className="cell-input" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} /></label>
-                    <label className="field"><span className="field-label">Outros</span><input type="number" className="cell-input" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} /></label>
-                  </div>
-                </div>
-                <div className="card-group totals">
-                  <div className="group-title">Totais</div>
-                  <div className="field-grid">
-                    <label className="field"><span className="field-label">N</span><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></label>
-                    <label className="field"><span className="field-label">Entradas</span><input className="cell-input readonly" readOnly value={t.totalEntradas || ''} /></label>
-                    <label className="field"><span className="field-label">Cozinha</span><input className="cell-input readonly" readOnly value={t.cozinha || ''} /></label>
-                    <label className="field"><span className="field-label">Bar</span><input className="cell-input readonly" readOnly value={t.bar || ''} /></label>
-                    <label className="field"><span className="field-label">Outros</span><input className="cell-input readonly" readOnly value={t.outros || ''} /></label>
-                    <label className="field"><span className="field-label">Média</span><input className="cell-input readonly" readOnly value={t.media || ''} /></label>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        <div className="section-actions">
-          <button className="primary" onClick={addDateRow}>Adicionar Data</button>
-        </div>
-      </section>
-    )
+  function setFinalized(rowId, finalized) {
+    onChange(rows.map(r => (r.id === rowId ? { ...r, finalized: !!finalized } : r)))
   }
 
   return (
     <section className="section entradas-section">
       <h2 className="section-title">ENTRADAS DIARIAS</h2>
-      <div className="table-wrap">
-        <table className="sheet-table">
-          <thead>
-            <tr>
-              <th rowSpan="2">Data</th>
-              <th colSpan="5">Dia</th>
-              <th colSpan="5">Noite</th>
-              <th colSpan="6">Totais</th>
-              <th rowSpan="2">Ações</th>
-            </tr>
-            <tr>
-              <th>N</th>
-              <th>Total</th>
-              <th>Cozinha</th>
-              <th>Bar</th>
-              <th>Outros</th>
-              <th>N</th>
-              <th>Total</th>
-              <th>Cozinha</th>
-              <th>Bar</th>
-              <th>Outros</th>
-              <th>N</th>
-              <th>Entradas</th>
-              <th>Cozinha</th>
-              <th>Bar</th>
-              <th>Outros</th>
-              <th>Média</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleRows.map(r => {
-              const t = totalsFor(r)
-              return (
-                <tr key={r.id}>
-                  <td>
-                    <input type="date" className="cell-input" value={r.date} onChange={e => updateDate(r.id, e.target.value)} />
-                  </td>
-                  <td><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} /></td>
-                  <td><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} /></td>
-                  <td><input type="number" className="cell-input" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} /></td>
-                  <td><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={t.totalEntradas || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={t.cozinha || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={t.bar || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={t.outros || ''} /></td>
-                  <td><input className="cell-input readonly" readOnly value={t.media || ''} /></td>
-                  <td>
-                    <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Remover</button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      <div className="entradas-cards">
+        {visibleRows.map(r => {
+          const t = totalsFor(r)
+          const mediaDia = r.dia.nEntradas > 0 ? r.dia.totalEntradas / r.dia.nEntradas : ''
+          const mediaNoite = r.noite.nEntradas > 0 ? r.noite.totalEntradas / r.noite.nEntradas : ''
+          return (
+            <div key={r.id} className="entrada-card">
+              <div className="card-header">
+                <input type="date" className="cell-input" value={r.date} onChange={e => updateDate(r.id, e.target.value)} />
+                <div className="card-actions">
+                  {r.finalized ? (
+                    <>
+                      <button className="link-button" onClick={() => setFinalized(r.id, false)}>Editar</button>
+                      <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Remover</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="link-button primary" onClick={() => setFinalized(r.id, true)}>Concluir</button>
+                      <button className="link-button danger" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>Remover</button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {r.finalized ? (
+                <div className="card-summary">
+                  <div className="group-title">Resumo (Acumulado)</div>
+                  <div className="table-wrap">
+                    <table className="sheet-table summary-table">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>N</th>
+                          <th>Entradas</th>
+                          <th>Cozinha</th>
+                          <th>Bar</th>
+                          <th>Outros</th>
+                          <th>Média</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="shift-label">Dia</td>
+                          <td><input className="cell-input readonly" readOnly value={r.dia.nEntradas || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.dia.totalEntradas || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.dia.cozinha || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.dia.bar || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.dia.outros || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={mediaDia || ''} /></td>
+                        </tr>
+                        <tr>
+                          <td className="shift-label">Noite</td>
+                          <td><input className="cell-input readonly" readOnly value={r.noite.nEntradas || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.noite.totalEntradas || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.noite.cozinha || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.noite.bar || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={r.noite.outros || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={mediaNoite || ''} /></td>
+                        </tr>
+                        <tr className="subtotal-row">
+                          <td className="shift-label">Total</td>
+                          <td><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={t.totalEntradas || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={t.cozinha || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={t.bar || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={t.outros || ''} /></td>
+                          <td><input className="cell-input readonly" readOnly value={t.media || ''} /></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="card-group">
+                    <div className="group-title">Dia</div>
+                    <div className="field-grid">
+                      <label className="field"><span className="field-label">N</span><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Total</span><input type="number" className="cell-input" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Cozinha</span><input type="number" className="cell-input" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Bar</span><input type="number" className="cell-input" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Outros</span><input type="number" className="cell-input" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} /></label>
+                    </div>
+                  </div>
+                  <div className="card-group">
+                    <div className="group-title">Noite</div>
+                    <div className="field-grid">
+                      <label className="field"><span className="field-label">N</span><input type="text" inputMode="numeric" pattern="[0-9]*" className="cell-input" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Total</span><input type="number" className="cell-input" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Cozinha</span><input type="number" className="cell-input" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Bar</span><input type="number" className="cell-input" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} /></label>
+                      <label className="field"><span className="field-label">Outros</span><input type="number" className="cell-input" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} /></label>
+                    </div>
+                  </div>
+                  <div className="card-group totals">
+                    <div className="group-title">Totais</div>
+                    <div className="field-grid">
+                      <label className="field"><span className="field-label">N</span><input className="cell-input readonly" readOnly value={t.nEntradas || ''} /></label>
+                      <label className="field"><span className="field-label">Entradas</span><input className="cell-input readonly" readOnly value={t.totalEntradas || ''} /></label>
+                      <label className="field"><span className="field-label">Cozinha</span><input className="cell-input readonly" readOnly value={t.cozinha || ''} /></label>
+                      <label className="field"><span className="field-label">Bar</span><input className="cell-input readonly" readOnly value={t.bar || ''} /></label>
+                      <label className="field"><span className="field-label">Outros</span><input className="cell-input readonly" readOnly value={t.outros || ''} /></label>
+                      <label className="field"><span className="field-label">Média</span><input className="cell-input readonly" readOnly value={t.media || ''} /></label>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )
+        })}
       </div>
       <div className="section-actions">
         <button className="primary" onClick={addDateRow}>Adicionar Data</button>
