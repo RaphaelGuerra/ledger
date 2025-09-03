@@ -1,5 +1,5 @@
 import './App.css'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import logo from './assets/Gemini_Generated_Image_isbz06isbz06isbz.png'
 import EntradasDiarias from './components/EntradasDiarias'
 import PrintSheet from './components/PrintSheet'
@@ -19,6 +19,15 @@ export default function App() {
   const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
   const [ledgerItems, setLedgerItems] = useState(null)
   const [printMode, setPrintMode] = useState(false)
+  const [toastMsg, setToastMsg] = useState('')
+  const toastTimerRef = useRef(null)
+  const lastSyncStatusRef = useRef('off')
+
+  function showToast(msg) {
+    setToastMsg(msg)
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    toastTimerRef.current = setTimeout(() => setToastMsg(''), 2000)
+  }
 
   // Sync ID init
   useEffect(() => {
@@ -36,12 +45,16 @@ export default function App() {
     setSyncIdState(id)
     setSyncId(id)
     setSyncStatus(id ? 'loading' : 'off')
+    if (id) showToast('Sync conectado')
+    lastSyncStatusRef.current = id ? 'loading' : 'off'
   }
 
   function disconnectSync() {
     setSyncIdState('')
     setSyncId('')
     setSyncStatus('off')
+    showToast('Sync desconectado')
+    lastSyncStatusRef.current = 'off'
   }
 
   // Load month data (remote first if syncId, then local)
@@ -58,9 +71,13 @@ export default function App() {
         const res = await loadRemote(syncId, activeMonth)
         if (res.ok) {
           setSyncStatus('ok')
+          lastSyncStatusRef.current = 'ok'
           data = res.data
+          showToast('Sync carregado')
         } else {
           setSyncStatus('error')
+          lastSyncStatusRef.current = 'error'
+          showToast('Falha de sync')
         }
       }
       if (!data) data = loadLocal(activeMonth)
@@ -79,7 +96,16 @@ export default function App() {
       ledgerItems: partial.ledgerItems ?? null,
     }
     saveLocalDebounced(activeMonth, payload)
-    if (syncId) saveRemoteDebounced(syncId, activeMonth, payload, ok => setSyncStatus(ok ? 'ok' : 'error'))
+    if (syncId) saveRemoteDebounced(syncId, activeMonth, payload, ok => {
+      setSyncStatus(ok ? 'ok' : 'error')
+      if (!ok) {
+        lastSyncStatusRef.current = 'error'
+        showToast('Falha de sync')
+      } else {
+        if (lastSyncStatusRef.current !== 'ok') showToast('Sync atualizado')
+        lastSyncStatusRef.current = 'ok'
+      }
+    })
   }
 
   // Do not auto-create rows when month changes; users add explicitly
@@ -276,6 +302,7 @@ export default function App() {
           activeMonth={activeMonth}
         />
       )}
+      {toastMsg ? <div className="toast" role="status" aria-live="polite">{toastMsg}</div> : null}
     </div>
   )
 }

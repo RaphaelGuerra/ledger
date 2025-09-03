@@ -101,6 +101,23 @@ body {
 .sync-ok { color: #16a34a; }
 .sync-err { color: #b91c1c; }
 .sync-off, .sync-loading { color: var(--muted); }
+
+/* Lightweight toast */
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+@media (prefers-color-scheme: dark) {
+  .toast { background: rgba(243, 244, 246, 0.92); color: #111827; }
+}
 .header-month-controls {
   flex: 1 1 auto;
   margin-left: 16px;
@@ -679,20 +696,22 @@ input[type=number] {
     padding: 12px;
     max-width: 100%;
   }
-
-  /* Keep header items side-by-side; tighten spacing */
+  /* Stack header vertically on narrow screens */
   .app-header-inner {
-    flex-direction: row;
+    flex-direction: column;
     gap: 8px;
     padding: 12px;
-    flex-wrap: nowrap;
   }
   .brand {
     justify-content: flex-start;
+    padding-right: 0;
+    border-right: 0;
   }
   .month-navigation {
     gap: 8px;
     padding: 4px 6px;
+    width: 100%;
+    justify-content: space-between;
   }
   .month-nav-btn {
     padding: 6px 8px;
@@ -701,9 +720,13 @@ input[type=number] {
     height: 32px;
   }
   .header-month-controls .current-month {
-    min-width: 110px;
+    min-width: 0;
+    flex: 1 1 auto;
     font-size: 14px;
+    text-align: center;
   }
+  .sync-group { width: 100%; }
+  .sync-group .cell-input { width: 100%; }
 
   .entries-container {
     max-height: 500px;
@@ -747,6 +770,14 @@ input[type=number] {
   .app-header-inner .brand { justify-self: start; }
   .app-header-inner .header-month-controls { justify-self: center; }
   .app-header-inner .sync-group { justify-self: start; justify-content: flex-start; }
+}
+
+/* On small screens, keep 3-up layout for slim cards */
+@media (max-width: 480px) {
+  .summary-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .summary-card { padding: 8px; }
+  .summary-card .label { font-size: 11px; }
+  .summary-card .value { font-size: 14px; }
 }
 
 /* Provide sensible min-widths so wide tables scroll horizontally rather than squish */
