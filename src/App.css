@@ -762,6 +762,11 @@ input[type=number] {
   gap: 6px;
 }
 
+.entrada-card .date-label {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .entrada-card .summary-table {
   font-size: 12px;
 }
