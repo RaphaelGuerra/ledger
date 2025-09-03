@@ -349,7 +349,7 @@ input[type=number] {
 
 .summary-cards {
   display: grid;
-  grid-template-columns: 1fr; /* default: stack */
+  grid-template-columns: repeat(3, 1fr); /* default: 3-up */
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -360,11 +360,7 @@ input[type=number] {
 /* Slightly extra space before entries title after RESUMO */
 .entries-title { margin-top: 20px; }
 
-@media (min-width: 480px) {
-  .summary-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+/* (Removed 480px breakpoint to keep only two modes) */
 
 @media (min-width: 720px) {
   .summary-cards {
@@ -514,8 +510,8 @@ input[type=number] {
 /* Mobile card containers hidden on desktop */
 .mobile-only { display: none; }
 .desktop-only { display: block; }
-/* Width-based UI mode: <400px uses mobile cards; otherwise tables */
-@media (max-width: 400px) {
+/* Width-based UI mode: <844px uses mobile cards; otherwise tables */
+@media (max-width: 844px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
 }
@@ -735,14 +731,14 @@ input[type=number] {
   text-align: center;
 }
 
-/* Responsive Design for Mobile */
-@media (max-width: 768px) {
+/* Responsive Design for Mobile: apply only under 844px */
+@media (max-width: 844px) {
   #root {
     padding: 12px;
     max-width: 100%;
   }
   /* Stack header vertically on narrow screens */
-  .app-header-inner {
+  .app-header-inner.header-grid {
     flex-direction: column;
     gap: 8px;
     padding: 12px;
@@ -799,8 +795,8 @@ input[type=number] {
   .brand-logo { width: 32px; height: 32px; }
 }
 
-/* Ensure mobile-friendly header stack */
-@media (max-width: 768px) {
+/* Ensure mobile-friendly header stack (under 844px) */
+@media (max-width: 844px) {
   #root { padding: 12px; max-width: 100%; }
   .app-header-inner.header-grid { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
   .brand { justify-content: flex-start; padding-right: 0; border-right: 0; }
@@ -813,8 +809,8 @@ input[type=number] {
   .sync-status { width: auto; }
 }
 
-/* Align header into 3 equal columns at >= 720px to match summary cards grid */
-@media (min-width: 720px) {
+/* Align header into 3 equal columns at desktop (>= 845px) */
+@media (min-width: 845px) {
   .app-header-inner {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -827,7 +823,7 @@ input[type=number] {
 }
 
 /* On small screens, keep 3-up layout for slim cards */
-@media (max-width: 480px) {
+@media (max-width: 844px) {
   .summary-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .summary-card { padding: 8px; }
   .summary-card .label { font-size: 11px; }
