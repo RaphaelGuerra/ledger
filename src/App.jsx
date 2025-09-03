@@ -212,18 +212,21 @@ export default function App() {
               →
             </button>
           </div>
-          <div className="sync-group" style={{ display: 'inline-flex', gap: 8, alignItems: 'flex-start', flexDirection: 'column' }}>
-            <label style={{ fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center' }}>
-              ID
-              <input
-                style={{ marginLeft: 8 }}
-                className="cell-input"
-                placeholder="opcional"
-                value={syncIdDraft}
-                onChange={e => handleSyncIdChange(e.target.value.trim())}
-              />
-            </label>
-            <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+          <div className="sync-group" style={{ display: 'inline-flex', gap: 8, alignItems: 'flex-start', flexDirection: 'column', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+              <label style={{ fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', flex: '1 1 auto' }}>
+                ID
+                <input
+                  style={{ marginLeft: 8, width: '100%' }}
+                  className="cell-input"
+                  placeholder="opcional"
+                  value={syncIdDraft}
+                  onChange={e => handleSyncIdChange(e.target.value.trim())}
+                />
+              </label>
+              <button className="secondary" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
+            </div>
+            <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
               {syncId ? (
                 <button className="secondary" onClick={disconnectSync}>Desconectar</button>
               ) : (
@@ -243,7 +246,6 @@ export default function App() {
                 )}
               </div>
             </div>
-            <button className="secondary" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
           </div>
         </div>
       </header>
