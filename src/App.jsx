@@ -195,7 +195,7 @@ export default function App() {
   return (
     <div className="app-root">
       <header className="app-header">
-        <div className="app-header-inner">
+        <div className="app-header-inner header-grid">
           <div className="brand">
             <img src={logo} alt="Logo" className="brand-logo" />
             <div className="brand-text">
@@ -203,30 +203,26 @@ export default function App() {
               <div className="brand-subtitle">Resumo de Caixa</div>
             </div>
           </div>
-          <div className="month-navigation header-month-controls">
-            <button className="month-nav-btn" onClick={() => navigateMonth(-1)} aria-label="Mês anterior" title="Mês anterior">
-              ←
-            </button>
-            <span className="current-month">{getMonthDisplayName(activeMonth)}</span>
-            <button className="month-nav-btn" onClick={() => navigateMonth(1)} aria-label="Próximo mês" title="Próximo mês">
-              →
-            </button>
-          </div>
-          <div className="sync-group" style={{ display: 'inline-flex', gap: 8, alignItems: 'flex-start', flexDirection: 'column', width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-              <label style={{ fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center', flex: '1 1 auto' }}>
-                ID
-                <input
-                  style={{ marginLeft: 8, width: '100%' }}
-                  className="cell-input"
-                  placeholder="opcional"
-                  value={syncIdDraft}
-                  onChange={e => handleSyncIdChange(e.target.value.trim())}
-                />
-              </label>
-              <button className="secondary" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
+          <div className="header-month-controls">
+            <div className="month-navigation">
+              <button className="month-nav-btn" onClick={() => navigateMonth(-1)} aria-label="Mês anterior" title="Mês anterior">←</button>
+              <span className="current-month">{getMonthDisplayName(activeMonth)}</span>
+              <button className="month-nav-btn" onClick={() => navigateMonth(1)} aria-label="Próximo mês" title="Próximo mês">→</button>
             </div>
-            <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+          </div>
+          <div className="sync-group">
+            <div className="sync-id-row">
+              <label className="sync-label" htmlFor="sync-id">ID</label>
+              <input
+                id="sync-id"
+                className="cell-input sync-input"
+                placeholder="opcional"
+                value={syncIdDraft}
+                onChange={e => handleSyncIdChange(e.target.value.trim())}
+              />
+              <button className="secondary print-btn" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
+            </div>
+            <div className="sync-actions">
               {syncId ? (
                 <button className="secondary" onClick={disconnectSync}>Desconectar</button>
               ) : (
