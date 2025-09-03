@@ -514,7 +514,8 @@ input[type=number] {
 /* Mobile card containers hidden on desktop */
 .mobile-only { display: none; }
 .desktop-only { display: block; }
-@media (max-width: 768px) {
+/* Width-based UI mode: <400px uses mobile cards; otherwise tables */
+@media (max-width: 400px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
 }
@@ -1017,6 +1018,8 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 .sync-actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
 .print-btn { white-space: nowrap; }
 .sync-group .print-btn { margin-top: 6px; }
+
+/* (Removed UI mode toggle styles; width-based mode in effect) */
   table-layout: fixed;
 }
 
