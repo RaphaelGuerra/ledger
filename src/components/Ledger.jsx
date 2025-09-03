@@ -169,7 +169,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                     </div>
                   </td>
                   <td className="actions-cell">
-                    <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)} disabled={items.length === 1}>✖</button>
+                    <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)}>✖</button>
                   </td>
                 </tr>
               ))}

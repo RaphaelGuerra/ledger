@@ -121,7 +121,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                       <th>Bar</th>
                       <th>Outros</th>
                       <th className="actions-cell">
-                        <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)} disabled={rows.length === 1}>✖</button>
+                        <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)}>✖</button>
                       </th>
                     </tr>
                     <tr className="collapsed-row">
