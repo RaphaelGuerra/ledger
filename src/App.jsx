@@ -2,6 +2,7 @@ import './App.css'
 import { useMemo, useState, useEffect } from 'react'
 import logo from './assets/Gemini_Generated_Image_isbz06isbz06isbz.png'
 import EntradasDiarias from './components/EntradasDiarias'
+import PrintSheet from './components/PrintSheet'
 import Ledger from './components/Ledger'
 import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRemoteDebounced } from './lib/store.js'
 
@@ -21,6 +22,8 @@ export default function App() {
     },
   ])
   const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
+  const [ledgerItems, setLedgerItems] = useState(null)
+  const [printMode, setPrintMode] = useState(false)
 
   // Sync ID init
   useEffect(() => {
@@ -139,6 +142,12 @@ export default function App() {
     return s.charAt(0).toUpperCase() + s.slice(1)
   }
 
+  useEffect(() => {
+    function handleAfterPrint() { setPrintMode(false) }
+    window.addEventListener('afterprint', handleAfterPrint)
+    return () => window.removeEventListener('afterprint', handleAfterPrint)
+  }, [])
+
   function navigateMonth(direction) {
     const [year, month] = activeMonth.split('-').map(Number)
     let newYear = year
@@ -178,8 +187,8 @@ export default function App() {
               →
             </button>
           </div>
-          <div className="sync-group" style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
-            <label style={{ fontSize: 12, color: 'var(--muted)' }}>
+          <div className="sync-group" style={{ display: 'inline-flex', gap: 8, alignItems: 'flex-start', flexDirection: 'column' }}>
+            <label style={{ fontSize: 12, color: 'var(--muted)', display: 'inline-flex', alignItems: 'center' }}>
               ID
               <input
                 style={{ marginLeft: 8 }}
@@ -189,6 +198,7 @@ export default function App() {
                 onChange={e => handleSyncIdChange(e.target.value.trim())}
               />
             </label>
+            <button className="secondary" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
           </div>
         </div>
       </header>
@@ -197,7 +207,7 @@ export default function App() {
           creditTotals={creditTotals}
           activeMonth={activeMonth}
           initialItems={ledgerInitialItems}
-          onItemsChange={items => persist({ ledgerItems: items })}
+          onItemsChange={items => { setLedgerItems(items); persist({ ledgerItems: items }) }}
         />
         <section className="section acumulado-section">
           <h2 className="section-title">Acumulado</h2>
@@ -234,6 +244,19 @@ export default function App() {
           activeMonth={activeMonth}
         />
       </main>
+      {printMode && (
+        <PrintSheet
+          hotelName="Vison Hotel"
+          logoSrc={logo}
+          monthDisplay={getMonthDisplayName(activeMonth)}
+          syncId={syncId}
+          creditTotals={creditTotals}
+          acumulado={acumulado}
+          ledgerItems={ledgerItems}
+          entradasRows={diariasRows}
+          activeMonth={activeMonth}
+        />
+      )}
     </div>
   )
 }
