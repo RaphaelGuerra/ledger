@@ -60,7 +60,6 @@ body {
 }
 .app-header-inner .brand { justify-self: start; }
 .app-header-inner .header-month-controls { justify-self: center; width: 100%; }
-.app-header-inner .sync-group { justify-self: end; width: 100%; max-width: 380px; }
 .brand {
   display: flex;
   align-items: center;
@@ -96,11 +95,6 @@ body {
   text-transform: uppercase;
   font-weight: 500;
 }
-.sync-status { font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
-.sync-dot { font-size: 10px; }
-.sync-ok { color: #16a34a; }
-.sync-err { color: #b91c1c; }
-.sync-off, .sync-loading { color: var(--muted); }
 
 /* Lightweight toast */
 .toast {
@@ -121,6 +115,7 @@ body {
 .header-month-controls {
   margin-left: 0;
 }
+.header-month-controls .month-actions { margin-top: 6px; text-align: center; }
 .header-month-controls .current-month {
   font-weight: 500;
   font-size: 15px;
@@ -285,6 +280,7 @@ body {
   font-size: 14px;
   transition: all 0.12s ease-out;
 }
+.icon-btn { width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; }
 .secondary:hover {
   background: color-mix(in srgb, var(--primary) 5%, transparent);
 }
@@ -803,10 +799,6 @@ input[type=number] {
   .month-navigation { gap: 8px; width: 100%; justify-content: space-between; box-sizing: border-box; padding: 2px 4px; border: none; background: transparent; }
   .month-nav-btn { padding: 6px 8px; font-size: 14px; width: 32px; height: 32px; }
   .header-month-controls .current-month { min-width: 0; flex: 1 1 auto; font-size: 14px; text-align: center; }
-  .sync-group { width: 100%; }
-  .sync-id-row { grid-template-columns: auto 1fr; }
-  .sync-group .cell-input { width: 100%; }
-  .sync-status { width: auto; }
 }
 
 /* Align header into 3 equal columns at desktop (>= 761px) */
@@ -819,10 +811,8 @@ input[type=number] {
   }
   .app-header-inner .brand { justify-self: start; }
   .app-header-inner .header-month-controls { justify-self: center; }
-  .app-header-inner .sync-group { justify-self: start; justify-content: flex-start; }
   /* Vertical separators around month selector */
   .app-header-inner .brand { border-right: 1px solid var(--border); padding-right: 16px; }
-  .app-header-inner .sync-group { border-left: 1px solid var(--border); padding-left: 16px; }
 }
 
 /* On small screens, keep 3-up layout for slim cards */
@@ -1009,18 +999,134 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 .entradas-section .sheet-table {
   min-width: 0;
   width: 100%;
-/* Sync group layout */
-.sync-group { display: grid; gap: 8px; }
-.sync-id-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }
-.sync-label { font-size: 12px; color: var(--muted); }
-.sync-input { min-width: 0; }
-.sync-actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
-.print-btn { white-space: nowrap; }
-.sync-group .print-btn { margin-top: 6px; }
-
-/* (Removed UI mode toggle styles; width-based mode in effect) */
   table-layout: fixed;
 }
+
+/* Sync group layout */
+.sync-group { 
+  display: grid; 
+  gap: 8px; 
+}
+
+.sync-id-row { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  flex-wrap: nowrap; 
+}
+
+.sync-label { 
+  font-size: 12px; 
+  color: var(--muted); 
+}
+
+.sync-input { 
+  min-width: 0; 
+}
+
+.sync-actions { 
+  display: flex; 
+  gap: 8px; 
+  align-items: center; 
+  justify-content: flex-end; 
+}
+
+.sync-id-label { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px; 
+}
+
+.sync-actions-inline { 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-end; 
+  flex: 0 0 auto; 
+}
+
+.print-btn { 
+  white-space: nowrap; 
+}
+
+.sync-group .print-btn { 
+  margin-top: 6px; 
+}
+
+/* Sync status indicator */
+.sync-status { 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  min-width: 16px; 
+}
+
+/* Sync dot status indicator */
+.sync-dot { 
+  display: inline-block; 
+  width: 10px; 
+  height: 10px; 
+  border-radius: 50%; 
+  box-shadow: 0 0 0 1px var(--border) inset; 
+}
+
+.sync-dot.ok { 
+  background: #16a34a; 
+}
+
+.sync-dot.loading { 
+  background: #f59e0b; 
+}
+
+.sync-dot.error { 
+  background: #b91c1c; 
+}
+
+.sync-dot.off { 
+  background: #9ca3af; 
+}
+
+/* Header sync group positioning */
+.app-header-inner .sync-group { 
+  justify-self: end; 
+  width: 100%; 
+  max-width: 380px; 
+}
+
+/* Mobile sync group styles */
+@media (max-width: 760px) {
+  .sync-group { 
+    width: 100%; 
+  }
+  
+  .sync-group .cell-input { 
+    width: 100%; 
+  }
+  
+  .sync-input { 
+    flex: 1 1 auto; 
+    min-width: 0; 
+  }
+  
+  .sync-status { 
+    width: auto; 
+  }
+}
+
+/* Desktop sync group styles */
+@media (min-width: 761px) {
+  .app-header-inner .sync-group { 
+    justify-self: start; 
+    justify-content: flex-start; 
+    border-left: 1px solid var(--border); 
+    padding-left: 16px; 
+  }
+  
+  .sync-input { 
+    width: 9ch; 
+  }
+}
+
+/* (Removed UI mode toggle styles; width-based mode in effect) */
 
 .acumulado-section .sheet-table {
   min-width: 520px;
