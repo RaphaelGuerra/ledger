@@ -209,10 +209,29 @@ export default function App() {
               <span className="current-month">{getMonthDisplayName(activeMonth)}</span>
               <button className="month-nav-btn" onClick={() => navigateMonth(1)} aria-label="Próximo mês" title="Próximo mês">→</button>
             </div>
+            <div className="month-actions">
+              <button
+                className="secondary print-btn"
+                onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}
+              >
+                Imprimir
+              </button>
+            </div>
           </div>
           <div className="sync-group">
             <div className="sync-id-row">
-              <label className="sync-label" htmlFor="sync-id">ID</label>
+              <div className="sync-id-label">
+                <label className="sync-label" htmlFor="sync-id">ID</label>
+                <span
+                  className={
+                    !syncId ? 'sync-dot off' : (
+                      syncStatus === 'ok' ? 'sync-dot ok' : (syncStatus === 'loading' ? 'sync-dot loading' : 'sync-dot error')
+                    )
+                  }
+                  aria-label={!syncId ? 'Sync desligado' : (syncStatus === 'ok' ? 'Sync OK' : (syncStatus === 'loading' ? 'Sincronizando' : 'Sync erro'))}
+                  title={!syncId ? 'Sync desligado' : (syncStatus === 'ok' ? 'Sync OK' : (syncStatus === 'loading' ? 'Sincronizando' : 'Sync erro'))}
+                />
+              </div>
               <input
                 id="sync-id"
                 className="cell-input sync-input"
@@ -220,30 +239,30 @@ export default function App() {
                 value={syncIdDraft}
                 onChange={e => handleSyncIdChange(e.target.value.trim())}
               />
-            </div>
-            <div className="sync-actions">
-              {syncId ? (
-                <button className="secondary" onClick={disconnectSync}>Desconectar</button>
-              ) : (
-                <button className="secondary" onClick={connectSync} disabled={!syncIdDraft}>Conectar</button>
-              )}
-              <div className="sync-status">
+              <div className="sync-actions-inline">
                 {syncId ? (
-                  syncStatus === 'ok' ? (
-                    <span className="sync-ok"><span className="sync-dot">●</span> Sync OK</span>
-                  ) : syncStatus === 'error' ? (
-                    <span className="sync-err"><span className="sync-dot">●</span> Sync erro</span>
-                  ) : (
-                    <span className="sync-loading"><span className="sync-dot">●</span> Sincronizando…</span>
-                  )
+                  <button
+                    className="secondary icon-btn"
+                    onClick={disconnectSync}
+                    aria-label="Desconectar sync"
+                    title="Desconectar"
+                  >
+                    ⎋
+                  </button>
                 ) : (
-                  <span className="sync-off"><span className="sync-dot">●</span> Sync desligado</span>
+                  <button
+                    className="secondary icon-btn"
+                    onClick={connectSync}
+                    disabled={!syncIdDraft}
+                    aria-label="Conectar sync"
+                    title="Conectar"
+                  >
+                    ⏎
+                  </button>
                 )}
               </div>
             </div>
-            <div>
-              <button className="secondary print-btn" onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}>Imprimir</button>
-            </div>
+            {/* Print button moved under month selector for all viewports */}
           </div>
         </div>
       </header>
