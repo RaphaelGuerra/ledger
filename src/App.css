@@ -820,6 +820,9 @@ input[type=number] {
   .app-header-inner .brand { justify-self: start; }
   .app-header-inner .header-month-controls { justify-self: center; }
   .app-header-inner .sync-group { justify-self: start; justify-content: flex-start; }
+  /* Vertical separators around month selector */
+  .app-header-inner .brand { border-right: 1px solid var(--border); padding-right: 16px; }
+  .app-header-inner .sync-group { border-left: 1px solid var(--border); padding-left: 16px; }
 }
 
 /* On small screens, keep 3-up layout for slim cards */
