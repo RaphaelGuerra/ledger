@@ -510,13 +510,18 @@ input[type=number] {
 @media (max-width: 760px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
-  /* Small-screen scroll windows for long lists */
+  /* Small-screen scroll windows for long lists: exactly ~5 records */
+  :root { --mobile-card-gap: 8px; --ent-card-h: 72px; --mov-card-h: 64px; }
+  .ent-card { min-height: var(--ent-card-h); }
+  .mov-card.compact { min-height: var(--mov-card-h); }
   .mov-cards,
   .ent-cards {
-    max-height: 60vh; /* shows ~5–10 items depending on device */
+    max-height: calc(var(--ent-card-h) * 5 + var(--mobile-card-gap) * 4);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+  /* Use specific height for mov list since cards can be expanded */
+  .mov-cards { max-height: calc(var(--mov-card-h) * 5 + var(--mobile-card-gap) * 4); }
 }
 
 /* Sticky table header inside scrollable containers */
@@ -543,12 +548,11 @@ input[type=number] {
 .mov-card .date-compact { width: 80px; }
 .mov-card .date-display { width: 80px; text-align: center; font-size: 12px; }
 .mov-card .val-display { text-align: right; }
+.mov-card .desc-inline { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mov-card .currency-input .cell-input { text-align: right; }
 .mov-card .desc-input { margin-top: 6px; }
 .mov-card .saldo-caption { margin-top: 4px; font-size: 12px; color: var(--muted); text-align: right; }
-.mov-card.compact .compact-info { display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px; }
-.mov-card.compact .desc-preview { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mov-card.compact .saldo-preview { margin-left: 8px; color: var(--muted); flex-shrink: 0; }
+/* Removed extra compact-info block; info shown inline in header */
 
 /* Entradas mobile cards */
 .ent-cards { display: grid; gap: 8px; }

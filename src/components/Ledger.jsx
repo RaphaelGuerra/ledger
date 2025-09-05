@@ -218,6 +218,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                 ) : (
                   <>
                     <div className="date-display">{formatDDMM(it.date)}</div>
+                    <div className="desc-inline" title={it.descricao || ''}>{it.descricao || '—'}</div>
                     <div className="val-display">R$ {it.valor === '' ? '—' : Number(it.valor).toFixed(2)}</div>
                   </>
                 )}
@@ -233,12 +234,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                   </div>
                   <div className="saldo-caption">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
                 </>
-              ) : (
-                <div className="compact-info">
-                  <div className="desc-preview">{it.descricao || '—'}</div>
-                  <div className="saldo-preview">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
-                </div>
-              )}
+              ) : null}
             </div>
           )})}
         </div>
