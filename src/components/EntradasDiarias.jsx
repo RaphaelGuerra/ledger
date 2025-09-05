@@ -128,7 +128,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                       <th>Bar</th>
                       <th>Outros</th>
                       <th className="actions-cell">
-                        <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)}>✖</button>
+                        <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)}>✖</button>
                       </th>
                     </tr>
                     <tr className="collapsed-row">
@@ -240,24 +240,38 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
             return (
               <div key={r.id} className="ent-card">
                 <div className="ent-card-header">
-                  <div className="date-compact-wrap" style={{ width: 90 }}>
-                    <input type="date" lang="pt-BR" className="cell-input date-compact" value={r.date} disabled />
-                    <div className="date-overlay">{formatDDMM(r.date)}</div>
-                  </div>
+                  {isOpen ? (
+                    <div className="date-compact-wrap" style={{ width: 90 }}>
+                      <input type="date" lang="pt-BR" className="cell-input date-compact" value={r.date} disabled />
+                      <div className="date-overlay">{formatDDMM(r.date)}</div>
+                    </div>
+                  ) : (
+                    <div className="date-display">{formatDDMM(r.date)}</div>
+                  )}
                   <div className="summary">
                     <span>Entradas <span className="val">{t.nEntradas || 0}</span></span>
                     <span>Diárias <span className="val">R$ {t.totalEntradas || 0}</span></span>
                   </div>
                   <div style={{ display: 'inline-flex', gap: 6 }}>
                     <button className="expand-toggle" onClick={() => toggle(r.id)}>{isOpen ? 'Recolher' : 'Expandir'}</button>
-                    <button className="link-button danger" onClick={() => removeDateRow(r.id)}>Remover</button>
+                    <button
+                      className="link-button danger icon"
+                      style={{ color: 'var(--danger)' }}
+                      aria-label="Remover"
+                      title="Remover"
+                      onClick={() => removeDateRow(r.id)}
+                    >
+                      ✖
+                    </button>
                   </div>
                 </div>
                 {isOpen && (
                   <div>
                     <div className="row-title">Dia</div>
                     <div className="grid">
-                      <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} placeholder="Entradas" />
+                      <div className="currency-input"><span className="prefix">Entradas</span>
+                        <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} />
+                      </div>
                       <div className="currency-input"><span className="prefix">R$ Diárias</span>
                         <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} />
                       </div>
@@ -276,7 +290,9 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                     </div>
                     <div className="row-title">Noite</div>
                     <div className="grid">
-                      <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} placeholder="Entradas" />
+                      <div className="currency-input"><span className="prefix">Entradas</span>
+                        <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} />
+                      </div>
                       <div className="currency-input"><span className="prefix">R$ Diárias</span>
                         <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} />
                       </div>

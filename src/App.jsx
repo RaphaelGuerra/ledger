@@ -167,11 +167,6 @@ export default function App() {
     return s.charAt(0).toUpperCase() + s.slice(1)
   }
 
-  useEffect(() => {
-    function handleAfterPrint() { setPrintMode(false) }
-    window.addEventListener('afterprint', handleAfterPrint)
-    return () => window.removeEventListener('afterprint', handleAfterPrint)
-  }, [])
 
   function navigateMonth(direction) {
     const [year, month] = activeMonth.split('-').map(Number)
@@ -212,7 +207,15 @@ export default function App() {
             <div className="month-actions">
               <button
                 className="secondary print-btn"
-                onClick={() => { setPrintMode(true); setTimeout(() => window.print(), 0) }}
+                onClick={() => {
+                  const onAfterPrint = () => {
+                    setPrintMode(false)
+                    window.removeEventListener('afterprint', onAfterPrint)
+                  }
+                  window.addEventListener('afterprint', onAfterPrint)
+                  setPrintMode(true)
+                  setTimeout(() => window.print(), 0)
+                }}
               >
                 Imprimir
               </button>
