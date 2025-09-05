@@ -537,6 +537,9 @@ input[type=number] {
 .mov-card .currency-input .cell-input { text-align: right; }
 .mov-card .desc-input { margin-top: 6px; }
 .mov-card .saldo-caption { margin-top: 4px; font-size: 12px; color: var(--muted); text-align: right; }
+.mov-card.compact .compact-info { display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px; }
+.mov-card.compact .desc-preview { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mov-card.compact .saldo-preview { margin-left: 8px; color: var(--muted); flex-shrink: 0; }
 
 /* Entradas mobile cards */
 .ent-cards { display: grid; gap: 8px; }
@@ -544,14 +547,14 @@ input[type=number] {
 .ent-card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ent-card .summary { display: inline-flex; gap: 8px; font-size: 12px; color: var(--muted); }
 .ent-card .summary .val { font-weight: 600; color: var(--text); }
-.ent-card .expand-toggle { background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.ent-card .expand-toggle, .mov-card .expand-toggle { background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 .ent-card .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
 .ent-card .row-title { font-weight: 600; font-size: 12px; color: var(--muted); margin-top: 6px; }
 .ent-card .date-compact-wrap { width: 80px; }
 .ent-card .date-overlay { font-size: 12px; }
 .ent-card .field-pair { display: flex; align-items: center; gap: 6px; }
 .ent-card .field-tag { font-size: 12px; color: var(--muted); white-space: nowrap; }
-.ent-card .field-pair .cell-input { flex: 1 1 auto; }
+.ent-card .field-pair .cell-input { flex: 1 1 auto; text-align: right; }
 .ent-card .date-compact-wrap { overflow: visible; }
 .ent-card .date-compact { width: 80px; }
 /* Ensure longer inline prefixes fit inside money inputs on mobile cards */
