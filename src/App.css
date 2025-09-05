@@ -983,8 +983,10 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .ph-right { font-size: 10px; text-align: right; line-height: 1.2; }
 
   .print-section { margin-top: 6px; }
+  .print-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
   .print-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
   .print-card { border: 1px solid #ddd; padding: 4px; }
+  .print-card { break-inside: avoid; }
   .plabel { font-size: 10px; color: #333; }
   .pvalue { font-size: 11px; font-weight: 700; text-align: right; }
 
@@ -994,6 +996,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .print-table th { background: #f2f2f2; }
   .print-table .num { text-align: right; }
   .print-table tr.ptotal-row { background: #f5f5f5; }
+  .print-table tr { break-inside: avoid; }
   /* Stronger separators at group boundaries */
   .print-table tr.pgroup-start td { border-top-width: 0.8px; }
   .print-table tr.ptotal-row td { border-bottom-width: 0.8px; }

@@ -55,6 +55,20 @@ export default function PrintSheet({
     return filtered.filter(hasAny).sort((a, b) => (a.date || '').localeCompare(b.date || ''))
   }, [entradasRows, activeMonth])
 
+  // Split visible entradas into two groups for print: days 1–15 and 16–31
+  const entradasLeft = useMemo(() => {
+    return visibleEntradas.filter(r => {
+      const d = Number((r.date || '').slice(8, 10))
+      return Number.isFinite(d) && d <= 15
+    })
+  }, [visibleEntradas])
+  const entradasRight = useMemo(() => {
+    return visibleEntradas.filter(r => {
+      const d = Number((r.date || '').slice(8, 10))
+      return Number.isFinite(d) && d >= 16
+    })
+  }, [visibleEntradas])
+
   function fmt2(v) {
     const n = Number(v)
     return Number.isFinite(n) ? n.toFixed(2) : ''
@@ -142,64 +156,128 @@ export default function PrintSheet({
 
       <section className="print-section">
         <h3 className="print-subtitle">Entradas</h3>
-        <table className="print-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Turno</th>
-              <th>Entradas</th>
-              <th>Diárias</th>
-              <th>Média</th>
-              <th>Cozinha</th>
-              <th>Bar</th>
-              <th>Outros</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleEntradas.map(r => {
-              const diaMedia = r.dia?.nEntradas > 0 ? (toNumberOrZero(r.dia.totalEntradas) / toNumberOrZero(r.dia.nEntradas)) : ''
-              const noiteMedia = r.noite?.nEntradas > 0 ? (toNumberOrZero(r.noite.totalEntradas) / toNumberOrZero(r.noite.nEntradas)) : ''
-              const totN = toNumberOrZero(r.dia.nEntradas) + toNumberOrZero(r.noite.nEntradas)
-              const totEntr = toNumberOrZero(r.dia.totalEntradas) + toNumberOrZero(r.noite.totalEntradas)
-              const totC = toNumberOrZero(r.dia.cozinha) + toNumberOrZero(r.noite.cozinha)
-              const totB = toNumberOrZero(r.dia.bar) + toNumberOrZero(r.noite.bar)
-              const totO = toNumberOrZero(r.dia.outros) + toNumberOrZero(r.noite.outros)
-              const totMedia = totN > 0 ? (totEntr / totN) : ''
-              return (
-                <React.Fragment key={r.id}>
-                  <tr className="pgroup-start">
-                    <td rowSpan={3}>{formatDDMM(r.date)}</td>
-                    <td>Dia</td>
-                    <td className="num">{r.dia.nEntradas || ''}</td>
-                    <td className="num">{fmt2(r.dia.totalEntradas)}</td>
-                    <td className="num">{fmt2(diaMedia)}</td>
-                    <td className="num">{fmt2(r.dia.cozinha)}</td>
-                    <td className="num">{fmt2(r.dia.bar)}</td>
-                    <td className="num">{fmt2(r.dia.outros)}</td>
-                  </tr>
-                  <tr>
-                    <td>Noite</td>
-                    <td className="num">{r.noite.nEntradas || ''}</td>
-                    <td className="num">{fmt2(r.noite.totalEntradas)}</td>
-                    <td className="num">{fmt2(noiteMedia)}</td>
-                    <td className="num">{fmt2(r.noite.cozinha)}</td>
-                    <td className="num">{fmt2(r.noite.bar)}</td>
-                    <td className="num">{fmt2(r.noite.outros)}</td>
-                  </tr>
-                  <tr className="ptotal-row">
-                    <td>Total</td>
-                    <td className="num">{totN}</td>
-                    <td className="num">{fmt2(totEntr)}</td>
-                    <td className="num">{fmt2(totMedia)}</td>
-                    <td className="num">{fmt2(totC)}</td>
-                    <td className="num">{fmt2(totB)}</td>
-                    <td className="num">{fmt2(totO)}</td>
-                  </tr>
-                </React.Fragment>
-              )
-            })}
-          </tbody>
-        </table>
+        <div className="print-grid-2">
+          <div className="print-card">
+            <table className="print-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Turno</th>
+                  <th>Entradas</th>
+                  <th>Diárias</th>
+                  <th>Média</th>
+                  <th>Cozinha</th>
+                  <th>Bar</th>
+                  <th>Outros</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entradasLeft.map(r => {
+                  const diaMedia = r.dia?.nEntradas > 0 ? (toNumberOrZero(r.dia.totalEntradas) / toNumberOrZero(r.dia.nEntradas)) : ''
+                  const noiteMedia = r.noite?.nEntradas > 0 ? (toNumberOrZero(r.noite.totalEntradas) / toNumberOrZero(r.noite.nEntradas)) : ''
+                  const totN = toNumberOrZero(r.dia.nEntradas) + toNumberOrZero(r.noite.nEntradas)
+                  const totEntr = toNumberOrZero(r.dia.totalEntradas) + toNumberOrZero(r.noite.totalEntradas)
+                  const totC = toNumberOrZero(r.dia.cozinha) + toNumberOrZero(r.noite.cozinha)
+                  const totB = toNumberOrZero(r.dia.bar) + toNumberOrZero(r.noite.bar)
+                  const totO = toNumberOrZero(r.dia.outros) + toNumberOrZero(r.noite.outros)
+                  const totMedia = totN > 0 ? (totEntr / totN) : ''
+                  return (
+                    <React.Fragment key={r.id}>
+                      <tr className="pgroup-start">
+                        <td rowSpan={3}>{formatDDMM(r.date)}</td>
+                        <td>Dia</td>
+                        <td className="num">{r.dia.nEntradas || ''}</td>
+                        <td className="num">{fmt2(r.dia.totalEntradas)}</td>
+                        <td className="num">{fmt2(diaMedia)}</td>
+                        <td className="num">{fmt2(r.dia.cozinha)}</td>
+                        <td className="num">{fmt2(r.dia.bar)}</td>
+                        <td className="num">{fmt2(r.dia.outros)}</td>
+                      </tr>
+                      <tr>
+                        <td>Noite</td>
+                        <td className="num">{r.noite.nEntradas || ''}</td>
+                        <td className="num">{fmt2(r.noite.totalEntradas)}</td>
+                        <td className="num">{fmt2(noiteMedia)}</td>
+                        <td className="num">{fmt2(r.noite.cozinha)}</td>
+                        <td className="num">{fmt2(r.noite.bar)}</td>
+                        <td className="num">{fmt2(r.noite.outros)}</td>
+                      </tr>
+                      <tr className="ptotal-row">
+                        <td>Total</td>
+                        <td className="num">{totN}</td>
+                        <td className="num">{fmt2(totEntr)}</td>
+                        <td className="num">{fmt2(totMedia)}</td>
+                        <td className="num">{fmt2(totC)}</td>
+                        <td className="num">{fmt2(totB)}</td>
+                        <td className="num">{fmt2(totO)}</td>
+                      </tr>
+                    </React.Fragment>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="print-card">
+            <table className="print-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Turno</th>
+                  <th>Entradas</th>
+                  <th>Diárias</th>
+                  <th>Média</th>
+                  <th>Cozinha</th>
+                  <th>Bar</th>
+                  <th>Outros</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entradasRight.map(r => {
+                  const diaMedia = r.dia?.nEntradas > 0 ? (toNumberOrZero(r.dia.totalEntradas) / toNumberOrZero(r.dia.nEntradas)) : ''
+                  const noiteMedia = r.noite?.nEntradas > 0 ? (toNumberOrZero(r.noite.totalEntradas) / toNumberOrZero(r.noite.nEntradas)) : ''
+                  const totN = toNumberOrZero(r.dia.nEntradas) + toNumberOrZero(r.noite.nEntradas)
+                  const totEntr = toNumberOrZero(r.dia.totalEntradas) + toNumberOrZero(r.noite.totalEntradas)
+                  const totC = toNumberOrZero(r.dia.cozinha) + toNumberOrZero(r.noite.cozinha)
+                  const totB = toNumberOrZero(r.dia.bar) + toNumberOrZero(r.noite.bar)
+                  const totO = toNumberOrZero(r.dia.outros) + toNumberOrZero(r.noite.outros)
+                  const totMedia = totN > 0 ? (totEntr / totN) : ''
+                  return (
+                    <React.Fragment key={r.id}>
+                      <tr className="pgroup-start">
+                        <td rowSpan={3}>{formatDDMM(r.date)}</td>
+                        <td>Dia</td>
+                        <td className="num">{r.dia.nEntradas || ''}</td>
+                        <td className="num">{fmt2(r.dia.totalEntradas)}</td>
+                        <td className="num">{fmt2(diaMedia)}</td>
+                        <td className="num">{fmt2(r.dia.cozinha)}</td>
+                        <td className="num">{fmt2(r.dia.bar)}</td>
+                        <td className="num">{fmt2(r.dia.outros)}</td>
+                      </tr>
+                      <tr>
+                        <td>Noite</td>
+                        <td className="num">{r.noite.nEntradas || ''}</td>
+                        <td className="num">{fmt2(r.noite.totalEntradas)}</td>
+                        <td className="num">{fmt2(noiteMedia)}</td>
+                        <td className="num">{fmt2(r.noite.cozinha)}</td>
+                        <td className="num">{fmt2(r.noite.bar)}</td>
+                        <td className="num">{fmt2(r.noite.outros)}</td>
+                      </tr>
+                      <tr className="ptotal-row">
+                        <td>Total</td>
+                        <td className="num">{totN}</td>
+                        <td className="num">{fmt2(totEntr)}</td>
+                        <td className="num">{fmt2(totMedia)}</td>
+                        <td className="num">{fmt2(totC)}</td>
+                        <td className="num">{fmt2(totB)}</td>
+                        <td className="num">{fmt2(totO)}</td>
+                      </tr>
+                    </React.Fragment>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
     </div>
   )
