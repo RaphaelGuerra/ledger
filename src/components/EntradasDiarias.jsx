@@ -257,7 +257,10 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                   <div>
                     <div className="row-title">Dia</div>
                     <div className="grid">
-                      <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} placeholder="Entradas" />
+                      <div className="field-pair">
+                        <span className="field-tag">Entradas</span>
+                        <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} />
+                      </div>
                       <div className="currency-input"><span className="prefix">R$ Diárias</span>
                         <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} />
                       </div>
@@ -276,7 +279,10 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                     </div>
                     <div className="row-title">Noite</div>
                     <div className="grid">
-                      <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} placeholder="Entradas" />
+                      <div className="field-pair">
+                        <span className="field-tag">Entradas</span>
+                        <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} />
+                      </div>
                       <div className="currency-input"><span className="prefix">R$ Diárias</span>
                         <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} />
                       </div>

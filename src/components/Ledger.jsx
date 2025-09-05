@@ -42,6 +42,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
     if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return migrateItems(initialItems, activeMonth)
     return []
   })
+  const [expandedMovs, setExpandedMovs] = useState({})
 
   // Reset when month or initialItems change (no auto-create)
   useEffect(() => {
@@ -75,6 +76,10 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
 
   function removeItem(id) {
     setItems(prev => prev.filter(it => it.id !== id))
+  }
+
+  function toggleMov(id) {
+    setExpandedMovs(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
   function updateItem(id, field, value) {
@@ -189,8 +194,10 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
         <div className="mov-cards">
           {sorted.length === 0 ? (
             <div className="empty-state"><p>Nenhum lançamento. Toque em "Adicionar Lançamento".</p></div>
-          ) : sorted.map((it, idx) => (
-            <div key={it.id} className="mov-card">
+          ) : sorted.map((it, idx) => {
+            const isOpen = expandedMovs[it.id] !== false
+            return (
+            <div key={it.id} className={`mov-card${isOpen ? '' : ' compact'}`}>
               <div className="mov-card-header">
                 <div className="date-compact-wrap">
                   <input
@@ -205,14 +212,26 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                 <div className="currency-input"><span className="prefix">R$</span>
                   <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
                 </div>
-                <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)}>✖</button>
+                <div style={{ display: 'inline-flex', gap: 6 }}>
+                  <button className="expand-toggle" onClick={() => toggleMov(it.id)}>{isOpen ? 'Recolher' : 'Expandir'}</button>
+                  <button className="link-button danger icon" aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)}>✖</button>
+                </div>
               </div>
-              <div className="desc-input">
-                <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" />
-              </div>
-              <div className="saldo-caption">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
+              {isOpen ? (
+                <>
+                  <div className="desc-input">
+                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" />
+                  </div>
+                  <div className="saldo-caption">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
+                </>
+              ) : (
+                <div className="compact-info">
+                  <div className="desc-preview">{it.descricao || '—'}</div>
+                  <div className="saldo-preview">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
+                </div>
+              )}
             </div>
-          ))}
+          )})}
         </div>
       </div>
 
