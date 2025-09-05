@@ -503,6 +503,8 @@ input[type=number] {
   background: var(--surface);
 }
 
+/* (Reverted) Lançamentos entries window height change */
+
 /* Mobile card containers hidden on desktop */
 .mobile-only { display: none; }
 .desktop-only { display: block; }
@@ -517,6 +519,8 @@ input[type=number] {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+  /* Show roughly 4 collapsed Lançamentos cards */
+  .mov-cards { max-height: 280px; }
 }
 
 /* Sticky table header inside scrollable containers */
@@ -556,7 +560,22 @@ input[type=number] {
 .ent-card-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .ent-card .summary { display: inline-flex; gap: 8px; font-size: 12px; color: var(--muted); }
 .ent-card .summary .val { font-weight: 600; color: var(--text); }
-.ent-card .expand-toggle, .mov-card .expand-toggle { background: transparent; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.ent-card .expand-toggle, .mov-card .expand-toggle {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text); /* ensure readable in dark mode */
+}
+.ent-card .expand-toggle:hover, .mov-card .expand-toggle:hover {
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+}
+.ent-card .expand-toggle:focus, .mov-card .expand-toggle:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
+}
 .ent-card .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
 .ent-card .row-title { font-weight: 600; font-size: 12px; color: var(--muted); margin-top: 6px; }
 .ent-card .date-compact-wrap { width: 80px; }

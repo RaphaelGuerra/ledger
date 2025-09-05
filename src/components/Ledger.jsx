@@ -79,7 +79,12 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   }
 
   function toggleMov(id) {
-    setExpandedMovs(prev => ({ ...prev, [id]: !prev[id] }))
+    // Default state is open when value is undefined; first click should close.
+    setExpandedMovs(prev => {
+      const cur = prev[id]
+      const next = (cur === false) ? true : false
+      return { ...prev, [id]: next }
+    })
   }
 
   function updateItem(id, field, value) {
