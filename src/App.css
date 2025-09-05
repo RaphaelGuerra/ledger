@@ -510,6 +510,13 @@ input[type=number] {
 @media (max-width: 760px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
+  /* Small-screen scroll windows for long lists */
+  .mov-cards,
+  .ent-cards {
+    max-height: 60vh; /* shows ~5–10 items depending on device */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Sticky table header inside scrollable containers */
