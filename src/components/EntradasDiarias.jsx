@@ -24,7 +24,19 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     return (nextDate || '') > lastDayOfMonthStr(activeMonth)
   }, [visibleRows, activeMonth])
   const [expanded, setExpanded] = useState({})
-  const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
+  const toggle = (id) => setExpanded(prev => (prev[id] ? {} : { [id]: true }))
+
+  // Collapse when clicking outside any ent-card (mobile cards)
+  React.useEffect(() => {
+    function onOutside(e) {
+      const target = e.target
+      if (!(target instanceof Element)) return
+      const inCard = target.closest('.ent-card')
+      if (!inCard) setExpanded({})
+    }
+    document.addEventListener('pointerdown', onOutside)
+    return () => document.removeEventListener('pointerdown', onOutside)
+  }, [])
 
   function fillMonth() {
     // Generate every missing date from the next date through the last day of the month
@@ -238,7 +250,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
             const t = totalsFor(r)
             const isOpen = !!expanded[r.id]
             return (
-              <div key={r.id} className="ent-card">
+              <div key={r.id} className={`ent-card${isOpen ? ' open' : ''}`}>
                 <div className="ent-card-header">
                   {isOpen ? (
                     <div className="date-compact-wrap" style={{ width: 90 }}>

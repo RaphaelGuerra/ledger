@@ -79,13 +79,25 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   }
 
   function toggleMov(id) {
-    // Default state is open when value is undefined; first click should close.
     setExpandedMovs(prev => {
-      const cur = prev[id]
-      const next = (cur === false) ? true : false
-      return { ...prev, [id]: next }
+      const isOpen = prev[id] === true
+      // Single-open behavior: open only this id; clicking again closes all
+      return isOpen ? {} : { [id]: true }
     })
   }
+
+  // Collapse when clicking outside any mov-card (mobile cards)
+  useEffect(() => {
+    function onOutside(e) {
+      const target = e.target
+      // if click is not within a mov-card, collapse
+      if (!(target instanceof Element)) return
+      const inCard = target.closest('.mov-card')
+      if (!inCard) setExpandedMovs({})
+    }
+    document.addEventListener('pointerdown', onOutside)
+    return () => document.removeEventListener('pointerdown', onOutside)
+  }, [])
 
   function updateItem(id, field, value) {
     setItems(prev => prev.map(it => {
@@ -200,9 +212,9 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
           {sorted.length === 0 ? (
             <div className="empty-state"><p>Nenhum lançamento. Toque em "Adicionar Lançamento".</p></div>
           ) : sorted.map((it, idx) => {
-            const isOpen = expandedMovs[it.id] !== false
+            const isOpen = expandedMovs[it.id] === true
             return (
-            <div key={it.id} className={`mov-card${isOpen ? '' : ' compact'}`}>
+            <div key={it.id} className={`mov-card${isOpen ? ' open' : ' compact'}`}>
               <div className="mov-card-header">
                 {isOpen ? (
                   <>
