@@ -554,6 +554,10 @@ input[type=number] {
 .mov-card.compact .desc-preview { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mov-card.compact .saldo-preview { margin-left: 8px; color: var(--muted); flex-shrink: 0; }
 
+/* Collapsed header middle: description + value on one line */
+.mov-card .collapsed-mid { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.mov-card .collapsed-mid .desc-preview { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* Entradas mobile cards */
 .ent-cards { display: grid; gap: 8px; }
 .ent-card { border: 1px solid var(--border); border-radius: 10px; padding: 8px; background: var(--surface); }
