@@ -72,23 +72,16 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
 
 
   function addDateRow() {
-    // Determine the next date to add (day after the latest existing date, or 01)
-    let nextDate = `${activeMonth}-01`
-    const valid = visibleRows.map(r => r.date).filter(Boolean).sort()
-    if (valid.length > 0) {
-      nextDate = isoAddDays(valid[valid.length - 1], 1)
-    }
+    // Add the earliest missing date within the active month
+    const monthStart = `${activeMonth}-01`
     const lastDay = lastDayOfMonthStr(activeMonth)
-    if ((nextDate || '') > lastDay) return // do not add beyond month
-
-    // Auto-fill any missing dates from the 1st up to nextDate (inclusive)
-    const have = new Set(visibleRows.map(r => r.date))
-    const newRows = []
-    for (let d = `${activeMonth}-01`; d <= nextDate; d = isoAddDays(d, 1)) {
-      if (!have.has(d)) newRows.push(createEmptyDateRow(d))
+    const have = new Set(visibleRows.map(r => r.date).filter(Boolean))
+    let missing = null
+    for (let d = monthStart; d <= lastDay; d = isoAddDays(d, 1)) {
+      if (!have.has(d)) { missing = d; break }
     }
-    if (newRows.length === 0) return
-    onChange([...rows, ...newRows])
+    if (!missing) return // nothing to add
+    onChange([...rows, createEmptyDateRow(missing)])
   }
 
   function removeDateRow(rowId) {
