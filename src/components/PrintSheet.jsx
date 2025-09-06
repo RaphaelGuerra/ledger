@@ -44,15 +44,16 @@ export default function PrintSheet({
     return { totalCreditos, totalMovimentos, resultado: totalCreditos - totalMovimentos }
   }, [creditTotals, visibleLanc])
 
-  // Split Lançamentos into up to 3 side-by-side tables to avoid page overflow
+  // Split Lançamentos into up to 4 side-by-side tables, max 8 rows each
   const lancChunks = useMemo(() => {
-    const n = visibleLanc.length
-    const cols = n > 20 ? 3 : (n > 10 ? 2 : 1)
-    if (cols === 1) return { cols, parts: [visibleLanc] }
-    const per = Math.ceil(n / cols)
-    const parts = []
-    for (let i = 0; i < n; i += per) parts.push(visibleLanc.slice(i, i + per))
-    return { cols, parts }
+    const all = visibleLanc
+    const chunks = []
+    for (let i = 0; i < all.length; i += 8) chunks.push(all.slice(i, i + 8))
+    const cols = Math.min(4, chunks.length || 1)
+    const shown = chunks.slice(0, cols)
+    const shownCount = shown.reduce((s, c) => s + c.length, 0)
+    const hiddenCount = all.length - shownCount
+    return { cols, parts: shown, hiddenCount, total: all.length }
   }, [visibleLanc])
 
   const visibleEntradas = useMemo(() => {
@@ -165,7 +166,7 @@ export default function PrintSheet({
             </tbody>
           </table>
         ) : (
-          <div className={lancChunks.cols === 3 ? 'print-grid-3' : 'print-grid-2'}>
+          <div className={lancChunks.cols === 4 ? 'print-grid-4' : (lancChunks.cols === 3 ? 'print-grid-3' : 'print-grid-2')}>
             {lancChunks.parts.map((chunk, idx) => (
               <div className="print-card" key={idx}>
                 <table className="print-table">
@@ -191,6 +192,9 @@ export default function PrintSheet({
               </div>
             ))}
           </div>
+        )}
+        {lancChunks.hiddenCount > 0 && (
+          <div className="print-note">Exibidos {lancChunks.total - lancChunks.hiddenCount} de {lancChunks.total} lançamentos</div>
         )}
       </section>
 
