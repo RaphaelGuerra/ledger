@@ -44,6 +44,17 @@ export default function PrintSheet({
     return { totalCreditos, totalMovimentos, resultado: totalCreditos - totalMovimentos }
   }, [creditTotals, visibleLanc])
 
+  // Split Lançamentos into up to 3 side-by-side tables to avoid page overflow
+  const lancChunks = useMemo(() => {
+    const n = visibleLanc.length
+    const cols = n > 20 ? 3 : (n > 10 ? 2 : 1)
+    if (cols === 1) return { cols, parts: [visibleLanc] }
+    const per = Math.ceil(n / cols)
+    const parts = []
+    for (let i = 0; i < n; i += per) parts.push(visibleLanc.slice(i, i + per))
+    return { cols, parts }
+  }, [visibleLanc])
+
   const visibleEntradas = useMemo(() => {
     const rows = Array.isArray(entradasRows) ? entradasRows : []
     const filtered = rows.filter(r => (r.date || '').startsWith(activeMonth))
@@ -132,26 +143,55 @@ export default function PrintSheet({
 
       <section className="print-section">
         <h3 className="print-subtitle">Lançamentos</h3>
-        <table className="print-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Descrição</th>
-              <th>Valor</th>
-              <th>Saldo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleLanc.map((it) => (
-              <tr key={it.id}>
-                <td>{formatDDMM(it.date)}</td>
-                <td>{it.descricao}</td>
-                <td className="num">{fmt2(it.valor)}</td>
-                <td className="num">{fmt2(it.saldo)}</td>
+        {lancChunks.cols === 1 ? (
+          <table className="print-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Saldo</th>
               </tr>
+            </thead>
+            <tbody>
+              {lancChunks.parts[0].map((it) => (
+                <tr key={it.id}>
+                  <td>{formatDDMM(it.date)}</td>
+                  <td>{it.descricao}</td>
+                  <td className="num">{fmt2(it.valor)}</td>
+                  <td className="num">{fmt2(it.saldo)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className={lancChunks.cols === 3 ? 'print-grid-3' : 'print-grid-2'}>
+            {lancChunks.parts.map((chunk, idx) => (
+              <div className="print-card" key={idx}>
+                <table className="print-table">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Descrição</th>
+                      <th>Valor</th>
+                      <th>Saldo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chunk.map(it => (
+                      <tr key={it.id}>
+                        <td>{formatDDMM(it.date)}</td>
+                        <td>{it.descricao}</td>
+                        <td className="num">{fmt2(it.valor)}</td>
+                        <td className="num">{fmt2(it.saldo)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        )}
       </section>
 
       <section className="print-section">
