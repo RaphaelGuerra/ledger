@@ -19,9 +19,14 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
   const sortedRows = useMemo(() => [...visibleRows].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleRows])
   const addDisabled = useMemo(() => {
-    const valid = visibleRows.map(r => r.date).filter(Boolean).sort()
-    const nextDate = valid.length > 0 ? isoAddDays(valid[valid.length - 1], 1) : `${activeMonth}-01`
-    return (nextDate || '') > lastDayOfMonthStr(activeMonth)
+    // Disable only when the entire month is filled (no missing dates)
+    const monthStart = `${activeMonth}-01`
+    const last = lastDayOfMonthStr(activeMonth)
+    const have = new Set(visibleRows.map(r => r.date).filter(Boolean))
+    for (let d = monthStart; d <= last; d = isoAddDays(d, 1)) {
+      if (!have.has(d)) return false // there is at least one missing date; enable buttons
+    }
+    return true // no missing dates; disable
   }, [visibleRows, activeMonth])
   const [expanded, setExpanded] = useState({})
   const toggle = (id) => setExpanded(prev => (prev[id] ? {} : { [id]: true }))
@@ -39,16 +44,12 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   }, [])
 
   function fillMonth() {
-    // Generate every missing date from the next date through the last day of the month
+    // Generate every missing date for the entire month (1..last)
     const have = new Set(visibleRows.map(r => r.date))
-    let nextDate = `${activeMonth}-01`
-    if (have.size > 0) {
-      const sorted = [...have].sort()
-      nextDate = isoAddDays(sorted[sorted.length - 1], 1)
-    }
+    const monthStart = `${activeMonth}-01`
     const last = lastDayOfMonthStr(activeMonth)
     const newRows = []
-    for (let d = nextDate; d <= last; d = isoAddDays(d, 1)) {
+    for (let d = monthStart; d <= last; d = isoAddDays(d, 1)) {
       if (!have.has(d)) newRows.push(createEmptyDateRow(d))
     }
     if (newRows.length) onChange([...rows, ...newRows])
