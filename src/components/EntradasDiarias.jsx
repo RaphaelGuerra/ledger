@@ -116,7 +116,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     <section className="section entradas-section">
       <h2 className="section-title">Entradas</h2>
       {isDesktop ? (
-      <div className="entries-container desktop-only">
+      <div className="entries-container">
         {sortedRows.length === 0 && (
           <div className="empty-state">
             <p>Nenhuma entrada no mês. Use "Adicionar Data" ou "Preencher Mês".</p>
@@ -248,7 +248,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
 
       ) : (
       /* Mobile cards */
-      <div className="mobile-only">
+      <div>
         <div className="ent-cards">
           {sortedRows.length === 0 ? (
             <div className="empty-state"><p>Nenhuma entrada no mês. Use "Adicionar Data" ou "Preencher Mês".</p></div>
