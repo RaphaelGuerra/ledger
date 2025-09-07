@@ -103,16 +103,13 @@ export default function PrintSheet({
       <section className="print-section">
         <div className="print-grid-3">
           <div className="print-card">
-            <div className="plabel">Créditos</div>
-            <div className="pvalue">{fmt2(lancTotals.totalCreditos)}</div>
+            <div className="print-kv"><span className="plabel">Créditos</span><span className="pvalue">{fmt2(lancTotals.totalCreditos)}</span></div>
           </div>
           <div className="print-card">
-            <div className="plabel">Movimentos</div>
-            <div className="pvalue">{fmt2(lancTotals.totalMovimentos)}</div>
+            <div className="print-kv"><span className="plabel">Movimentos</span><span className="pvalue">{fmt2(lancTotals.totalMovimentos)}</span></div>
           </div>
           <div className="print-card">
-            <div className="plabel">Resultado</div>
-            <div className="pvalue">{fmt2(lancTotals.resultado)}</div>
+            <div className="print-kv"><span className="plabel">Resultado</span><span className="pvalue">{fmt2(lancTotals.resultado)}</span></div>
           </div>
         </div>
       </section>
