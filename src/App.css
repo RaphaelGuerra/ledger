@@ -1015,6 +1015,12 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .print-card { border: 1px solid #ddd; padding: 4px; }
   .print-card { break-inside: avoid; }
   .print-note { font-size: 9px; color: #444; margin-top: 4px; }
+  /* Compact single-row inside each resumo card */
+  .print-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .print-kv .plabel { white-space: nowrap; }
+  .print-kv .pvalue { white-space: nowrap; }
+  /* Slightly tighter section spacing to help fit one page */
+  .print-section { margin-top: 4px; }
   .plabel { font-size: 10px; color: #333; }
   .pvalue { font-size: 11px; font-weight: 700; text-align: right; }
 
