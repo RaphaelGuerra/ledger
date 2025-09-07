@@ -508,8 +508,8 @@ input[type=number] {
 /* Mobile card containers hidden on desktop */
 .mobile-only { display: none; }
 .desktop-only { display: block; }
-/* Width-based UI mode: <760px uses mobile cards; otherwise tables */
-@media (max-width: 760px) {
+/* Width-based UI mode: <720px uses mobile cards; otherwise tables */
+@media (max-width: 719px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
   /* Small-screen scroll windows for long lists */
@@ -521,6 +521,12 @@ input[type=number] {
   }
   /* Show roughly 4 collapsed Lançamentos cards */
   .mov-cards { max-height: 280px; }
+}
+
+/* Always use table layout when printing */
+@media print {
+  .mobile-only { display: none !important; }
+  .desktop-only { display: block !important; }
 }
 
 /* Sticky table header inside scrollable containers */
@@ -763,8 +769,8 @@ input[type=number] {
   text-align: center;
 }
 
-/* Responsive Design for Mobile: apply only under 760px */
-@media (max-width: 760px) {
+/* Responsive Design for Mobile: apply only under 720px */
+@media (max-width: 719px) {
   #root {
     padding: 12px;
     max-width: 100%;
@@ -827,8 +833,8 @@ input[type=number] {
   .brand-logo { width: 32px; height: 32px; }
 }
 
-/* Ensure mobile-friendly header stack (under 760px) */
-@media (max-width: 760px) {
+/* Ensure mobile-friendly header stack (under 720px) */
+@media (max-width: 719px) {
   #root { padding: 12px; max-width: 100%; }
   .app-header-inner.header-grid { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
   .brand { justify-content: flex-start; padding-right: 0; border-right: 0; }
@@ -837,8 +843,8 @@ input[type=number] {
   .header-month-controls .current-month { min-width: 0; flex: 1 1 auto; font-size: 14px; text-align: center; }
 }
 
-/* Align header into 3 equal columns at desktop (>= 761px) */
-@media (min-width: 761px) {
+/* Align header into 3 equal columns at desktop (>= 720px) */
+@media (min-width: 720px) {
   .app-header-inner {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -852,7 +858,7 @@ input[type=number] {
 }
 
 /* On small screens, keep 3-up layout for slim cards */
-@media (max-width: 760px) {
+@media (max-width: 719px) {
   .summary-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .summary-card { padding: 8px; }
   .summary-card .label { font-size: 11px; }
@@ -1137,7 +1143,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 }
 
 /* Mobile sync group styles */
-@media (max-width: 760px) {
+@media (max-width: 719px) {
   .sync-group { 
     width: 100%; 
   }
@@ -1157,7 +1163,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 }
 
 /* Desktop sync group styles */
-@media (min-width: 761px) {
+@media (min-width: 720px) {
   .app-header-inner .sync-group { 
     justify-self: start; 
     justify-content: flex-start; 
