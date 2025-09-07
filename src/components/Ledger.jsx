@@ -153,7 +153,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       <h2 className="section-title entries-title">Lançamentos</h2>
 
       {isDesktop ? (
-      <div className="entries-container desktop-only">
+      <div className="entries-container">
         <div className="table-wrap">
           <table className="sheet-table ledger-table">
             <thead>
@@ -210,7 +210,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       </div>
       ) : (
       /* Mobile cards */
-      <div className="mobile-only">
+      <div>
         <div className="mov-cards">
           {sorted.length === 0 ? (
             <div className="empty-state"><p>Nenhum lançamento. Toque em "Adicionar Lançamento".</p></div>
