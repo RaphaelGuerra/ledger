@@ -1,3 +1,4 @@
+/* Responsive breakpoint: 720px (tables >=720px, cards <720px) */
 :root {
   --bg: #f5f7fb;
   --text: #111827;
@@ -505,13 +506,8 @@ input[type=number] {
 
 /* (Reverted) Lançamentos entries window height change */
 
-/* Mobile card containers hidden on desktop */
-.mobile-only { display: none; }
-.desktop-only { display: block; }
-/* Width-based UI mode: <720px uses mobile cards; otherwise tables */
+/* Mobile tweaks for card lists (<720px) */
 @media (max-width: 719px) {
-  .mobile-only { display: block; }
-  .desktop-only { display: none; }
   /* Small-screen scroll windows for long lists */
   .mov-cards,
   .ent-cards {
@@ -521,12 +517,6 @@ input[type=number] {
   }
   /* Show roughly 4 collapsed Lançamentos cards */
   .mov-cards { max-height: 280px; }
-}
-
-/* Always use table layout when printing */
-@media print {
-  .mobile-only { display: none !important; }
-  .desktop-only { display: block !important; }
 }
 
 /* Sticky table header inside scrollable containers */
