@@ -358,7 +358,7 @@ input[type=number] {
 
 /* (Removed 480px breakpoint to keep only two modes) */
 
-@media (min-width: 720px) {
+@media (min-width: 500px) {
   .summary-cards {
     grid-template-columns: repeat(3, 1fr); /* ensure 3 side by side */
     gap: 8px; /* tighter gap to fit within 720 */
@@ -509,7 +509,7 @@ input[type=number] {
 .mobile-only { display: none; }
 .desktop-only { display: block; }
 /* Width-based UI mode: <720px uses mobile cards; otherwise tables */
-@media (max-width: 719px) {
+@media (max-width: 499px) {
   .mobile-only { display: block; }
   .desktop-only { display: none; }
   /* Small-screen scroll windows for long lists */
@@ -769,8 +769,8 @@ input[type=number] {
   text-align: center;
 }
 
-/* Responsive Design for Mobile: apply only under 720px */
-@media (max-width: 719px) {
+/* Responsive Design for Mobile: apply only under 500px */
+@media (max-width: 499px) {
   #root {
     padding: 12px;
     max-width: 100%;
@@ -833,8 +833,8 @@ input[type=number] {
   .brand-logo { width: 32px; height: 32px; }
 }
 
-/* Ensure mobile-friendly header stack (under 720px) */
-@media (max-width: 719px) {
+/* Ensure mobile-friendly header stack (under 500px) */
+@media (max-width: 499px) {
   #root { padding: 12px; max-width: 100%; }
   .app-header-inner.header-grid { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
   .brand { justify-content: flex-start; padding-right: 0; border-right: 0; }
@@ -843,8 +843,8 @@ input[type=number] {
   .header-month-controls .current-month { min-width: 0; flex: 1 1 auto; font-size: 14px; text-align: center; }
 }
 
-/* Align header into 3 equal columns at desktop (>= 720px) */
-@media (min-width: 720px) {
+/* Align header into 3 equal columns at desktop (>= 500px) */
+@media (min-width: 500px) {
   .app-header-inner {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -858,7 +858,7 @@ input[type=number] {
 }
 
 /* On small screens, keep 3-up layout for slim cards */
-@media (max-width: 719px) {
+@media (max-width: 499px) {
   .summary-cards { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .summary-card { padding: 8px; }
   .summary-card .label { font-size: 11px; }
@@ -1143,7 +1143,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 }
 
 /* Mobile sync group styles */
-@media (max-width: 719px) {
+@media (max-width: 499px) {
   .sync-group { 
     width: 100%; 
   }
@@ -1163,7 +1163,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
 }
 
 /* Desktop sync group styles */
-@media (min-width: 720px) {
+@media (min-width: 500px) {
   .app-header-inner .sync-group { 
     justify-self: start; 
     justify-content: flex-start; 
