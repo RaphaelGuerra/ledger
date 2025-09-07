@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 
-// Returns true when viewport width is >= 720px
+// Returns true when viewport width is >= 500px
 export function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return true
-    return window.matchMedia('(min-width: 720px)').matches
+    return window.matchMedia('(min-width: 500px)').matches
   })
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
-    const mq = window.matchMedia('(min-width: 720px)')
+    const mq = window.matchMedia('(min-width: 500px)')
     const handler = (e) => setIsDesktop(e.matches)
     // modern and legacy listener support
     if (typeof mq.addEventListener === 'function') mq.addEventListener('change', handler)
@@ -22,4 +22,3 @@ export function useIsDesktop() {
 
   return isDesktop
 }
-
