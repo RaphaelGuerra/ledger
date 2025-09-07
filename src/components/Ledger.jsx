@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import { useIsDesktop } from '../lib/useIsDesktop.js'
 import { formatDDMM } from '../lib/date.js'
 
 function toNumberOrZero(value) {
@@ -38,6 +39,7 @@ function migrateItems(items, activeMonth) {
 }
 
 export default function Ledger({ creditTotals, activeMonth, initialItems, onItemsChange }) {
+  const isDesktop = useIsDesktop()
   const [items, setItems] = useState(() => {
     if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return migrateItems(initialItems, activeMonth)
     return []
@@ -150,6 +152,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       </div>
       <h2 className="section-title entries-title">Lançamentos</h2>
 
+      {isDesktop ? (
       <div className="entries-container desktop-only">
         <div className="table-wrap">
           <table className="sheet-table ledger-table">
@@ -205,8 +208,8 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
           </table>
         </div>
       </div>
-
-      {/* Mobile cards */}
+      ) : (
+      /* Mobile cards */
       <div className="mobile-only">
         <div className="mov-cards">
           {sorted.length === 0 ? (
@@ -258,6 +261,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
           )})}
         </div>
       </div>
+      )}
 
       <div className="section-actions">
         <button className="primary" onClick={addItem} disabled={addDisabled}>Adicionar Lançamento</button>

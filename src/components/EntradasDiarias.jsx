@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { formatDDMM, isoAddDays, lastDayOfMonthStr } from '../lib/date.js'
+import { useIsDesktop } from '../lib/useIsDesktop.js'
 
 function createEmptyShift() {
   return { nEntradas: '', totalEntradas: '', cozinha: '', bar: '', outros: '' }
@@ -16,6 +17,7 @@ function toNumberOrZero(value) {
 }
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
+  const isDesktop = useIsDesktop()
   const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
   const sortedRows = useMemo(() => [...visibleRows].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleRows])
   const addDisabled = useMemo(() => {
@@ -113,6 +115,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   return (
     <section className="section entradas-section">
       <h2 className="section-title">Entradas</h2>
+      {isDesktop ? (
       <div className="entries-container desktop-only">
         {sortedRows.length === 0 && (
           <div className="empty-state">
@@ -243,7 +246,8 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
         </div>
       </div>
 
-      {/* Mobile cards */}
+      ) : (
+      /* Mobile cards */
       <div className="mobile-only">
         <div className="ent-cards">
           {sortedRows.length === 0 ? (
@@ -330,6 +334,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
           })}
         </div>
       </div>
+      )}
       <div className="section-actions">
         <button className="primary" onClick={addDateRow} disabled={addDisabled}>Adicionar Data</button>
         <button className="secondary" onClick={fillMonth} disabled={addDisabled}>Preencher Mês</button>
