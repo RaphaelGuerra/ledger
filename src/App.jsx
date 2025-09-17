@@ -7,6 +7,7 @@ import Ledger from './components/Ledger'
 import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRemoteDebounced } from './lib/store.js'
 import { computeCreditTotals, computeAcumulado } from './lib/stats.js'
 import { getMonthDisplayName, incMonth } from './lib/date.js'
+import { filterByMonth } from './lib/selectors.js'
 
 export default function App() {
   // Get first day of current month for initial record
@@ -112,9 +113,7 @@ export default function App() {
 
   // Do not auto-create rows when month changes; users add explicitly
 
-  const visibleDiariasRows = useMemo(() => {
-    return diariasRows.filter(r => (r.date || '').startsWith(activeMonth))
-  }, [diariasRows, activeMonth])
+  const visibleDiariasRows = useMemo(() => filterByMonth(diariasRows, activeMonth), [diariasRows, activeMonth])
 
   const creditTotals = useMemo(() => computeCreditTotals(visibleDiariasRows), [visibleDiariasRows])
 

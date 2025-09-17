@@ -60,6 +60,7 @@ npm run build
 - `src/lib/date.js`: utilitários de data (DD/MM, adicionar dias, rótulo de mês, avançar/voltar mês).
 - `src/lib/number.js`: utilitários numéricos e formatação (`toNumberOrZero`, `fmt2`, `fmtBRL`, `isBlank`).
 - `src/lib/stats.js`: agregações puras para Créditos e Acumulado.
+- `src/lib/selectors.js`: seletores reutilizáveis (filtrar e ordenar por mês/data).
 - `src/lib/store.js`: persistência (localStorage) e sincronização remota (fetch).
 
 Racional de refatoração:
@@ -67,6 +68,15 @@ Racional de refatoração:
 - Removida duplicação de helpers (número/formatação) dos componentes; agora ficam em `src/lib/number.js`.
 - Cálculos de totais/estatísticas migrados para `src/lib/stats.js` (funções puras, fáceis de testar).
 - Navegação e rótulo de mês movidos para `src/lib/date.js` para manter o `App.jsx` focado em estado/fluxo.
+
+### Qualidade de Código
+
+- Lint: `npm run lint`
+- Format: `npm run format`
+- Testes (lib): `npm run test`
+- Checagem rápida (build + lint): `npm run check`
+
+Veja também: `IMPROVEMENTS.md` para o roadmap e acompanhamento.
 
 ### Notas
 - Saldo/Resultando atualizam em tempo real.

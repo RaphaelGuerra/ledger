@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { formatDDMM, isoAddDays, lastDayOfMonthStr } from '../lib/date.js'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
 import { toNumberOrZero, fmt2 } from '../lib/number.js'
+import { visibleEntradasRows } from '../lib/selectors.js'
 
 function createEmptyShift() {
   return { nEntradas: '', totalEntradas: '', cozinha: '', bar: '', outros: '' }
@@ -15,8 +16,8 @@ export function createEmptyDateRow(dateString) {
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const isDesktop = useIsDesktop()
-  const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
-  const sortedRows = useMemo(() => [...visibleRows].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleRows])
+  const visibleRows = useMemo(() => visibleEntradasRows(rows, activeMonth), [rows, activeMonth])
+  const sortedRows = visibleRows // already sorted by selector
   const addDisabled = useMemo(() => {
     // Disable only when the entire month is filled (no missing dates)
     const monthStart = `${activeMonth}-01`
