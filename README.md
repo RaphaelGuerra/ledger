@@ -52,6 +52,22 @@ Ambiente:
 npm run build
 ```
 
+### Código (visão geral)
+
+- `src/components/EntradasDiarias.jsx`: edição das entradas por dia (tabela no desktop; cartões no mobile).
+- `src/components/Ledger.jsx`: lançamentos (descrição + valor) com saldo acumulado.
+- `src/components/PrintSheet.jsx`: folha de impressão simplificada.
+- `src/lib/date.js`: utilitários de data (DD/MM, adicionar dias, rótulo de mês, avançar/voltar mês).
+- `src/lib/number.js`: utilitários numéricos e formatação (`toNumberOrZero`, `fmt2`, `fmtBRL`, `isBlank`).
+- `src/lib/stats.js`: agregações puras para Créditos e Acumulado.
+- `src/lib/store.js`: persistência (localStorage) e sincronização remota (fetch).
+
+Racional de refatoração:
+
+- Removida duplicação de helpers (número/formatação) dos componentes; agora ficam em `src/lib/number.js`.
+- Cálculos de totais/estatísticas migrados para `src/lib/stats.js` (funções puras, fáceis de testar).
+- Navegação e rótulo de mês movidos para `src/lib/date.js` para manter o `App.jsx` focado em estado/fluxo.
+
 ### Notas
 - Saldo/Resultando atualizam em tempo real.
 - Campos somente leitura têm fundo sutil.

@@ -1,12 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
 import { formatDDMM } from '../lib/date.js'
-
-function toNumberOrZero(value) {
-  if (value === '' || value === null || value === undefined) return 0
-  const n = Number(value)
-  return Number.isFinite(n) ? n : 0
-}
+import { toNumberOrZero } from '../lib/number.js'
 
 
 function createEmptyItem(defaultDate) {

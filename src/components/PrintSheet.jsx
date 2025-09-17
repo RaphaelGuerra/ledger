@@ -1,15 +1,6 @@
 import React, { useMemo } from 'react'
 import { formatDDMM } from '../lib/date.js'
-
-function toNumberOrZero(v) {
-  if (v === '' || v === null || v === undefined) return 0
-  const n = Number(v)
-  return Number.isFinite(n) ? n : 0
-}
-
-function isBlank(v) {
-  return v === '' || v === null || v === undefined
-}
+import { toNumberOrZero, isBlank, fmt2 } from '../lib/number.js'
 
 export default function PrintSheet({
   hotelName,
@@ -81,10 +72,7 @@ export default function PrintSheet({
     })
   }, [visibleEntradas])
 
-  function fmt2(v) {
-    const n = Number(v)
-    return Number.isFinite(n) ? n.toFixed(2) : ''
-  }
+  // formatting helper moved to lib/number.js
 
   return (
     <div className="print-root">

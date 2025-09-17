@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { formatDDMM, isoAddDays, lastDayOfMonthStr } from '../lib/date.js'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
+import { toNumberOrZero, fmt2 } from '../lib/number.js'
 
 function createEmptyShift() {
   return { nEntradas: '', totalEntradas: '', cozinha: '', bar: '', outros: '' }
@@ -10,11 +11,7 @@ export function createEmptyDateRow(dateString) {
   return { id: Math.random().toString(36).slice(2), date: dateString, dia: createEmptyShift(), noite: createEmptyShift() }
 }
 
-function toNumberOrZero(value) {
-  if (value === '' || value === null || value === undefined) return 0
-  const n = Number(value)
-  return Number.isFinite(n) ? n : 0
-}
+// numeric helpers moved to lib/number.js
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const isDesktop = useIsDesktop()
@@ -101,16 +98,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     return { nEntradas, totalEntradas, cozinha, bar, outros, media }
   }
 
-  function fmtBRL(v) {
-    if (v === '' || v === null || v === undefined || Number.isNaN(Number(v))) return ''
-    return `R$ ${Number(v).toFixed(2)}`
-  }
-
-  function fmt2(v) {
-    if (v === '' || v === null || v === undefined) return ''
-    const n = Number(v)
-    return Number.isFinite(n) ? n.toFixed(2) : ''
-  }
+  // formatting helpers moved to lib/number.js
 
   return (
     <section className="section entradas-section">
