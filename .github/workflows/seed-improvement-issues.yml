@@ -1,0 +1,92 @@
+name: Seed Improvement Issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (log only, no create)'
+        required: false
+        default: 'false'
+
+permissions:
+  issues: write
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or skip issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const dryRun = (core.getInput('dry_run') || 'false').toLowerCase() === 'true'
+            const issues = [
+              {
+                title: 'Architecture: Feature folders for ledger and entradas',
+                labels: ['enhancement', 'architecture'],
+                body: `Group related UI/logic by feature to improve local cohesion and discoverability.\n\nWhy\n- Keeps components, hooks, and logic close together\n- Reduces cross-feature coupling\n\nScope\n- Create src/features/ledger and src/features/entradas\n- Move their components/logic under each feature\n- Update imports\n\nAcceptance\n- App builds and runs\n- No circular deps introduced`,
+              },
+              {
+                title: 'Architecture: Extract App header into Header, MonthNav, SyncControls',
+                labels: ['enhancement', 'architecture'],
+                body: `Split App header into small, focused components to simplify App.jsx.\n\nScope\n- Create Header, MonthNav, and SyncControls components\n- Move markup and props wiring from App.jsx\n- Keep print button behavior unchanged\n\nAcceptance\n- App UI unchanged\n- Components have minimal props and no business logic`,
+              },
+              {
+                title: 'Data: Add JSON Export/Import per month',
+                labels: ['enhancement', 'data'],
+                body: `Allow users to export/import month JSON for safety and portability.\n\nScope\n- Add Export and Import buttons (per active month)\n- Export schema: { entradasRows, ledgerItems, version, timestamp }\n- Import validates schema and replaces current month data\n\nAcceptance\n- Round-trip export/import works locally\n- Invalid import shows friendly error`,
+              },
+              {
+                title: 'Data: Use nanoid for stable IDs',
+                labels: ['enhancement', 'data'],
+                body: `Replace Math.random IDs with nanoid for more stable IDs across sessions/exports.\n\nScope\n- Add nanoid dependency\n- Update ID creation in row/item factories\n- Keep existing IDs intact (no migrations)\n\nAcceptance\n- New items/rows use nanoid\n- No regressions in editing/removal`,
+              },
+              {
+                title: 'Sync: Include timestamp/version and enforce last-write-wins',
+                labels: ['enhancement', 'sync'],
+                body: `Add metadata to payloads and document conflict policy.\n\nScope\n- Include { version, updatedAt } in payload\n- Update store.save/load to read/write metadata\n- Document last-write-wins in README\n\nAcceptance\n- Backward compatible with existing data\n- Visible sync status remains correct`,
+              },
+              {
+                title: 'API: Validate payload schema on GET/PUT',
+                labels: ['enhancement', 'api'],
+                body: `Validate payloads in Cloudflare function to avoid storing invalid shapes.\n\nScope\n- Add minimal schema validation function (runtime)\n- GET: ensure parseable JSON; PUT: validate fields and types\n- Return 400 on invalid payload\n\nAcceptance\n- Valid payloads persist; invalid return 400\n- Add basic tests where possible`,
+              },
+              {
+                title: 'UX: Extract Toast, SummaryCards, PrintButton components',
+                labels: ['enhancement', 'ux'],
+                body: `Create small presentational components to reduce duplication and clarify structure.\n\nScope\n- Move toast markup/state handling behind a tiny component\n- Extract SummaryCards and PrintButton from App\n- Keep behavior identical\n\nAcceptance\n- No visual/behavioral changes\n- Components are stateless or minimal state`,
+              },
+              {
+                title: 'A11y: Keyboard focus and labels polish',
+                labels: ['enhancement', 'a11y'],
+                body: `Small accessibility improvements for inputs and controls.\n\nScope\n- Ensure inputs have labels/aria\n- Focus new rows/items on add\n- Verify tab order and button names\n\nAcceptance\n- Basic keyboard flow works end-to-end`,
+              },
+              {
+                title: 'Print: Document and centralize chunking rules',
+                labels: ['enhancement', 'print'],
+                body: `Clarify how Lançamentos are chunked into columns and keep the rule centralized.\n\nScope\n- Add code doc for chunk sizing and column caps\n- Move the rule to a helper (e.g., in stats/selectors)\n- Reference from PrintSheet\n\nAcceptance\n- Printed output unchanged; logic lives in one place`,
+              },
+            ]
+
+            for (const item of issues) {
+              const q = `repo:${context.repo.owner}/${context.repo.repo} is:issue in:title "${item.title}"`
+              const found = await github.rest.search.issuesAndPullRequests({ q })
+              const exists = found.data.items.some(it => it.title === item.title)
+              if (exists) {
+                core.info(`Skip (exists): ${item.title}`)
+                continue
+              }
+              if (dryRun) {
+                core.info(`[DRY-RUN] Would create: ${item.title}`)
+                continue
+              }
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: item.title,
+                body: item.body,
+                labels: item.labels,
+              })
+              core.info(`Created: ${item.title}`)
+            }
+

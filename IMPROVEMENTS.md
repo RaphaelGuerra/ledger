@@ -37,6 +37,12 @@ UX/Print
 
 - Add selectors, typedefs, lint/format, and lib tests
 
+## Issue Seeding
+
+- To create GitHub issues for the prioritized backlog, trigger the workflow:
+  - Actions → "Seed Improvement Issues" → Run workflow (dry_run=false)
+  - It skips already existing issues and creates only missing ones.
+
 ## Done
 
 - Refactor: shared utils (`number`, `date`, `stats`), docs update
@@ -50,4 +56,3 @@ UX/Print
 ## Progress Log
 
 - YYYY-MM-DD: Created tracker; queued selectors, typedefs, lint+format, and tests
-
