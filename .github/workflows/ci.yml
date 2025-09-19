@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   push:
-    branches: [develop]
+    branches: [develop, dev]
 
 jobs:
   build:
@@ -13,6 +13,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lockfile sync check
+        run: |
+          set -e
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE_SHA" ]; then BASE_SHA="${{ github.event.before }}"; fi
+          HEAD_SHA="${{ github.sha }}"
+          if [ -z "$BASE_SHA" ]; then
+            echo "No base ref available; skipping lockfile check"
+            exit 0
+          fi
+          echo "Diff base..head: $BASE_SHA..$HEAD_SHA"
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -qx 'package.json'; then
+            if echo "$CHANGED" | grep -qx 'package-lock.json'; then
+              echo 'package.json changed and lockfile updated — OK'
+            else
+              echo 'ERROR: package.json changed but package-lock.json not updated.'
+              exit 1
+            fi
+          else
+            echo 'No package.json changes — skipping lockfile check.'
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -25,3 +51,6 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Lint
+        run: npm run lint
