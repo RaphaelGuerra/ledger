@@ -2,6 +2,7 @@
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import * as espree from 'espree'
 
 export default [
   // Ignore build artifacts and vendor dirs
@@ -12,8 +13,10 @@ export default [
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
+      parser: espree,
       ecmaVersion: 'latest',
       sourceType: 'module',
+      parserOptions: { ecmaFeatures: { jsx: true } },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -31,4 +34,3 @@ export default [
   // Turn off formatting-related rules that conflict with Prettier
   eslintConfigPrettier,
 ]
-
