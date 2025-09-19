@@ -56,3 +56,15 @@ UX/Print
 ## Progress Log
 
 - YYYY-MM-DD: Created tracker; queued selectors, typedefs, lint+format, and tests
+
+## Links
+
+- [Architecture: Feature folders for ledger and entradas](https://github.com/RaphaelGuerra/ledger/issues/10) (#10)
+- [Architecture: Extract App header into Header, MonthNav, SyncControls](https://github.com/RaphaelGuerra/ledger/issues/11) (#11)
+- [Data: JSON Export/Import per month](https://github.com/RaphaelGuerra/ledger/issues/12) (#12)
+- [Data: Use nanoid for stable IDs](https://github.com/RaphaelGuerra/ledger/issues/13) (#13)
+- [Sync: Include timestamp/version and enforce last-write-wins](https://github.com/RaphaelGuerra/ledger/issues/14) (#14)
+- [API: Validate payload schema on GET/PUT](https://github.com/RaphaelGuerra/ledger/issues/15) (#15)
+- [UX: Extract Toast, SummaryCards, PrintButton](https://github.com/RaphaelGuerra/ledger/issues/16) (#16)
+- [A11y: Keyboard focus and labels polish](https://github.com/RaphaelGuerra/ledger/issues/17) (#17)
+- [Print: Document and centralize chunking rules](https://github.com/RaphaelGuerra/ledger/issues/18) (#18)
