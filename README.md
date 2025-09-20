@@ -83,6 +83,7 @@ Other static hosts
 - Sync: with a valid KV binding, entering a Sync ID should load/save month data.
 
 ## Screenshots
+- Place images in `resources/screenshots/` and reference them from this README.
 - App view: add a screenshot of the main ledger and daily entries.
 - Print preview: add a screenshot or PDF of the print layout.
 
