@@ -4,6 +4,7 @@ import logo from './assets/Gemini_Generated_Image_isbz06isbz06isbz.png'
 import EntradasDiarias from './components/EntradasDiarias'
 import PrintSheet from './components/PrintSheet'
 import Ledger from './components/Ledger'
+import Header from './components/Header'
 import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRemoteDebounced } from './lib/store.js'
 import { computeCreditTotals, computeAcumulado } from './lib/stats.js'
 import { getMonthDisplayName, incMonth } from './lib/date.js'
@@ -123,88 +124,33 @@ export default function App() {
     setActiveMonth(prev => incMonth(prev, direction))
   }
 
+  function handlePrint() {
+    const onAfterPrint = () => {
+      setPrintMode(false)
+      window.removeEventListener('afterprint', onAfterPrint)
+    }
+    window.addEventListener('afterprint', onAfterPrint)
+    setPrintMode(true)
+    setTimeout(() => window.print(), 0)
+  }
+
   return (
     <div className="app-root">
-      <header className="app-header">
-        <div className="app-header-inner header-grid">
-          <div className="brand">
-            <img src={logo} alt="Logo" className="brand-logo" />
-            <div className="brand-text">
-              <div className="brand-title">Vison Hotel</div>
-              <div className="brand-subtitle">Resumo de Caixa</div>
-            </div>
-          </div>
-          <div className="header-month-controls">
-            <div className="month-navigation">
-              <button className="month-nav-btn" onClick={() => navigateMonth(-1)} aria-label="Mês anterior" title="Mês anterior">←</button>
-              <span className="current-month">{getMonthDisplayName(activeMonth)}</span>
-              <button className="month-nav-btn" onClick={() => navigateMonth(1)} aria-label="Próximo mês" title="Próximo mês">→</button>
-            </div>
-            <div className="month-actions">
-              <button
-                className="secondary print-btn"
-                onClick={() => {
-                  const onAfterPrint = () => {
-                    setPrintMode(false)
-                    window.removeEventListener('afterprint', onAfterPrint)
-                  }
-                  window.addEventListener('afterprint', onAfterPrint)
-                  setPrintMode(true)
-                  setTimeout(() => window.print(), 0)
-                }}
-              >
-                Imprimir
-              </button>
-            </div>
-          </div>
-          <div className="sync-group">
-            <div className="sync-id-row">
-              <div className="sync-id-label">
-                <label className="sync-label" htmlFor="sync-id">ID</label>
-                <span
-                  className={
-                    !syncId ? 'sync-dot off' : (
-                      syncStatus === 'ok' ? 'sync-dot ok' : (syncStatus === 'loading' ? 'sync-dot loading' : 'sync-dot error')
-                    )
-                  }
-                  aria-label={!syncId ? 'Sync desligado' : (syncStatus === 'ok' ? 'Sync OK' : (syncStatus === 'loading' ? 'Sincronizando' : 'Sync erro'))}
-                  title={!syncId ? 'Sync desligado' : (syncStatus === 'ok' ? 'Sync OK' : (syncStatus === 'loading' ? 'Sincronizando' : 'Sync erro'))}
-                />
-              </div>
-              <input
-                id="sync-id"
-                className="cell-input sync-input"
-                placeholder="opcional"
-                value={syncIdDraft}
-                onChange={e => handleSyncIdChange(e.target.value.trim())}
-              />
-              <div className="sync-actions-inline">
-                {syncId ? (
-                  <button
-                    className="secondary icon-btn"
-                    onClick={disconnectSync}
-                    aria-label="Desconectar sync"
-                    title="Desconectar"
-                  >
-                    ⎋
-                  </button>
-                ) : (
-                  <button
-                    className="secondary icon-btn"
-                    onClick={connectSync}
-                    disabled={!syncIdDraft}
-                    aria-label="Conectar sync"
-                    title="Conectar"
-                  >
-                    ⏎
-                  </button>
-                )}
-              </div>
-            </div>
-            {/* Print button moved under month selector for all viewports */}
-          </div>
-        </div>
-      </header>
+      <Header
+        logoSrc={logo}
+        brandTitle="Vison Hotel"
+        brandSubtitle="Resumo de Caixa"
+        monthLabel={getMonthDisplayName(activeMonth)}
+        onPrevMonth={() => navigateMonth(-1)}
+        onNextMonth={() => navigateMonth(1)}
+        onPrint={handlePrint}
+        syncId={syncId}
+        syncIdDraft={syncIdDraft}
+        syncStatus={syncStatus}
+        onSyncIdChange={handleSyncIdChange}
+        onConnect={connectSync}
+        onDisconnect={disconnectSync}
+      />
       <main>
         <Ledger
           creditTotals={creditTotals}
