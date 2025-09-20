@@ -6,7 +6,7 @@ Purpose: central place to plan, track, and log small, high‑impact upgrades whi
 
 - Scope: MVP-quality UI with clear logic; focus on maintainability and small, testable pieces.
 - Owner: @RaphaelGuerra
-- Last Updated: 2025-09-20
+- Last Updated: 2025-09-20 (post multi-page print + entradas auto-fill rollout)
 
 ## Backlog (Prioritized)
 
@@ -26,13 +26,10 @@ UX/Print
 - [ ] Micro-components: `Toast`, `SummaryCards`, `PrintButton`
 - [ ] Small a11y/keyboard polish; ensure focus flows to new rows
 - [ ] Document print chunking rules in code and README
-- [ ] Print: multi-page continuation so lançamentos beyond 32 rows flow to a second sheet (#19)
-- [ ] Entradas: auto-fill intermediate dates when adding new day rows (#20)
 
 ## In Progress
 
 - Architecture: Feature folders for ledger/entradas (#10) — mapping ownership of shared helpers
-- Print: Capture overflow scenarios for regression snapshots before iterating on layout (#19)
 
 ## Issue Seeding
 
@@ -48,6 +45,8 @@ UX/Print
 - Tooling: Minimal ESLint + Prettier config with `npm run lint` / `npm run format`
 - Tooling: Added `npm run check` for build+lint and Vitest coverage for `src/lib/`
 - Refactor: shared utils (`number`, `date`, `stats`), docs update
+- UX/Print: Multi-page continuation for lançamentos printing (#19)
+- UX/Entradas: Auto-fill missing dates when adding rows (#20)
 
 ## Decisions
 
@@ -58,7 +57,7 @@ UX/Print
 ## Progress Log
 
 - 2025-09-20: Wrapped selectors, typedefs, lint/test tooling, and extracted header components; next up feature folders
-- 2025-09-20: Logged follow-up issues for print overflow continuation (#19) and entradas auto-fill gaps (#20); prep snapshot coverage for print changes
+- 2025-09-20: Implemented multi-page print continuation (#19) e auto-fill incremental de datas nas Entradas (#20); próximos passos focam em documentação e testes visuais
 
 ## Links
 
@@ -71,5 +70,5 @@ UX/Print
 - [UX: Extract Toast, SummaryCards, PrintButton](https://github.com/RaphaelGuerra/ledger/issues/16) (#16)
 - [A11y: Keyboard focus and labels polish](https://github.com/RaphaelGuerra/ledger/issues/17) (#17)
 - [Print: Document and centralize chunking rules](https://github.com/RaphaelGuerra/ledger/issues/18) (#18)
-- [Print: Continue lançamentos across pages when exceeding 32 rows](https://github.com/RaphaelGuerra/ledger/issues/19) (#19)
-- [Entradas: Auto-fill gaps when appending new dates](https://github.com/RaphaelGuerra/ledger/issues/20) (#20)
+- ✅ [Print: Continue lançamentos across pages when exceeding 32 rows](https://github.com/RaphaelGuerra/ledger/issues/19) (#19)
+- ✅ [Entradas: Auto-fill gaps when appending new dates](https://github.com/RaphaelGuerra/ledger/issues/20) (#20)
