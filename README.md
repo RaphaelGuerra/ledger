@@ -12,7 +12,7 @@ Single‑page React app — minimal, fast, and focused on daily cash workflow.
 Detalhes de UX
 
 - Datas exibidas em DD/MM com calendário; em Entradas a Data é fixa e avança do 1º ao último dia do mês.
-- “Adicionar Data” adiciona o próximo dia; “Preencher Mês” completa todos os dias restantes do mês.
+- “Adicionar Data” preenche automaticamente quaisquer datas intermediárias faltantes até o próximo dia disponível; “Preencher Mês” completa todos os dias restantes do mês.
 - “Adicionar Lançamento” reutiliza a mesma Data do último lançamento; exige Descrição e Valor preenchidos (botão desabilita com mensagem explicativa).
 - Campos monetários têm dica “R$” e alinham à direita; totais são somente leitura com “R$”.
 
@@ -22,7 +22,7 @@ Detalhes de UX
   - Cabeçalho: logo, nome, Mês/Ano, ID (opcional) e data/hora da impressão.
   - Resumo: Créditos, Movimentos e Resultado.
   - Acumulado: Entradas (N), Diárias (R$), Média (R$), Cozinha (R$), Bar (R$), Outros (R$).
-  - Lançamentos: Data, Descrição, Valor, Saldo (apenas linhas preenchidas).
+  - Lançamentos: Data, Descrição, Valor, Saldo (apenas linhas preenchidas) com continuação automática em páginas extras quando houver mais de 32 linhas.
   - Entradas: por Data (Dia, Noite, Total) com separadores visuais e linha de total destacada.
 - Estilo tipo planilha: bordas finas, números alinhados à direita, sem sombras/cores fortes.
 - Dicas:
