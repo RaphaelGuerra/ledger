@@ -3,6 +3,7 @@ import { formatDDMM, isoAddDays, lastDayOfMonthStr } from '../lib/date.js'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
 import { toNumberOrZero, fmt2 } from '../lib/number.js'
 import { visibleEntradasRows } from '../lib/selectors.js'
+import { computeDatesToAdd } from '../lib/entradas.js'
 
 function createEmptyShift() {
   return { nEntradas: '', totalEntradas: '', cozinha: '', bar: '', outros: '' }
@@ -72,16 +73,10 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
 
 
   function addDateRow() {
-    // Add the earliest missing date within the active month
-    const monthStart = `${activeMonth}-01`
-    const lastDay = lastDayOfMonthStr(activeMonth)
-    const have = new Set(visibleRows.map(r => r.date).filter(Boolean))
-    let missing = null
-    for (let d = monthStart; d <= lastDay; d = isoAddDays(d, 1)) {
-      if (!have.has(d)) { missing = d; break }
-    }
-    if (!missing) return // nothing to add
-    onChange([...rows, createEmptyDateRow(missing)])
+    const datesToAdd = computeDatesToAdd(visibleRows, activeMonth)
+    if (datesToAdd.length === 0) return
+    const newRows = datesToAdd.map(createEmptyDateRow)
+    onChange([...rows, ...newRows])
   }
 
   function removeDateRow(rowId) {
