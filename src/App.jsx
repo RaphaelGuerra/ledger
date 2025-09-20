@@ -1,6 +1,6 @@
 import './App.css'
 import { useMemo, useState, useEffect, useRef } from 'react'
-import logo from './assets/Gemini_Generated_Image_isbz06isbz06isbz.png'
+import logo from './assets/logo.webp'
 import EntradasDiarias from './components/EntradasDiarias'
 import PrintSheet from './components/PrintSheet'
 import Ledger from './components/Ledger'
