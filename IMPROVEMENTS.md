@@ -6,21 +6,15 @@ Purpose: central place to plan, track, and log small, high‑impact upgrades whi
 
 - Scope: MVP-quality UI with clear logic; focus on maintainability and small, testable pieces.
 - Owner: @RaphaelGuerra
-- Last Updated: <!-- update when making changes -->
+- Last Updated: 2025-09-20
 
 ## Backlog (Prioritized)
 
 Architecture & Code Health
 - [ ] Feature folders for `ledger` and `entradas` (opt-in) — group components/hooks/logic
-- [ ] Extract `Header`, `MonthNav`, `SyncControls` from `App.jsx`
-- [x] Shared number/date/stats utilities in `src/lib/`
-- [ ] Add selector helpers for month filtering and sorting
-- [ ] Add JSDoc typedefs for data models (LedgerItem, EntradaRow)
 
 Tooling
-- [ ] Minimal ESLint + Prettier; `npm run lint`, `npm run format`
-- [ ] Add `npm run check` (build + lint)
-- [ ] Vitest for `src/lib/` tests
+- [ ] Evaluate UI snapshot smoke tests once component extraction stabilizes
 
 Data & Sync
 - [ ] Export/Import JSON per month (safety + portability)
@@ -35,7 +29,7 @@ UX/Print
 
 ## In Progress
 
-- Add selectors, typedefs, lint/format, and lib tests
+- Architecture: Feature folders for ledger/entradas (#10) — mapping ownership of shared helpers
 
 ## Issue Seeding
 
@@ -45,6 +39,11 @@ UX/Print
 
 ## Done
 
+- Architecture: Extracted `Header`, `MonthNav`, `SyncControls` from `App.jsx` to `components/Header.jsx` (#11)
+- Architecture: Shared month filtering/sorting selectors in `src/lib/selectors.js`
+- Data: Added shared JSDoc typedefs for ledger and entradas rows (`src/types.d.ts`)
+- Tooling: Minimal ESLint + Prettier config with `npm run lint` / `npm run format`
+- Tooling: Added `npm run check` for build+lint and Vitest coverage for `src/lib/`
 - Refactor: shared utils (`number`, `date`, `stats`), docs update
 
 ## Decisions
@@ -55,12 +54,12 @@ UX/Print
 
 ## Progress Log
 
-- YYYY-MM-DD: Created tracker; queued selectors, typedefs, lint+format, and tests
+- 2025-09-20: Wrapped selectors, typedefs, lint/test tooling, and extracted header components; next up feature folders
 
 ## Links
 
 - [Architecture: Feature folders for ledger and entradas](https://github.com/RaphaelGuerra/ledger/issues/10) (#10)
-- [Architecture: Extract App header into Header, MonthNav, SyncControls](https://github.com/RaphaelGuerra/ledger/issues/11) (#11)
+- ✅ [Architecture: Extract App header into Header, MonthNav, SyncControls](https://github.com/RaphaelGuerra/ledger/issues/11) (#11)
 - [Data: JSON Export/Import per month](https://github.com/RaphaelGuerra/ledger/issues/12) (#12)
 - [Data: Use nanoid for stable IDs](https://github.com/RaphaelGuerra/ledger/issues/13) (#13)
 - [Sync: Include timestamp/version and enforce last-write-wins](https://github.com/RaphaelGuerra/ledger/issues/14) (#14)

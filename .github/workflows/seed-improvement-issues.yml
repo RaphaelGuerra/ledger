@@ -23,16 +23,12 @@ jobs:
         with:
           script: |
             const dryRun = (core.getInput('dry_run') || 'false').toLowerCase() === 'true'
+            // Completed 2025-09-20: Architecture header extraction (#11)
             const issues = [
               {
                 title: 'Architecture: Feature folders for ledger and entradas',
                 labels: ['enhancement', 'architecture'],
                 body: `Group related UI/logic by feature to improve local cohesion and discoverability.\n\nWhy\n- Keeps components, hooks, and logic close together\n- Reduces cross-feature coupling\n\nScope\n- Create src/features/ledger and src/features/entradas\n- Move their components/logic under each feature\n- Update imports\n\nAcceptance\n- App builds and runs\n- No circular deps introduced`,
-              },
-              {
-                title: 'Architecture: Extract App header into Header, MonthNav, SyncControls',
-                labels: ['enhancement', 'architecture'],
-                body: `Split App header into small, focused components to simplify App.jsx.\n\nScope\n- Create Header, MonthNav, and SyncControls components\n- Move markup and props wiring from App.jsx\n- Keep print button behavior unchanged\n\nAcceptance\n- App UI unchanged\n- Components have minimal props and no business logic`,
               },
               {
                 title: 'Data: Add JSON Export/Import per month',
