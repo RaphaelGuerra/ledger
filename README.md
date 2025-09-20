@@ -76,6 +76,17 @@ Cloudflare Pages (recommended)
 Other static hosts
 - You can deploy `dist/` anywhere. The sync feature requires the Cloudflare function (or your own compatible endpoint) at `/api/storage/:user/:month`.
 
+## Production
+- Live app: https://YOUR-PRODUCTION-URL (replace with your domain)
+- Branch: `main` (auto‑deploy on push)
+- Health checks: ensure the home page loads and printing works.
+- Sync: with a valid KV binding, entering a Sync ID should load/save month data.
+
+## Screenshots
+- App view: add a screenshot of the main ledger and daily entries.
+- Print preview: add a screenshot or PDF of the print layout.
+
+
 ## Development Notes
 - Node version: use `nvm use 20` for a consistent local environment.
 - Large assets: the logo is optimized (`src/assets/logo.webp`). Prefer WebP for images.
@@ -93,4 +104,3 @@ Other static hosts
 
 ## License
 No license file is provided. All rights reserved unless stated otherwise.
-
