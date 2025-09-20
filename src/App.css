@@ -15,6 +15,12 @@
   --danger: #b91c1c;
 }
 
+/* Optional brand theme overrides (set data-theme="brand" on <html> to activate) */
+:root[data-theme="brand"] {
+  /* --primary: #0ea5a0; */
+  /* --bg: #f6f9fb; */
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0b1220;
@@ -1073,6 +1079,12 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .print-table tr.ptotal-row td { border-bottom-width: 0.8px; }
 
   @page { margin: 10mm; size: A4 portrait; }
+
+  /* Print footer (signatures / date) */
+  .print-footer { display: flex; gap: 20mm; margin-top: 8mm; }
+  .print-footer .pf-col { flex: 1 1 0; }
+  .print-footer .pf-line { height: 0; border-top: 0.6px solid #333; margin-top: 12mm; }
+  .print-footer .pf-label { font-size: 10px; color: #444; margin-top: 2mm; }
 }
 
 /* Hide print root during screen */

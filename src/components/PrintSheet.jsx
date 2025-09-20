@@ -316,6 +316,21 @@ export default function PrintSheet({
           </div>
         </div>
       </section>
+
+      <footer className="print-footer" aria-label="Assinaturas e data">
+        <div className="pf-col">
+          <div className="pf-line" />
+          <div className="pf-label">Assinatura do Responsável</div>
+        </div>
+        <div className="pf-col">
+          <div className="pf-line" />
+          <div className="pf-label">Conferência</div>
+        </div>
+        <div className="pf-col">
+          <div className="pf-line" />
+          <div className="pf-label">Data</div>
+        </div>
+      </footer>
     </div>
   )
 }
