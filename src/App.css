@@ -70,8 +70,8 @@ body {
   border-right: 1px solid var(--border);
 }
 .brand-logo {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -1003,7 +1003,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
     border-bottom: 1px solid #ccc;
     padding-bottom: 6px;
   }
-  .print-logo { width: 16mm; height: auto; object-fit: contain; }
+  .print-logo { width: 12mm; height: auto; object-fit: contain; }
   .ph-left { display: flex; gap: 8px; align-items: center; }
   .ph-brand { font-weight: 700; font-size: 14px; }
   .ph-right { font-size: 10px; text-align: right; line-height: 1.2; }
@@ -1013,8 +1013,13 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .print-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
   .print-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
   .print-card { border: 1px solid #ddd; padding: 4px; }
-  .print-card { break-inside: avoid; }
+  .print-card { break-inside: avoid; page-break-inside: avoid; }
+  .print-card--table { break-inside: auto; page-break-inside: auto; }
+  .print-card--table .print-table { break-inside: auto; page-break-inside: auto; }
   .print-note { font-size: 9px; color: #444; margin-top: 4px; }
+  .print-lanc-page { break-inside: avoid; page-break-inside: avoid; }
+  .print-subtitle--continued { margin-top: 6px; }
+  .print-page-break { break-before: page; page-break-before: always; height: 0; margin: 0; }
   /* Compact single-row inside each resumo card */
   .print-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .print-kv .plabel { white-space: nowrap; }
@@ -1025,7 +1030,7 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .pvalue { font-size: 11px; font-weight: 700; text-align: right; }
 
   .print-subtitle { margin: 6px 0 4px 0; font-size: 12px; }
-  .print-table { width: 100%; border-collapse: collapse; font-size: 9px; }
+  .print-table { width: 100%; border-collapse: collapse; font-size: 9px; break-inside: auto; page-break-inside: auto; }
   .print-table th, .print-table td { border: 0.4px solid #d0d0d0; padding: 1px 2px; }
   .print-table th { background: #f2f2f2; }
   .print-table .num { text-align: right; }

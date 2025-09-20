@@ -1,12 +1,8 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
 import { formatDDMM } from '../lib/date.js'
-
-function toNumberOrZero(value) {
-  if (value === '' || value === null || value === undefined) return 0
-  const n = Number(value)
-  return Number.isFinite(n) ? n : 0
-}
+import { toNumberOrZero } from '../lib/number.js'
+import { visibleLedgerItems } from '../lib/selectors.js'
 
 
 function createEmptyItem(defaultDate) {
@@ -58,8 +54,8 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
   // Notify parent to persist
   useEffect(() => { onItemsChange && onItemsChange(items) }, [items, onItemsChange])
 
-  const visibleItems = useMemo(() => items.filter(it => (it.date || '').startsWith(activeMonth)), [items, activeMonth])
-  const sorted = useMemo(() => [...visibleItems].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleItems])
+  const visibleItems = useMemo(() => visibleLedgerItems(items, activeMonth), [items, activeMonth])
+  const sorted = visibleItems // already sorted
 
   const addDisabled = useMemo(() => {
     return visibleItems.some(it => {

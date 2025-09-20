@@ -1,6 +1,9 @@
 import React, { useMemo, useState } from 'react'
 import { formatDDMM, isoAddDays, lastDayOfMonthStr } from '../lib/date.js'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
+import { toNumberOrZero, fmt2 } from '../lib/number.js'
+import { visibleEntradasRows } from '../lib/selectors.js'
+import { computeDatesToAdd } from '../lib/entradas.js'
 
 function createEmptyShift() {
   return { nEntradas: '', totalEntradas: '', cozinha: '', bar: '', outros: '' }
@@ -10,16 +13,12 @@ export function createEmptyDateRow(dateString) {
   return { id: Math.random().toString(36).slice(2), date: dateString, dia: createEmptyShift(), noite: createEmptyShift() }
 }
 
-function toNumberOrZero(value) {
-  if (value === '' || value === null || value === undefined) return 0
-  const n = Number(value)
-  return Number.isFinite(n) ? n : 0
-}
+// numeric helpers moved to lib/number.js
 
 export default function EntradasDiarias({ rows, onChange, activeMonth }) {
   const isDesktop = useIsDesktop()
-  const visibleRows = useMemo(() => rows.filter(r => r.date?.startsWith(activeMonth)), [rows, activeMonth])
-  const sortedRows = useMemo(() => [...visibleRows].sort((a, b) => (a.date || '').localeCompare(b.date || '')), [visibleRows])
+  const visibleRows = useMemo(() => visibleEntradasRows(rows, activeMonth), [rows, activeMonth])
+  const sortedRows = visibleRows // already sorted by selector
   const addDisabled = useMemo(() => {
     // Disable only when the entire month is filled (no missing dates)
     const monthStart = `${activeMonth}-01`
@@ -74,16 +73,10 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
 
 
   function addDateRow() {
-    // Add the earliest missing date within the active month
-    const monthStart = `${activeMonth}-01`
-    const lastDay = lastDayOfMonthStr(activeMonth)
-    const have = new Set(visibleRows.map(r => r.date).filter(Boolean))
-    let missing = null
-    for (let d = monthStart; d <= lastDay; d = isoAddDays(d, 1)) {
-      if (!have.has(d)) { missing = d; break }
-    }
-    if (!missing) return // nothing to add
-    onChange([...rows, createEmptyDateRow(missing)])
+    const datesToAdd = computeDatesToAdd(visibleRows, activeMonth)
+    if (datesToAdd.length === 0) return
+    const newRows = datesToAdd.map(createEmptyDateRow)
+    onChange([...rows, ...newRows])
   }
 
   function removeDateRow(rowId) {
@@ -101,16 +94,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
     return { nEntradas, totalEntradas, cozinha, bar, outros, media }
   }
 
-  function fmtBRL(v) {
-    if (v === '' || v === null || v === undefined || Number.isNaN(Number(v))) return ''
-    return `R$ ${Number(v).toFixed(2)}`
-  }
-
-  function fmt2(v) {
-    if (v === '' || v === null || v === undefined) return ''
-    const n = Number(v)
-    return Number.isFinite(n) ? n.toFixed(2) : ''
-  }
+  // formatting helpers moved to lib/number.js
 
   return (
     <section className="section entradas-section">

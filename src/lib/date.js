@@ -32,3 +32,29 @@ export function lastDayOfMonthStr(monthStr /* YYYY-MM */) {
   return `${yy}-${mm}-${dd}`
 }
 
+/**
+ * Human-friendly month label from YYYY-MM in pt-BR (e.g., "Setembro 2025").
+ * @param {string} monthStr YYYY-MM
+ * @returns {string}
+ */
+export function getMonthDisplayName(monthStr) {
+  const [y, m] = monthStr.split('-').map(Number)
+  const date = new Date(Date.UTC(y, m - 1, 1))
+  const s = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date)
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+/**
+ * Increment/decrement a YYYY-MM string by a number of months.
+ * @param {string} monthStr YYYY-MM
+ * @param {number} delta positive or negative months
+ * @returns {string} new YYYY-MM
+ */
+export function incMonth(monthStr, delta) {
+  const [year, month] = monthStr.split('-').map(Number)
+  let newYear = year
+  let newMonth = month + delta
+  while (newMonth > 12) { newMonth -= 12; newYear += 1 }
+  while (newMonth < 1) { newMonth += 12; newYear -= 1 }
+  return `${newYear}-${String(newMonth).padStart(2, '0')}`
+}
