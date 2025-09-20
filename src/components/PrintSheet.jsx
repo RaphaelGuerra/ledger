@@ -153,7 +153,7 @@ export default function PrintSheet({
         ) : (
           <div className={lancChunks.cols === 4 ? 'print-grid-4' : (lancChunks.cols === 3 ? 'print-grid-3' : 'print-grid-2')}>
             {lancChunks.parts.map((chunk, idx) => (
-              <div className="print-card" key={idx}>
+              <div className="print-card print-card--table" key={idx}>
                 <table className="print-table">
                   <thead>
                     <tr>
@@ -186,7 +186,7 @@ export default function PrintSheet({
       <section className="print-section">
         <h3 className="print-subtitle">Entradas</h3>
         <div className="print-grid-2">
-          <div className="print-card">
+          <div className="print-card print-card--table">
             <table className="print-table">
               <thead>
                 <tr>
@@ -246,7 +246,7 @@ export default function PrintSheet({
               </tbody>
             </table>
           </div>
-          <div className="print-card">
+          <div className="print-card print-card--table">
             <table className="print-table">
               <thead>
                 <tr>
