@@ -1,8 +1,12 @@
 # Future Plans
 
-## Print: Lançamentos Multi‑Page Continuation
+## Print: Lançamentos Multi‑Page Continuation (Issue #19)
 
 - Goal: When there are more than 32 lançamentos in a month, continue rendering additional columns/rows on a new page instead of truncating, while keeping the layout compact and readable.
+- Next Steps:
+  - Capture overflow examples (33+ lançamentos) to compare before/after layout changes.
+  - Prototype second-page rendering keeping the existing 4×8 grid and controlled page breaks.
+  - Validate saldo behavior (continuous vs. per-chunk) with stakeholders before coding the final approach.
 - Current: We chunk lançamentos into up to 4 side‑by‑side tables with 8 rows each (max 32 rows shown); if more, a note indicates truncated count.
 - Options:
   - Continue with additional rows on the next page using a second grid of up to 4 tables; insert a controlled page break before the second grid.
@@ -19,9 +23,13 @@
 
 Code references: `src/components/PrintSheet.jsx` (lancChunks, print‑grid‑2/3/4 rendering) and `src/App.css` (print styles).
 
-## Entradas: Auto‑Fill Missing Dates on Add
+## Entradas: Auto‑Fill Missing Dates on Add (Issue #20)
 
 - Goal: When adding a new Entradas date, automatically insert any missing dates prior to the new last date so the month has no gaps.
+- Next Steps:
+  - Audit current `EntradasDiarias` helpers to list pure utilities vs. UI-specific logic before introducing auto-fill.
+  - Outline algorithm for inserting missing rows so it can be unit-tested independently of the component.
+  - Confirm UX copy for any helper messaging when multiple rows are added automatically.
 - Current:
   - “Adicionar Data” appends the next day after the latest visible date within the active month.
   - “Preencher Mês” fills all remaining days until month end upon request.
