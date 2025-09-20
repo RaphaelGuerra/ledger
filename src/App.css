@@ -1017,6 +1017,9 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   .print-card--table { break-inside: auto; page-break-inside: auto; }
   .print-card--table .print-table { break-inside: auto; page-break-inside: auto; }
   .print-note { font-size: 9px; color: #444; margin-top: 4px; }
+  .print-lanc-page { break-inside: avoid; page-break-inside: avoid; }
+  .print-subtitle--continued { margin-top: 6px; }
+  .print-page-break { break-before: page; page-break-before: always; height: 0; margin: 0; }
   /* Compact single-row inside each resumo card */
   .print-kv { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .print-kv .plabel { white-space: nowrap; }

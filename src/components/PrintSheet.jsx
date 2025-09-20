@@ -35,16 +35,16 @@ export default function PrintSheet({
     return { totalCreditos, totalMovimentos, resultado: totalCreditos - totalMovimentos }
   }, [creditTotals, visibleLanc])
 
-  // Split Lançamentos into up to 4 side-by-side tables, max 8 rows each
-  const lancChunks = useMemo(() => {
+  // Split Lançamentos into pages. Each column has up to 8 rows and each page has up to 4 columns.
+  const lancPages = useMemo(() => {
     const all = visibleLanc
-    const chunks = []
-    for (let i = 0; i < all.length; i += 8) chunks.push(all.slice(i, i + 8))
-    const cols = Math.min(4, chunks.length || 1)
-    const shown = chunks.slice(0, cols)
-    const shownCount = shown.reduce((s, c) => s + c.length, 0)
-    const hiddenCount = all.length - shownCount
-    return { cols, parts: shown, hiddenCount, total: all.length }
+    const columns = []
+    for (let i = 0; i < all.length; i += 8) columns.push(all.slice(i, i + 8))
+    const pages = []
+    for (let i = 0; i < columns.length; i += 4) {
+      pages.push(columns.slice(i, i + 4))
+    }
+    return { pages, total: all.length }
   }, [visibleLanc])
 
   const visibleEntradas = useMemo(() => {
@@ -129,57 +129,65 @@ export default function PrintSheet({
 
       <section className="print-section">
         <h3 className="print-subtitle">Lançamentos</h3>
-        {lancChunks.cols === 1 ? (
-          <table className="print-table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Saldo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lancChunks.parts[0].map((it) => (
-                <tr key={it.id}>
-                  <td>{formatDDMM(it.date)}</td>
-                  <td>{it.descricao}</td>
-                  <td className="num">{fmt2(it.valor)}</td>
-                  <td className="num">{fmt2(it.saldo)}</td>
+        {lancPages.pages.length === 0 ? null : (
+          lancPages.pages.map((pageChunks, pageIdx) => {
+            const isSingleColumn = pageChunks.length === 1
+            const gridClass = pageChunks.length === 4 ? 'print-grid-4' : (pageChunks.length === 3 ? 'print-grid-3' : 'print-grid-2')
+            const tableHeader = (
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Valor</th>
+                  <th>Saldo</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className={lancChunks.cols === 4 ? 'print-grid-4' : (lancChunks.cols === 3 ? 'print-grid-3' : 'print-grid-2')}>
-            {lancChunks.parts.map((chunk, idx) => (
-              <div className="print-card print-card--table" key={idx}>
-                <table className="print-table">
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Descrição</th>
-                      <th>Valor</th>
-                      <th>Saldo</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {chunk.map(it => (
-                      <tr key={it.id}>
-                        <td>{formatDDMM(it.date)}</td>
-                        <td>{it.descricao}</td>
-                        <td className="num">{fmt2(it.valor)}</td>
-                        <td className="num">{fmt2(it.saldo)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-          </div>
-        )}
-        {lancChunks.hiddenCount > 0 && (
-          <div className="print-note">Exibidos {lancChunks.total - lancChunks.hiddenCount} de {lancChunks.total} lançamentos</div>
+              </thead>
+            )
+            const tableBody = chunk => (
+              <tbody>
+                {chunk.map(it => (
+                  <tr key={it.id}>
+                    <td>{formatDDMM(it.date)}</td>
+                    <td>{it.descricao}</td>
+                    <td className="num">{fmt2(it.valor)}</td>
+                    <td className="num">{fmt2(it.saldo)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            )
+            return (
+              <React.Fragment key={pageIdx}>
+                {pageIdx > 0 && (
+                  <>
+                    <div className="print-page-break" aria-hidden="true" />
+                    <h3 className="print-subtitle print-subtitle--continued">Lançamentos (continuação)</h3>
+                  </>
+                )}
+                <div className="print-lanc-page">
+                  {isSingleColumn ? (
+                    <table className="print-table">
+                      {tableHeader}
+                      {tableBody(pageChunks[0])}
+                    </table>
+                  ) : (
+                    <div className={gridClass}>
+                      {pageChunks.map((chunk, idx) => (
+                        <div className="print-card print-card--table" key={idx}>
+                          <table className="print-table">
+                            {tableHeader}
+                            {tableBody(chunk)}
+                          </table>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {pageIdx < lancPages.pages.length - 1 ? (
+                    <div className="print-note">Continua na próxima página…</div>
+                  ) : null}
+                </div>
+              </React.Fragment>
+            )
+          })
         )}
       </section>
 
