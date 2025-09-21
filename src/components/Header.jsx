@@ -113,8 +113,6 @@ export function SyncControls({
   onConnect,
   onDisconnect,
 }) {
-  const { statusClass, statusLabel } = getSyncStatusPresentation(syncId, syncStatus)
-
   // Derive button presentation based on state
   const btn = getSyncButtonPresentation({ syncId, syncStatus, syncIdDraft, onConnect, onDisconnect })
 
@@ -125,7 +123,6 @@ export function SyncControls({
           <label className="sync-label" htmlFor="sync-id">
             ID
           </label>
-          <span className={statusClass} aria-label={statusLabel} title={statusLabel} />
         </div>
         <input
           id="sync-id"
