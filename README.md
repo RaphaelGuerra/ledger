@@ -76,12 +76,14 @@ Cloudflare Pages (recommended)
   - Variable name: `LEDGER`
   
 ### Provision Sync Spaces (MVP)
-This app does not auto‑create spaces. To allow a specific Sync ID, create a marker key in the same KV namespace:
+This app does not auto‑create spaces. To allow a specific Sync ID, you must pre‑provision a marker key in the same KV namespace.
 
-- Key: `space:<SyncID>` (example: `space:my-team-2024`)
-- Value: any non‑empty value (e.g., `1`)
+- Compute the Route ID: `routeId = base64url(sha256(syncId))`
+  - You can get it in the browser console on the app: `await window.__ledgerRouteId('YOUR_SYNC_ID')`
+  - Or compute locally with Node/Web Crypto.
+- Create KV key: `space:<routeId>` with any non‑empty value (e.g., `1`).
 
-Once provisioned, clients can read/write month data under keys like `<SyncID>/<YYYY-MM>`.
+Once provisioned, clients read/write month data under keys like `<routeId>/<YYYY-MM>`. The Sync ID itself is never sent to the server; it is used only to encrypt/decrypt on the client.
 
 Tip: Use high‑entropy Sync IDs (UUID or 16+ random chars). The Sync ID doubles as the encryption passphrase.
 - Connect to GitHub and trigger deploys from `main` (or your chosen branch)

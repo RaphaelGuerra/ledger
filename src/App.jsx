@@ -39,6 +39,8 @@ export default function App() {
     const id = getSyncId()
     setSyncIdState(id)
     setSyncIdDraft(id)
+    // Expose helper for provisioning: compute route ID (hash) client-side
+    import('./lib/store.js').then(m => { try { window.__ledgerRouteId = m.routeIdForSyncId } catch { /* ignore */ } })
   }, [])
 
   function handleSyncIdChange(id) {
