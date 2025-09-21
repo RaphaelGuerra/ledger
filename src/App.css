@@ -2,16 +2,18 @@
 
 /* Responsive breakpoint: 720px (tables >=720px, cards <720px) */
 :root {
-  --bg: #f5f7fb;
-  --text: #111827;
+  color-scheme: light dark;
+  --bg: #fffdf7;
+  --text: #1a1712;
   --surface: #ffffff;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --table-border: #dddddd;
-  --thead: #f3f4f6;
-  --readonly: #f9fafb;
-  --subtotal: #f8fafc;
-  --primary: #2563eb;
+  --muted: #6f6757;
+  --border: #e8e3d7;
+  --table-border: #e4decf;
+  --thead: #f7f3e6;
+  --readonly: #faf7ef;
+  --subtotal: #f7f3e6;
+  --primary: #c8a343;
+  --on-primary: #111111;
   --danger: #b91c1c;
 }
 
@@ -23,25 +25,27 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b1220;
-    --text: #e5e7eb;
-    --surface: #111827;
-    --muted: #9ca3af;
-    --border: #334155;
-    --table-border: #334155;
-    --thead: #1f2937;
-    --readonly: #1b2538;
-    --subtotal: #152238;
-    --primary: #60a5fa;
+    /* Luxury dark: deep blacks with warm gold accents */
+    --bg: #0a0a0a;
+    --text: #f5f3e7; /* warm off-white */
+    --surface: #121212;
+    --muted: #b3ad99; /* desaturated warm gray */
+    --border: #242424;
+    --table-border: #2a2a2a;
+    --thead: #171717;
+    --readonly: #151515;
+    --subtotal: #101010;
+    --primary: #c8a343; /* gold */
+    --on-primary: #111111; /* readable on gold */
     --danger: #f87171;
   }
 }
 
 body {
   background: var(--bg);
-  background-image: 
-    radial-gradient(circle at 20% 10%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 90%, rgba(37, 99, 235, 0.02) 0%, transparent 50%);
+  background-image:
+    radial-gradient(circle at 20% 10%, color-mix(in srgb, var(--primary) 8%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, color-mix(in srgb, var(--primary) 6%, transparent) 0%, transparent 50%);
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
   font-feature-settings: 'tnum' 1;
@@ -240,7 +244,7 @@ body {
 .cell-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
 }
 /* Show focus rings only for keyboard users */
 .cell-input:focus:not(:focus-visible) {
@@ -267,7 +271,7 @@ body {
 
 .primary {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   border: 1px solid var(--primary);
   padding: 8px 16px;
   border-radius: 6px;
@@ -290,7 +294,7 @@ body {
   opacity: 0.9;
 }
 .primary:focus {
-  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
   outline-offset: 2px;
 }
 .primary:focus:not(:focus-visible) { outline: none; }
@@ -311,7 +315,7 @@ body {
   background: color-mix(in srgb, var(--primary) 5%, transparent);
 }
 .secondary:focus {
-  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
   outline-offset: 2px;
 }
 .secondary:focus:not(:focus-visible) { outline: none; }
@@ -337,7 +341,7 @@ body {
   background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 .link-button:focus {
-  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
   outline-offset: 2px;
 }
 .link-button:focus:not(:focus-visible) { outline: none; }
@@ -403,7 +407,7 @@ input[type=number] {
   }
 }
 .summary-card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
   background: var(--surface);
@@ -442,7 +446,7 @@ input[type=number] {
 }
 .tab.active {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -509,13 +513,13 @@ input[type=number] {
 
 .month-nav-btn:hover {
   background: var(--primary);
-  color: white;
+  color: var(--on-primary);
   border-color: var(--primary);
   transform: translateY(-1px);
 }
 
 .month-nav-btn:focus {
-  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
   outline-offset: 2px;
 }
 .month-nav-btn:focus:not(:focus-visible) { outline: none; }
@@ -610,7 +614,7 @@ input[type=number] {
   background: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 .ent-card .expand-toggle:focus, .mov-card .expand-toggle:focus {
-  outline: 2px solid rgba(37, 99, 235, 0.3);
+  outline: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
   outline-offset: 2px;
 }
 .ent-card .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
@@ -788,7 +792,7 @@ input[type=number] {
 
 .collapsed-row.totals-row .shift-label {
   background: var(--primary);
-  color: white;
+  color: var(--on-primary);
 }
 
 .collapsed-row .actions-cell {
