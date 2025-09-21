@@ -119,15 +119,11 @@ export function SyncControls({
   return (
     <div className="sync-group">
       <div className="sync-id-row">
-        <div className="sync-id-label">
-          <label className="sync-label" htmlFor="sync-id">
-            ID
-          </label>
-        </div>
         <input
           id="sync-id"
           className="cell-input sync-input"
-          placeholder="opcional"
+          placeholder="Sync ID"
+          aria-label="Sync ID"
           value={syncIdDraft}
           onChange={event => onSyncIdChange(event.target.value.trim())}
         />
