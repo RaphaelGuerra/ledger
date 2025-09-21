@@ -15,7 +15,7 @@ export function createEmptyDateRow(dateString) {
 
 // numeric helpers moved to lib/number.js
 
-export default function EntradasDiarias({ rows, onChange, activeMonth }) {
+export default function EntradasDiarias({ rows, onChange, activeMonth, canCreate = false }) {
   const isDesktop = useIsDesktop()
   const visibleRows = useMemo(() => visibleEntradasRows(rows, activeMonth), [rows, activeMonth])
   const sortedRows = visibleRows // already sorted by selector
@@ -129,15 +129,15 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                       <th>Bar</th>
                       <th>Outros</th>
                       <th className="actions-cell">
-                        <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)}>✖</button>
+                        <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeDateRow(r.id)} disabled={!canCreate}>✖</button>
                       </th>
                     </tr>
                     <tr className="collapsed-row">
                       <td className="shift-label">Dia</td>
-                      <td><input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} /></td>
+                      <td><input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} disabled={!canCreate} /></td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td>
@@ -147,27 +147,27 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                       </td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td></td>
                     </tr>
                     <tr className="collapsed-row">
                       <td className="shift-label">Noite</td>
-                      <td><input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} /></td>
+                      <td><input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} disabled={!canCreate} /></td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td>
@@ -177,17 +177,17 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                       </td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td>
                         <div className="currency-input"><span className="prefix">R$</span>
-                          <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} />
+                          <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} disabled={!canCreate} />
                         </div>
                       </td>
                       <td></td>
@@ -262,6 +262,7 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                       aria-label="Remover"
                       title="Remover"
                       onClick={() => removeDateRow(r.id)}
+                      disabled={!canCreate}
                     >
                       ✖
                     </button>
@@ -272,43 +273,43 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
                     <div className="row-title">Dia</div>
                     <div className="grid">
                       <div className="currency-input"><span className="prefix">Entradas</span>
-                        <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} />
+                        <input className="cell-input" inputMode="numeric" value={r.dia.nEntradas} onChange={e => updateShift(r.id, 'dia', 'nEntradas', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Diárias</span>
-                        <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.dia.totalEntradas} onChange={e => updateShift(r.id, 'dia', 'totalEntradas', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Média</span>
                         <input className="cell-input" readOnly value={fmt2(r.dia.nEntradas > 0 ? (r.dia.totalEntradas / r.dia.nEntradas) : '')} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Cozinha</span>
-                        <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.dia.cozinha} onChange={e => updateShift(r.id, 'dia', 'cozinha', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Bar</span>
-                        <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.dia.bar} onChange={e => updateShift(r.id, 'dia', 'bar', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Outros</span>
-                        <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.dia.outros} onChange={e => updateShift(r.id, 'dia', 'outros', e.target.value)} disabled={!canCreate} />
                       </div>
                     </div>
                     <div className="row-title">Noite</div>
                     <div className="grid">
                       <div className="currency-input"><span className="prefix">Entradas</span>
-                        <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} />
+                        <input className="cell-input" inputMode="numeric" value={r.noite.nEntradas} onChange={e => updateShift(r.id, 'noite', 'nEntradas', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Diárias</span>
-                        <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.noite.totalEntradas} onChange={e => updateShift(r.id, 'noite', 'totalEntradas', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Média</span>
                         <input className="cell-input" readOnly value={fmt2(r.noite.nEntradas > 0 ? (r.noite.totalEntradas / r.noite.nEntradas) : '')} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Cozinha</span>
-                        <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.noite.cozinha} onChange={e => updateShift(r.id, 'noite', 'cozinha', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Bar</span>
-                        <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.noite.bar} onChange={e => updateShift(r.id, 'noite', 'bar', e.target.value)} disabled={!canCreate} />
                       </div>
                       <div className="currency-input"><span className="prefix">R$ Outros</span>
-                        <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} />
+                        <input className="cell-input" type="number" value={r.noite.outros} onChange={e => updateShift(r.id, 'noite', 'outros', e.target.value)} disabled={!canCreate} />
                       </div>
                     </div>
                   </div>
@@ -320,11 +321,13 @@ export default function EntradasDiarias({ rows, onChange, activeMonth }) {
       </div>
       )}
       <div className="section-actions">
-        <button className="primary" onClick={addDateRow} disabled={addDisabled}>Adicionar Data</button>
-        <button className="secondary" onClick={fillMonth} disabled={addDisabled}>Preencher Mês</button>
-        {addDisabled && (
+        <button className="primary" onClick={addDateRow} disabled={!canCreate || addDisabled}>Adicionar Data</button>
+        <button className="secondary" onClick={fillMonth} disabled={!canCreate || addDisabled}>Preencher Mês</button>
+        {!canCreate ? (
+          <span className="disabled-hint"><span className="info-icon" aria-hidden>ⓘ</span>Conecte seu Sync ID para adicionar datas.</span>
+        ) : addDisabled ? (
           <span className="disabled-hint"><span className="info-icon" aria-hidden>ⓘ</span>Não há mais dias neste mês para adicionar.</span>
-        )}
+        ) : null}
       </div>
     </section>
   )

@@ -34,7 +34,7 @@ function migrateItems(items, activeMonth) {
   })
 }
 
-export default function Ledger({ creditTotals, activeMonth, initialItems, onItemsChange }) {
+export default function Ledger({ creditTotals, activeMonth, initialItems, onItemsChange, canCreate = false }) {
   const isDesktop = useIsDesktop()
   const [items, setItems] = useState(() => {
     if (initialItems && Array.isArray(initialItems) && initialItems.length > 0) return migrateItems(initialItems, activeMonth)
@@ -178,16 +178,17 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                         className="cell-input date-compact"
                         value={it.date}
                         onChange={e => updateItem(it.id, 'date', e.target.value)}
+                        disabled={!canCreate}
                       />
                       <div className="date-overlay">{formatDDMM(it.date)}</div>
                     </div>
                   </td>
                   <td>
-                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" />
+                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" disabled={!canCreate} />
                   </td>
                   <td>
                     <div className="currency-input"><span className="prefix">R$</span>
-                      <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
+                      <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} disabled={!canCreate} />
                     </div>
                   </td>
                   <td>
@@ -196,7 +197,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                     </div>
                   </td>
                   <td className="actions-cell">
-                    <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)}>✖</button>
+                    <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)} disabled={!canCreate}>✖</button>
                   </td>
                 </tr>
               ))}
@@ -224,11 +225,12 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                         className="cell-input date-compact"
                         value={it.date}
                         onChange={e => updateItem(it.id, 'date', e.target.value)}
+                        disabled={!canCreate}
                       />
                       <div className="date-overlay">{formatDDMM(it.date)}</div>
                     </div>
                     <div className="currency-input"><span className="prefix">R$</span>
-                      <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} />
+                      <input type="number" inputMode="decimal" step="any" className="cell-input" value={it.valor === '' ? '' : it.valor} onChange={e => updateItem(it.id, 'valor', e.target.value)} disabled={!canCreate} />
                     </div>
                   </>
                 ) : (
@@ -242,13 +244,13 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                 )}
                 <div style={{ display: 'inline-flex', gap: 6 }}>
                   <button className="expand-toggle" onClick={() => toggleMov(it.id)}>{isOpen ? 'Recolher' : 'Expandir'}</button>
-                  <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)}>✖</button>
+                  <button className="link-button danger icon" style={{ color: 'var(--danger)' }} aria-label="Remover" title="Remover" onClick={() => removeItem(it.id)} disabled={!canCreate}>✖</button>
                 </div>
               </div>
               {isOpen ? (
                 <>
                   <div className="desc-input">
-                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" />
+                    <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" disabled={!canCreate} />
                   </div>
                   <div className="saldo-caption">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
                 </>
@@ -260,10 +262,12 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       )}
 
       <div className="section-actions">
-        <button className="primary" onClick={addItem} disabled={addDisabled}>Adicionar Lançamento</button>
-        {addDisabled && (
+        <button className="primary" onClick={addItem} disabled={!canCreate || addDisabled}>Adicionar Lançamento</button>
+        {!canCreate ? (
+          <span className="disabled-hint"><span className="info-icon" aria-hidden>ⓘ</span>Conecte seu Sync ID para adicionar lançamentos.</span>
+        ) : addDisabled ? (
           <span className="disabled-hint"><span className="info-icon" aria-hidden>ⓘ</span>Preencha Descrição e Valor em todos os lançamentos para adicionar outro.</span>
-        )}
+        ) : null}
       </div>
     </section>
   )
