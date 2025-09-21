@@ -193,6 +193,7 @@ export default function App() {
           activeMonth={activeMonth}
           initialItems={ledgerInitialItems}
           onItemsChange={items => { setLedgerItems(items); persist({ ledgerItems: items }) }}
+          canCreate={!!syncId && syncStatus === 'ok'}
         />
         <section className="section acumulado-section">
           <h2 className="section-title">Acumulado</h2>
@@ -227,6 +228,7 @@ export default function App() {
           rows={diariasRows}
           onChange={(rows) => { setDiariasRows(rows); persist({ entradasRows: rows }) }}
           activeMonth={activeMonth}
+          canCreate={!!syncId && syncStatus === 'ok'}
         />
       </main>
       {printMode && (
