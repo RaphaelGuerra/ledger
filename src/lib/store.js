@@ -1,6 +1,8 @@
 const PREFIX = 'ledger.v1.data.'
 const SYNC_ID_KEY = 'ledger.v1.syncId'
 
+import { encryptJSON, decryptJSON, isEncryptedEnvelope } from './crypto.js'
+
 function debounce(fn, ms) {
   let t
   return (...args) => {
@@ -33,12 +35,20 @@ export const saveLocalDebounced = debounce((month, data) => {
   try { localStorage.setItem(monthKey(month), JSON.stringify(data)) } catch { /* ignore storage errors */ }
 }, 300)
 
+// Always require encryption when using remote: the Sync ID is the passphrase.
 export async function loadRemote(syncId, month) {
   try {
     const res = await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`)
     if (!res.ok) return { ok: false, data: null }
     const data = await res.json()
-    return { ok: true, data }
+    if (data === null) return { ok: true, data: null }
+    if (!isEncryptedEnvelope(data)) return { ok: false, data: null }
+    try {
+      const plain = await decryptJSON(data, syncId)
+      return { ok: true, data: plain }
+    } catch {
+      return { ok: false, data: null }
+    }
   } catch {
     return { ok: false, data: null }
   }
@@ -46,10 +56,18 @@ export async function loadRemote(syncId, month) {
 
 export const saveRemoteDebounced = debounce(async (syncId, month, data, onDone) => {
   try {
+    let body
+    try {
+      const encrypted = await encryptJSON(data, syncId)
+      body = JSON.stringify(encrypted)
+    } catch {
+      if (typeof onDone === 'function') onDone(false)
+      return
+    }
     const res = await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body,
     })
     if (typeof onDone === 'function') onDone(res.ok)
   } catch {

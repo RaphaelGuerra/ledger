@@ -6,6 +6,8 @@ A lightweight React (Vite) web app for monthly cash summaries used by Vison Hote
 - Fast monthly workflow: daily entries, ledger summary, and totals.
 - Print‑ready view: compact single‑page layout with clear tables and cards.
 - Optional sync: enter a Sync ID to persist month data to Cloudflare KV; otherwise, data stays in your browser (localStorage).
+  - Locked spaces: server only accepts pre‑provisioned Sync IDs (no auto‑create).
+  - Encrypted sync: data is always encrypted with AES‑GCM using the Sync ID as the passphrase.
 - Simple, dependency‑light stack: React, Vite, ESLint, Prettier, Vitest.
 
 ## Quick Start
@@ -46,8 +48,9 @@ A lightweight React (Vite) web app for monthly cash summaries used by Vison Hote
 - Local persistence: `localStorage`, keyed by month (e.g., `ledger.v1.data.2025-09`).
 - Sync ID: stored locally (key `ledger.v1.syncId`). Entering a non‑empty ID enables remote sync.
 - Remote persistence: Cloudflare Pages Function with a KV namespace binding `LEDGER`.
-  - GET `/api/storage/:user/:month` → JSON or `null`
-  - PUT `/api/storage/:user/:month` with JSON body → `204 No Content` on success
+- GET `/api/storage/:user/:month` → JSON or `null`
+- PUT `/api/storage/:user/:month` with JSON body → `204 No Content` on success
+- Spaces are locked: the server denies access unless a marker key exists for the Sync ID.
 
 Example month payload
 ```json
@@ -71,6 +74,16 @@ Cloudflare Pages (recommended)
 - KV binding: create a Pages KV namespace (e.g., `ledger-kv`) and bind it as `LEDGER`
   - Pages Project → Settings → Functions → KV namespaces → Add binding
   - Variable name: `LEDGER`
+  
+### Provision Sync Spaces (MVP)
+This app does not auto‑create spaces. To allow a specific Sync ID, create a marker key in the same KV namespace:
+
+- Key: `space:<SyncID>` (example: `space:my-team-2024`)
+- Value: any non‑empty value (e.g., `1`)
+
+Once provisioned, clients can read/write month data under keys like `<SyncID>/<YYYY-MM>`.
+
+Tip: Use high‑entropy Sync IDs (UUID or 16+ random chars). The Sync ID doubles as the encryption passphrase.
 - Connect to GitHub and trigger deploys from `main` (or your chosen branch)
 
 Other static hosts
@@ -81,6 +94,13 @@ Other static hosts
 - Branch: `main` (auto‑deploy on push)
 - Health checks: ensure the home page loads and printing works.
 - Sync: with a valid KV binding, entering a Sync ID should load/save month data.
+  - If the space is not provisioned (`space:<SyncID>` absent), the server returns 404 and the app shows a sync error.
+
+## Encryption
+- End‑to‑end by default when sync is enabled: the Sync ID is the passphrase.
+- Key derivation: PBKDF2 (100k iterations) → AES‑GCM 256‑bit. Random salt and IV per save.
+- Payload envelope: `{ "_enc": 1, "alg": "AES-GCM", "kdf": "PBKDF2", "iter": 100000, "salt", "iv", "ct" }` (base64 fields).
+- Wrong Sync ID → decryption fails → the app shows a sync error (no connection).
 
 ## Screenshots
 - Place images in `resources/screenshots/` and reference them from this README.
