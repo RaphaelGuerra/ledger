@@ -8,6 +8,15 @@ export async function onRequest(context) {
   const key = `${user}/${month}`
   const method = request.method.toUpperCase()
 
+  // Require the "space" to be pre-provisioned: a marker key must exist.
+  // To provision, create a KV key named `space:<SyncID>` with any value (e.g., "1").
+  const spaceMarkerKey = `space:${user}`
+  const spaceExists = await env.LEDGER.get(spaceMarkerKey)
+  if (!spaceExists) {
+    // Do not auto-create; deny access if the space is not provisioned.
+    return new Response('Not Found', { status: 404 })
+  }
+
   if (method === 'GET') {
     const val = await env.LEDGER.get(key)
     return new Response(val || 'null', { headers: { 'Content-Type': 'application/json' } })
@@ -30,4 +39,3 @@ export async function onRequest(context) {
     headers: { Allow: 'GET, PUT' },
   })
 }
-

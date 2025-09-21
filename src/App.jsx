@@ -50,7 +50,7 @@ export default function App() {
     setSyncIdState(id)
     setSyncId(id)
     setSyncStatus(id ? 'loading' : 'off')
-    if (id) showToast('Sync conectado')
+    // Success toast shown after first successful load/save.
     lastSyncStatusRef.current = id ? 'loading' : 'off'
   }
 
@@ -78,7 +78,7 @@ export default function App() {
           setSyncStatus('ok')
           lastSyncStatusRef.current = 'ok'
           data = res.data
-          showToast('Sync carregado')
+          showToast('Sync conectado')
         } else {
           setSyncStatus('error')
           lastSyncStatusRef.current = 'error'
