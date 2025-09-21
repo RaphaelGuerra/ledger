@@ -115,6 +115,9 @@ export function SyncControls({
 }) {
   const { statusClass, statusLabel } = getSyncStatusPresentation(syncId, syncStatus)
 
+  // Derive button presentation based on state
+  const btn = getSyncButtonPresentation({ syncId, syncStatus, syncIdDraft, onConnect, onDisconnect })
+
   return (
     <div className="sync-group">
       <div className="sync-id-row">
@@ -132,21 +135,18 @@ export function SyncControls({
           onChange={event => onSyncIdChange(event.target.value.trim())}
         />
         <div className="sync-actions-inline">
-          {syncId ? (
-            <button className="secondary icon-btn" onClick={onDisconnect} aria-label="Desconectar sync" title="Desconectar">
-              ⎋
-            </button>
-          ) : (
-            <button
-              className="secondary icon-btn"
-              onClick={onConnect}
-              disabled={!syncIdDraft}
-              aria-label="Conectar sync"
-              title="Conectar"
-            >
-              ⏎
-            </button>
-          )}
+          <button
+            className={`sync-btn ${btn.variant}`}
+            onClick={btn.onClick}
+            disabled={btn.disabled}
+            aria-label={btn.aria}
+            title={btn.title}
+          >
+            <span className="sync-icon" aria-hidden>
+              {btn.icon}
+            </span>
+            <span>{btn.label}</span>
+          </button>
         </div>
       </div>
     </div>
@@ -164,4 +164,56 @@ function getSyncStatusPresentation(syncId, syncStatus) {
     return { statusClass: 'sync-dot loading', statusLabel: 'Sincronizando' }
   }
   return { statusClass: 'sync-dot error', statusLabel: 'Sync erro' }
+}
+
+function getSyncButtonPresentation({ syncId, syncStatus, syncIdDraft, onConnect, onDisconnect }) {
+  // off: no syncId set
+  if (!syncId) {
+    return {
+      variant: 'sync-btn--off',
+      label: 'Conectar',
+      icon: '○',
+      onClick: onConnect,
+      disabled: !syncIdDraft,
+      aria: 'Conectar sync',
+      title: 'Conectar',
+    }
+  }
+
+  // loading: connecting or syncing
+  if (syncStatus === 'loading') {
+    return {
+      variant: 'sync-btn--loading',
+      label: 'Conectando…',
+      icon: '⟳',
+      onClick: () => {},
+      disabled: true,
+      aria: 'Sincronizando',
+      title: 'Sincronizando',
+    }
+  }
+
+  // ok: connected; allow disconnect
+  if (syncStatus === 'ok') {
+    return {
+      variant: 'sync-btn--ok',
+      label: 'Desconectar',
+      icon: '✓',
+      onClick: onDisconnect,
+      disabled: false,
+      aria: 'Desconectar sync',
+      title: 'Desconectar',
+    }
+  }
+
+  // error: show retry using existing syncId
+  return {
+    variant: 'sync-btn--error',
+    label: 'Tentar novamente',
+    icon: '⚠',
+    onClick: onConnect,
+    disabled: false,
+    aria: 'Tentar novamente',
+    title: 'Tentar novamente',
+  }
 }
