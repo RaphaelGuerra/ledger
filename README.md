@@ -46,4 +46,4 @@ Open the local server shown by Vite (usually http://localhost:5173).
 - Encrypting/decrypting JSON with Web Crypto
 
 ## License
-All rights reserved. Personal portfolio project — please do not use in production.
+All rights reserved. Personal portfolio project — not for production use.
