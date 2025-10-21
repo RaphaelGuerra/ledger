@@ -26,7 +26,7 @@
     "espree": "^10.4.0",
     "globals": "^14.0.0",
     "prettier": "^3.3.3",
-    "vite": "^7.1.7",
+    "vite": "^7.1.11",
     "vitest": "^3.2.4"
   },
   "engines": {
