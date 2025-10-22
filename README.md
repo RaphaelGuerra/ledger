@@ -1,5 +1,19 @@
 # Cash Ledger
 
+Last updated: 2025-10-22
+
+## Table of Contents
+
+<!-- TOC start -->
+- [What It Does](#what-it-does)
+- [How It Works](#how-it-works)
+- [Tech Stack](#tech-stack)
+- [Run Locally](#run-locally)
+- [Status & Roadmap](#status-roadmap)
+- [What I Practiced](#what-i-practiced)
+- [License](#license)
+<!-- TOC end -->
+
 Simple cash and daily entries tracker designed for small hospitality businesses.
 
 This is a small side project for learning and practice — exploring local‑first data, print‑friendly UIs, and a lightweight encrypted sync flow in the browser. It is not a production system.
