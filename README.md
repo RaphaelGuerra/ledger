@@ -22,6 +22,8 @@ This is a small side project for learning and practice — exploring local‑fir
 
 Branding shown in the UI is placeholder for demo purposes only.
 
+Live demo: none (local-only)
+
 ## What It Does
 - Monthly overview with previous/next navigation
 - Daily entries grouped by category (Kitchen, Bar, Others) with totals and averages
