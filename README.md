@@ -9,7 +9,7 @@ Last updated: 2025-11-29
 - [How It Works](#how-it-works)
 - [Tech Stack](#tech-stack)
 - [Run Locally](#run-locally)
-- [Status & Roadmap](#status-roadmap)
+- [Status & Roadmap](#status--roadmap)
 - [What I Practiced](#what-i-practiced)
 - [License](#license)
 <!-- TOC end -->
