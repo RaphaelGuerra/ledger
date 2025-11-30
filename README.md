@@ -1,7 +1,6 @@
 # Cash Ledger
 
-[![Lint](https://github.com/RaphaelGuerra/ledger/actions/workflows/lint.yml/badge.svg)](https://github.com/RaphaelGuerra/ledger/actions/workflows/lint.yml)
-[![Security](https://github.com/RaphaelGuerra/ledger/actions/workflows/security.yml/badge.svg)](https://github.com/RaphaelGuerra/ledger/actions/workflows/security.yml)
+Last updated: 2025-11-30
 
 ## Table of Contents
 
@@ -14,6 +13,10 @@
 - [What I Practiced](#what-i-practiced)
 - [License](#license)
 <!-- TOC end -->
+
+[![Lint](https://github.com/RaphaelGuerra/ledger/actions/workflows/lint.yml/badge.svg)](https://github.com/RaphaelGuerra/ledger/actions/workflows/lint.yml)
+[![Security](https://github.com/RaphaelGuerra/ledger/actions/workflows/security.yml/badge.svg)](https://github.com/RaphaelGuerra/ledger/actions/workflows/security.yml)
+
 
 Simple cash and daily entries tracker designed for small hospitality businesses.
 
