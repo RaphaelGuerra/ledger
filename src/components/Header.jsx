@@ -115,6 +115,7 @@ export function SyncControls({
 }) {
   // Derive button presentation based on state
   const btn = getSyncButtonPresentation({ syncId, syncStatus, syncIdDraft, onConnect, onDisconnect })
+  const status = getSyncStatusPresentation(syncId, syncStatus)
 
   return (
     <div className="sync-group">
@@ -142,13 +143,17 @@ export function SyncControls({
           </button>
         </div>
       </div>
+      <div className="sync-status" role="status" aria-live="polite">
+        <span className={status.statusClass} aria-hidden />
+        <span className="sync-status-label">{status.statusLabel}</span>
+      </div>
     </div>
   )
 }
 
 function getSyncStatusPresentation(syncId, syncStatus) {
   if (!syncId) {
-    return { statusClass: 'sync-dot off', statusLabel: 'Sync desligado' }
+    return { statusClass: 'sync-dot off', statusLabel: 'Modo local (sem sync)' }
   }
   if (syncStatus === 'ok') {
     return { statusClass: 'sync-dot ok', statusLabel: 'Sync OK' }
@@ -156,7 +161,7 @@ function getSyncStatusPresentation(syncId, syncStatus) {
   if (syncStatus === 'loading') {
     return { statusClass: 'sync-dot loading', statusLabel: 'Sincronizando' }
   }
-  return { statusClass: 'sync-dot error', statusLabel: 'Sync erro' }
+  return { statusClass: 'sync-dot error', statusLabel: 'Falha de sync (modo local)' }
 }
 
 function getSyncButtonPresentation({ syncId, syncStatus, syncIdDraft, onConnect, onDisconnect }) {

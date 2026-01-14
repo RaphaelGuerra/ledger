@@ -1145,6 +1145,41 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   flex: 0 0 auto; 
 }
 
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sync-status-label {
+  line-height: 1.2;
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--muted);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--muted) 20%, transparent);
+}
+
+.sync-dot.ok {
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
+}
+
+.sync-dot.loading {
+  background: var(--warning);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 20%, transparent);
+}
+
+.sync-dot.error {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 20%, transparent);
+}
+
 .print-btn { 
   white-space: nowrap; 
 }
