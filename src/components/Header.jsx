@@ -12,6 +12,7 @@
  * @param {() => void} props.onNextMonth
  * @param {() => void} props.onPrint
  * @param {() => void} props.onExport
+ * @param {() => void} props.onImport
  * @param {string} props.syncId
  * @param {string} props.syncIdDraft
  * @param {'off' | 'loading' | 'ok' | 'error'} props.syncStatus
@@ -28,6 +29,7 @@ export default function Header({
   onNextMonth,
   onPrint,
   onExport,
+  onImport,
   syncId,
   syncIdDraft,
   syncStatus,
@@ -51,6 +53,7 @@ export default function Header({
           onNextMonth={onNextMonth}
           onPrint={onPrint}
           onExport={onExport}
+          onImport={onImport}
         />
         <SyncControls
           syncId={syncId}
@@ -75,8 +78,9 @@ export default function Header({
  * @param {() => void} props.onNextMonth
  * @param {() => void} props.onPrint
  * @param {() => void} props.onExport
+ * @param {() => void} props.onImport
  */
-export function MonthNav({ monthLabel, onPrevMonth, onNextMonth, onPrint, onExport }) {
+export function MonthNav({ monthLabel, onPrevMonth, onNextMonth, onPrint, onExport, onImport }) {
   return (
     <div className="header-month-controls">
       <div className="month-navigation">
@@ -94,6 +98,9 @@ export function MonthNav({ monthLabel, onPrevMonth, onNextMonth, onPrint, onExpo
         </button>
         <button className="secondary export-btn" onClick={onExport}>
           Exportar
+        </button>
+        <button className="secondary import-btn" onClick={onImport}>
+          Importar
         </button>
       </div>
     </div>

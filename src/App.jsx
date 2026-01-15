@@ -9,7 +9,7 @@ import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRe
 import { computeCreditTotals, computeAcumulado } from './lib/stats.js'
 import { getMonthDisplayName, incMonth } from './lib/date.js'
 import { filterByMonth, visibleEntradasRows, visibleLedgerItems } from './lib/selectors.js'
-import { buildMonthExport } from './lib/transfer.js'
+import { buildMonthExport, validateMonthImport } from './lib/transfer.js'
 
 export default function App() {
   // Get first day of current month for initial record
@@ -24,6 +24,12 @@ export default function App() {
   const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
   const [ledgerItems, setLedgerItems] = useState(null)
   const [printMode, setPrintMode] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
+  const [importFileName, setImportFileName] = useState('')
+  const [importSummary, setImportSummary] = useState(null)
+  const [importErrors, setImportErrors] = useState([])
+  const [importWarnings, setImportWarnings] = useState([])
+  const [importPayload, setImportPayload] = useState(null)
   const [toastMsg, setToastMsg] = useState('')
   const toastTimerRef = useRef(null)
   const lastSyncStatusRef = useRef('off')
@@ -108,22 +114,28 @@ export default function App() {
   }, [activeMonth, syncId])
 
   // Persist helpers
+  function persistMonthData(month, data) {
+    saveLocalDebounced(month, data)
+    if (syncId) {
+      saveRemoteDebounced(syncId, month, data, ok => {
+        setSyncStatus(ok ? 'ok' : 'error')
+        if (!ok) {
+          lastSyncStatusRef.current = 'error'
+          showToast('Falha de sync')
+        } else {
+          if (lastSyncStatusRef.current !== 'ok') showToast('Sync atualizado')
+          lastSyncStatusRef.current = 'ok'
+        }
+      })
+    }
+  }
+
   function persist(partial) {
     const payload = {
       entradasRows: partial.entradasRows ?? diariasRows,
       ledgerItems: partial.ledgerItems ?? null,
     }
-    saveLocalDebounced(activeMonth, payload)
-    if (syncId) saveRemoteDebounced(syncId, activeMonth, payload, ok => {
-      setSyncStatus(ok ? 'ok' : 'error')
-      if (!ok) {
-        lastSyncStatusRef.current = 'error'
-        showToast('Falha de sync')
-      } else {
-        if (lastSyncStatusRef.current !== 'ok') showToast('Sync atualizado')
-        lastSyncStatusRef.current = 'ok'
-      }
-    })
+    persistMonthData(activeMonth, payload)
   }
 
   // Do not auto-create rows when month changes; users add explicitly
@@ -133,6 +145,12 @@ export default function App() {
   const creditTotals = useMemo(() => computeCreditTotals(visibleDiariasRows), [visibleDiariasRows])
 
   const acumulado = useMemo(() => computeAcumulado(visibleDiariasRows), [visibleDiariasRows])
+
+  const importReady = Boolean(importPayload && importErrors.length === 0 && syncStatus !== 'loading')
+  const importMonthLabel = importSummary?.month ? getMonthDisplayName(importSummary.month) : ''
+  const importCreatedAtLabel = importSummary?.createdAt && !Number.isNaN(Date.parse(importSummary.createdAt))
+    ? new Date(importSummary.createdAt).toLocaleString('pt-BR')
+    : ''
 
   function navigateMonth(direction) {
     setActiveMonth(prev => incMonth(prev, direction))
@@ -154,6 +172,60 @@ export default function App() {
     })
     downloadJSON(payload, `cash-ledger-${activeMonth}.json`)
     showToast('Exportação pronta')
+  }
+
+  function openImport() {
+    setImportOpen(true)
+    setImportFileName('')
+    setImportSummary(null)
+    setImportErrors([])
+    setImportWarnings([])
+    setImportPayload(null)
+  }
+
+  function closeImport() {
+    setImportOpen(false)
+    setImportFileName('')
+    setImportSummary(null)
+    setImportErrors([])
+    setImportWarnings([])
+    setImportPayload(null)
+  }
+
+  async function handleImportFile(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+    setImportFileName(file.name)
+    setImportErrors([])
+    setImportWarnings([])
+    setImportSummary(null)
+    setImportPayload(null)
+    try {
+      const text = await file.text()
+      const parsed = JSON.parse(text)
+      const result = validateMonthImport(parsed, activeMonth)
+      setImportSummary(result.summary)
+      setImportErrors(result.errors)
+      setImportWarnings(result.warnings)
+      setImportPayload(result.payload)
+    } catch {
+      setImportErrors(['Não foi possível ler o JSON do arquivo.'])
+    }
+  }
+
+  function confirmImport() {
+    if (!importPayload || importErrors.length > 0) return
+    const targetMonth = importPayload.month || activeMonth
+    const data = {
+      entradasRows: importPayload.entradasRows || [],
+      ledgerItems: importPayload.ledgerItems || [],
+    }
+    setDiariasRows(data.entradasRows)
+    setLedgerInitialItems(data.ledgerItems)
+    setLedgerItems(data.ledgerItems)
+    persistMonthData(targetMonth, data)
+    showToast('Importação concluída')
+    closeImport()
   }
 
   useEffect(() => {
@@ -207,6 +279,7 @@ export default function App() {
         onNextMonth={() => navigateMonth(1)}
         onPrint={handlePrint}
         onExport={handleExport}
+        onImport={openImport}
         syncId={syncId}
         syncIdDraft={syncIdDraft}
         syncStatus={syncStatus}
@@ -270,6 +343,76 @@ export default function App() {
           entradasRows={diariasRows}
           activeMonth={activeMonth}
         />
+      )}
+      {importOpen && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Importar mês">
+          <div className="modal-card">
+            <div className="modal-header">
+              <div>
+                <h3 className="modal-title">Importar mês</h3>
+                <p className="modal-subtitle">Use um arquivo JSON exportado pelo Cash Ledger.</p>
+              </div>
+              <button className="link-button danger" onClick={closeImport} aria-label="Fechar">
+                Fechar
+              </button>
+            </div>
+
+            <label className="file-drop">
+              <input type="file" accept="application/json" onChange={handleImportFile} />
+              <span>{importFileName ? `Arquivo: ${importFileName}` : 'Selecionar arquivo JSON'}</span>
+            </label>
+
+            {importSummary && (
+              <div className="import-summary">
+                <div className="import-row">
+                  <span>Mês</span>
+                  <span>{importMonthLabel ? `${importMonthLabel} (${importSummary.month})` : importSummary.month}</span>
+                </div>
+                <div className="import-row">
+                  <span>Entradas</span>
+                  <span>{importSummary.entradasCount}</span>
+                </div>
+                <div className="import-row">
+                  <span>Lançamentos</span>
+                  <span>{importSummary.ledgerCount}</span>
+                </div>
+                {importCreatedAtLabel ? (
+                  <div className="import-row">
+                    <span>Criado em</span>
+                    <span>{importCreatedAtLabel}</span>
+                  </div>
+                ) : null}
+              </div>
+            )}
+
+            {importErrors.length > 0 && (
+              <div className="import-callout error">
+                <div className="callout-title">Erros</div>
+                <ul>
+                  {importErrors.map((err, idx) => <li key={idx}>{err}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {importWarnings.length > 0 && (
+              <div className="import-callout warning">
+                <div className="callout-title">Avisos</div>
+                <ul>
+                  {importWarnings.map((warn, idx) => <li key={idx}>{warn}</li>)}
+                </ul>
+              </div>
+            )}
+
+            <div className="modal-actions">
+              <button className="secondary" onClick={closeImport}>
+                Cancelar
+              </button>
+              <button className="primary" onClick={confirmImport} disabled={!importReady}>
+                Importar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {toastMsg ? <div className="toast" role="status" aria-live="polite">{toastMsg}</div> : null}
     </div>

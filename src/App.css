@@ -127,6 +127,103 @@ body {
   box-shadow: 0 6px 16px rgba(0,0,0,0.2);
   z-index: 1000;
 }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1200;
+}
+.modal-card {
+  width: min(560px, 92vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.modal-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.modal-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.file-drop {
+  margin-top: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+  text-align: center;
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface));
+  cursor: pointer;
+}
+.file-drop input {
+  width: 100%;
+  font-size: 13px;
+  cursor: pointer;
+}
+.file-drop span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.import-summary {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  background: color-mix(in srgb, var(--primary) 4%, var(--surface));
+}
+.import-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.import-callout {
+  margin-top: 10px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.import-callout ul {
+  margin: 6px 0 0 16px;
+}
+.import-callout.error {
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+}
+.import-callout.warning {
+  border: 1px solid var(--warning);
+  color: color-mix(in srgb, var(--warning) 85%, var(--text));
+  background: color-mix(in srgb, var(--warning) 12%, var(--surface));
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
 .header-month-controls {
   margin-left: 0;
 }
