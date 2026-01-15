@@ -8,7 +8,8 @@ import Header from './components/Header'
 import { getSyncId, setSyncId, loadLocal, saveLocalDebounced, loadRemote, saveRemoteDebounced } from './lib/store.js'
 import { computeCreditTotals, computeAcumulado } from './lib/stats.js'
 import { getMonthDisplayName, incMonth } from './lib/date.js'
-import { filterByMonth } from './lib/selectors.js'
+import { filterByMonth, visibleEntradasRows, visibleLedgerItems } from './lib/selectors.js'
+import { buildMonthExport } from './lib/transfer.js'
 
 export default function App() {
   // Get first day of current month for initial record
@@ -32,6 +33,18 @@ export default function App() {
     setToastMsg(msg)
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     toastTimerRef.current = setTimeout(() => setToastMsg(''), 2000)
+  }
+
+  function downloadJSON(payload, filename) {
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
   }
 
   // Sync ID init
@@ -130,6 +143,19 @@ export default function App() {
     setPrintMode(true)
   }
 
+  function handleExport() {
+    const entradasExport = visibleEntradasRows(diariasRows, activeMonth)
+    const ledgerSource = Array.isArray(ledgerItems) ? ledgerItems : (Array.isArray(ledgerInitialItems) ? ledgerInitialItems : [])
+    const ledgerExport = visibleLedgerItems(ledgerSource, activeMonth)
+    const payload = buildMonthExport({
+      month: activeMonth,
+      entradasRows: entradasExport,
+      ledgerItems: ledgerExport,
+    })
+    downloadJSON(payload, `cash-ledger-${activeMonth}.json`)
+    showToast('Exportação pronta')
+  }
+
   useEffect(() => {
     if (!printMode || typeof window === 'undefined') return undefined
 
@@ -180,6 +206,7 @@ export default function App() {
         onPrevMonth={() => navigateMonth(-1)}
         onNextMonth={() => navigateMonth(1)}
         onPrint={handlePrint}
+        onExport={handleExport}
         syncId={syncId}
         syncIdDraft={syncIdDraft}
         syncStatus={syncStatus}

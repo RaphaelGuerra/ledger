@@ -131,6 +131,7 @@ body {
   margin-left: 0;
 }
 .header-month-controls .month-actions { margin-top: 6px; text-align: center; }
+.header-month-controls .month-actions button + button { margin-left: 8px; }
 .header-month-controls .current-month {
   font-weight: 500;
   font-size: 15px;
