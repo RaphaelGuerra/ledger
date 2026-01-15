@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useIsDesktop } from '../lib/useIsDesktop.js'
 import { formatDDMM } from '../lib/date.js'
-import { toNumberOrZero } from '../lib/number.js'
+import { toNumberOrZero, fmt2 } from '../lib/number.js'
 import { visibleLedgerItems } from '../lib/selectors.js'
 
 
@@ -135,15 +135,15 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
       <div className="summary-cards">
         <div className="summary-card">
           <div className="label">Total Créditos</div>
-          <div className="value currency"><span className="prefix">R$</span><span className="val">{totals.totalCreditos.toFixed(2)}</span></div>
+          <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(totals.totalCreditos)}</span></div>
         </div>
         <div className="summary-card">
           <div className="label">Total Movimentos</div>
-          <div className="value currency"><span className="prefix">R$</span><span className="val">{totals.totalMovimentos.toFixed(2)}</span></div>
+          <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(totals.totalMovimentos)}</span></div>
         </div>
         <div className="summary-card">
           <div className="label">RESULTADO</div>
-          <div className="value currency"><span className="prefix">R$</span><span className="val">{totals.resultado.toFixed(2)}</span></div>
+          <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(totals.resultado)}</span></div>
         </div>
       </div>
       <h2 className="section-title entries-title">Lançamentos</h2>
@@ -193,7 +193,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                   </td>
                   <td>
                     <div className="currency-input"><span className="prefix">R$</span>
-                      <input className="cell-input readonly" readOnly value={typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : ''} />
+                      <input className="cell-input readonly" readOnly value={fmt2(rowResults[idx].saldo)} />
                     </div>
                   </td>
                   <td className="actions-cell">
@@ -238,7 +238,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                     <div className="date-display">{formatDDMM(it.date)}</div>
                     <div className="collapsed-mid">
                       <div className="desc-preview">{it.descricao || '—'}</div>
-                      <div className="val-display">R$ {it.valor === '' ? '—' : Number(it.valor).toFixed(2)}</div>
+                      <div className="val-display">R$ {fmt2(it.valor) || '—'}</div>
                     </div>
                   </>
                 )}
@@ -252,7 +252,7 @@ export default function Ledger({ creditTotals, activeMonth, initialItems, onItem
                   <div className="desc-input">
                     <input className="cell-input" value={it.descricao} onChange={e => updateItem(it.id, 'descricao', e.target.value)} placeholder="Descrição" disabled={!canCreate} />
                   </div>
-                  <div className="saldo-caption">Saldo: R$ {typeof rowResults[idx].saldo === 'number' ? rowResults[idx].saldo.toFixed(2) : '—'}</div>
+                  <div className="saldo-caption">Saldo: R$ {fmt2(rowResults[idx].saldo) || '—'}</div>
                 </>
               ) : null}
             </div>

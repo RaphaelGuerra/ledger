@@ -10,6 +10,7 @@ import { computeCreditTotals, computeAcumulado } from './lib/stats.js'
 import { getMonthDisplayName, incMonth } from './lib/date.js'
 import { filterByMonth, visibleEntradasRows, visibleLedgerItems } from './lib/selectors.js'
 import { buildMonthExport, validateMonthImport } from './lib/transfer.js'
+import { fmt2 } from './lib/number.js'
 
 export default function App() {
   // Get first day of current month for initial record
@@ -304,23 +305,23 @@ export default function App() {
             </div>
             <div className="summary-card">
               <div className="label">Diárias</div>
-              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.entradas || 0).toFixed(2)}</span></div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(acumulado.total.entradas || 0)}</span></div>
             </div>
             <div className="summary-card">
               <div className="label">Média</div>
-              <div className="value currency"><span className="prefix">R$</span><span className="val">{typeof acumulado.total.media === 'number' ? acumulado.total.media.toFixed(2) : ''}</span></div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(acumulado.total.media)}</span></div>
             </div>
             <div className="summary-card">
               <div className="label">Cozinha</div>
-              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.cozinha || 0).toFixed(2)}</span></div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(acumulado.total.cozinha || 0)}</span></div>
             </div>
             <div className="summary-card">
               <div className="label">Bar</div>
-              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.bar || 0).toFixed(2)}</span></div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(acumulado.total.bar || 0)}</span></div>
             </div>
             <div className="summary-card">
               <div className="label">Outros</div>
-              <div className="value currency"><span className="prefix">R$</span><span className="val">{(acumulado.total.outros || 0).toFixed(2)}</span></div>
+              <div className="value currency"><span className="prefix">R$</span><span className="val">{fmt2(acumulado.total.outros || 0)}</span></div>
             </div>
           </div>
         </section>

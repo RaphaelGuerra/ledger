@@ -22,6 +22,18 @@ export function isBlank(v) {
   return v === '' || v === null || v === undefined
 }
 
+const numberFormatter = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
 /**
  * Format a value with 2 decimal places, or empty when not a number.
  * @param {unknown} v
@@ -30,7 +42,7 @@ export function isBlank(v) {
 export function fmt2(v) {
   if (isBlank(v)) return ''
   const n = Number(v)
-  return Number.isFinite(n) ? n.toFixed(2) : ''
+  return Number.isFinite(n) ? numberFormatter.format(n) : ''
 }
 
 /**
@@ -41,6 +53,5 @@ export function fmt2(v) {
 export function fmtBRL(v) {
   if (isBlank(v)) return ''
   const n = Number(v)
-  return Number.isFinite(n) ? `R$ ${n.toFixed(2)}` : ''
+  return Number.isFinite(n) ? currencyFormatter.format(n) : ''
 }
-
