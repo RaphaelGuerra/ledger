@@ -19,7 +19,9 @@ export default function App() {
   const [activeMonth, setActiveMonth] = useState(firstDayOfMonth.slice(0, 7)) // YYYY-MM
   const [syncId, setSyncIdState] = useState('') // active (connected) ID
   const [syncIdDraft, setSyncIdDraft] = useState('') // user input (not yet connected)
-  const [syncStatus, setSyncStatus] = useState('off') // off | loading | ok | error
+  const [syncStatus, setSyncStatus] = useState('off') // off | loading | ok | error | missing
+  const [lastSyncAt, setLastSyncAt] = useState('')
+  const [syncNote, setSyncNote] = useState('')
   
   const [diariasRows, setDiariasRows] = useState([])
   const [ledgerInitialItems, setLedgerInitialItems] = useState(null)
@@ -40,6 +42,13 @@ export default function App() {
     setToastMsg(msg)
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     toastTimerRef.current = setTimeout(() => setToastMsg(''), 2000)
+  }
+
+  function formatSyncTimestamp(value) {
+    if (!value) return ''
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
   }
 
   function downloadJSON(payload, filename) {
@@ -70,6 +79,7 @@ export default function App() {
     setSyncIdState(id)
     setSyncId(id)
     setSyncStatus(id ? 'loading' : 'off')
+    setSyncNote('')
     // Success toast shown after first successful load/save.
     lastSyncStatusRef.current = id ? 'loading' : 'off'
   }
@@ -78,6 +88,8 @@ export default function App() {
     setSyncIdState('')
     setSyncId('')
     setSyncStatus('off')
+    setLastSyncAt('')
+    setSyncNote('')
     showToast('Sync desconectado')
     lastSyncStatusRef.current = 'off'
   }
@@ -96,13 +108,23 @@ export default function App() {
         const res = await loadRemote(syncId, activeMonth)
         if (res.ok) {
           setSyncStatus('ok')
+          setSyncNote('')
+          setLastSyncAt(new Date().toISOString())
           lastSyncStatusRef.current = 'ok'
           data = res.data
           showToast('Sync conectado')
         } else {
-          setSyncStatus('error')
-          lastSyncStatusRef.current = 'error'
-          showToast('Falha de sync')
+          if (res.status === 404) {
+            setSyncStatus('missing')
+            setSyncNote(`space:${syncId}`)
+            lastSyncStatusRef.current = 'missing'
+            showToast('Sync não provisionado')
+          } else {
+            setSyncStatus('error')
+            setSyncNote('')
+            lastSyncStatusRef.current = 'error'
+            showToast('Falha de sync')
+          }
         }
       }
       if (!data) data = loadLocal(activeMonth)
@@ -118,15 +140,27 @@ export default function App() {
   function persistMonthData(month, data) {
     saveLocalDebounced(month, data)
     if (syncId) {
-      saveRemoteDebounced(syncId, month, data, ok => {
-        setSyncStatus(ok ? 'ok' : 'error')
+      saveRemoteDebounced(syncId, month, data, result => {
+        const { ok, status } = result || { ok: false, status: 0 }
         if (!ok) {
-          lastSyncStatusRef.current = 'error'
-          showToast('Falha de sync')
-        } else {
-          if (lastSyncStatusRef.current !== 'ok') showToast('Sync atualizado')
-          lastSyncStatusRef.current = 'ok'
+          if (status === 404) {
+            setSyncStatus('missing')
+            setSyncNote(`space:${syncId}`)
+            lastSyncStatusRef.current = 'missing'
+            showToast('Sync não provisionado')
+          } else {
+            setSyncStatus('error')
+            setSyncNote('')
+            lastSyncStatusRef.current = 'error'
+            showToast('Falha de sync')
+          }
+          return
         }
+        setSyncStatus('ok')
+        setSyncNote('')
+        setLastSyncAt(new Date().toISOString())
+        if (lastSyncStatusRef.current !== 'ok') showToast('Sync atualizado')
+        lastSyncStatusRef.current = 'ok'
       })
     }
   }
@@ -152,6 +186,7 @@ export default function App() {
   const importCreatedAtLabel = importSummary?.createdAt && !Number.isNaN(Date.parse(importSummary.createdAt))
     ? new Date(importSummary.createdAt).toLocaleString('pt-BR')
     : ''
+  const lastSyncLabel = formatSyncTimestamp(lastSyncAt)
 
   function navigateMonth(direction) {
     setActiveMonth(prev => incMonth(prev, direction))
@@ -284,6 +319,8 @@ export default function App() {
         syncId={syncId}
         syncIdDraft={syncIdDraft}
         syncStatus={syncStatus}
+        lastSyncLabel={lastSyncLabel}
+        syncNote={syncNote}
         onSyncIdChange={handleSyncIdChange}
         onConnect={connectSync}
         onDisconnect={disconnectSync}

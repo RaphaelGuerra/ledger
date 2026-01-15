@@ -15,7 +15,9 @@
  * @param {() => void} props.onImport
  * @param {string} props.syncId
  * @param {string} props.syncIdDraft
- * @param {'off' | 'loading' | 'ok' | 'error'} props.syncStatus
+ * @param {'off' | 'loading' | 'ok' | 'error' | 'missing'} props.syncStatus
+ * @param {string} props.lastSyncLabel
+ * @param {string} props.syncNote
  * @param {(value: string) => void} props.onSyncIdChange
  * @param {() => void} props.onConnect
  * @param {() => void} props.onDisconnect
@@ -33,6 +35,8 @@ export default function Header({
   syncId,
   syncIdDraft,
   syncStatus,
+  lastSyncLabel,
+  syncNote,
   onSyncIdChange,
   onConnect,
   onDisconnect,
@@ -59,6 +63,8 @@ export default function Header({
           syncId={syncId}
           syncIdDraft={syncIdDraft}
           syncStatus={syncStatus}
+          lastSyncLabel={lastSyncLabel}
+          syncNote={syncNote}
           onSyncIdChange={onSyncIdChange}
           onConnect={onConnect}
           onDisconnect={onDisconnect}
@@ -114,7 +120,9 @@ export function MonthNav({ monthLabel, onPrevMonth, onNextMonth, onPrint, onExpo
  * @param {Object} props
  * @param {string} props.syncId
  * @param {string} props.syncIdDraft
- * @param {'off' | 'loading' | 'ok' | 'error'} props.syncStatus
+ * @param {'off' | 'loading' | 'ok' | 'error' | 'missing'} props.syncStatus
+ * @param {string} props.lastSyncLabel
+ * @param {string} props.syncNote
  * @param {(value: string) => void} props.onSyncIdChange
  * @param {() => void} props.onConnect
  * @param {() => void} props.onDisconnect
@@ -123,6 +131,8 @@ export function SyncControls({
   syncId,
   syncIdDraft,
   syncStatus,
+  lastSyncLabel,
+  syncNote,
   onSyncIdChange,
   onConnect,
   onDisconnect,
@@ -161,6 +171,12 @@ export function SyncControls({
         <span className={status.statusClass} aria-hidden />
         <span className="sync-status-label">{status.statusLabel}</span>
       </div>
+      {syncId && lastSyncLabel ? (
+        <div className="sync-meta">Último sync: {lastSyncLabel}</div>
+      ) : null}
+      {syncStatus === 'missing' && syncNote ? (
+        <div className="sync-meta sync-meta--warn">Provisionar {syncNote} no KV</div>
+      ) : null}
     </div>
   )
 }
@@ -174,6 +190,9 @@ function getSyncStatusPresentation(syncId, syncStatus) {
   }
   if (syncStatus === 'loading') {
     return { statusClass: 'sync-dot loading', statusLabel: 'Sincronizando' }
+  }
+  if (syncStatus === 'missing') {
+    return { statusClass: 'sync-dot error', statusLabel: 'Sync não provisionado' }
   }
   return { statusClass: 'sync-dot error', statusLabel: 'Falha de sync (modo local)' }
 }

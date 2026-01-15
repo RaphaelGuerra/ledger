@@ -1255,6 +1255,15 @@ input[type="date"].date-compact::-webkit-datetime-edit { color: transparent; }
   line-height: 1.2;
 }
 
+.sync-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.sync-meta--warn {
+  color: var(--warning);
+}
+
 .sync-dot {
   width: 8px;
   height: 8px;

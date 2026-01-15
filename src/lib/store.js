@@ -39,18 +39,18 @@ export const saveLocalDebounced = debounce((month, data) => {
 export async function loadRemote(syncId, month) {
   try {
     const res = await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`)
-    if (!res.ok) return { ok: false, data: null }
+    if (!res.ok) return { ok: false, data: null, status: res.status }
     const data = await res.json()
-    if (data === null) return { ok: true, data: null }
-    if (!isEncryptedEnvelope(data)) return { ok: false, data: null }
+    if (data === null) return { ok: true, data: null, status: res.status }
+    if (!isEncryptedEnvelope(data)) return { ok: false, data: null, status: res.status }
     try {
       const plain = await decryptJSON(data, syncId)
-      return { ok: true, data: plain }
+      return { ok: true, data: plain, status: res.status }
     } catch {
-      return { ok: false, data: null }
+      return { ok: false, data: null, status: res.status }
     }
   } catch {
-    return { ok: false, data: null }
+    return { ok: false, data: null, status: 0 }
   }
 }
 
@@ -61,7 +61,7 @@ export const saveRemoteDebounced = debounce(async (syncId, month, data, onDone) 
       const encrypted = await encryptJSON(data, syncId)
       body = JSON.stringify(encrypted)
     } catch {
-      if (typeof onDone === 'function') onDone(false)
+      if (typeof onDone === 'function') onDone({ ok: false, status: 0 })
       return
     }
     const res = await fetch(`/api/storage/${encodeURIComponent(syncId)}/${encodeURIComponent(month)}`, {
@@ -69,8 +69,8 @@ export const saveRemoteDebounced = debounce(async (syncId, month, data, onDone) 
       headers: { 'Content-Type': 'application/json' },
       body,
     })
-    if (typeof onDone === 'function') onDone(res.ok)
+    if (typeof onDone === 'function') onDone({ ok: res.ok, status: res.status })
   } catch {
-    if (typeof onDone === 'function') onDone(false)
+    if (typeof onDone === 'function') onDone({ ok: false, status: 0 })
   }
 }, 500)
